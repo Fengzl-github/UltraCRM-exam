@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UltraCRM-exam</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+
+</head>
+<body>
+<div>
+    <div class="loginCard">
+        <div id="appVM">
+            <el-card class="box-card">
+                <div slot="header" class="clearfix">
+                    <span><i class="el-icon-phone-outline"> UltraCRM-exam 考试系统</i></span>
+                </div>
+                <div>
+                    <el-form :model="form" ref="form">
+                        <el-form-item label="" prop="ghid" :rules="[{required: true, message: '账号不能为空'}]">
+                            <el-input v-model="form.ghid" clearable autocomplete="off" placeholder="账号"
+                                      @keyup.enter.native="login"></el-input>
+                        </el-form-item>
+
+                        <el-form-item label="" prop="pass" :rules="[{required: true, message: '密码不能为空'}]">
+                            <el-input v-model="form.pass" show-password autocomplete="off" placeholder="密码"
+                                      @keyup.enter.native="login"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <div>
+                        <el-checkbox v-model="checked" @change="rememberPwd">记住密码</el-checkbox>
+                        <span style="color:red; padding-left: 15%;">
+                        {{retInfo}}
+                    </span>
+                    </div>
+                    <el-row style="padding-left:75%;">
+                        <el-button type="success" @click="login">登录</el-button>
+                    </el-row>
+                </div>
+            </el-card>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript">
+    let vData = {
+        retInfo: '',
+        checked: false,
+        form: {
+            ghid: '',
+            pass: ''
+        }
+    };
+
+    let vm = new Vue({
+        el: '#appVM',
+        data: vData,
+        method: {
+            login,
+            rememberPwd
+        }
+    });
+
+    function login() {
+        vm.$refs['form'].validate((valid) => {
+            if (valid) {
+                vData.retInfo = "";
+                submitLogin();
+            } else {
+                return false;
+            }
+        });
+    }
+
+    function submitLogin() {
+        if (myUtil.getLookie("save_pwd") == 1) {
+            myUtil.setLookie("pwd", vData.form.pass, 24 * 30);
+        } else {
+            myUtil.setLookie("pwd", '', 24 * 30);
+        }
+        axios.post("login/verification", vData.form)
+            .then(function (response) {
+                let result = response.data;
+                console.log(result, "--------");
+                if (result.code == 200) {
+                    let user = result.data.content;
+                    let loginToken = result.data.loginToken;
+                    myUtil.setToken(loginToken);
+                    myUtil.setUname(user.name);
+                    myUtil.setAccountPwd(user.ghid);
+                    myUtil.setPmAgent(JSON.stringify(user));
+                    // document.location.href = "/myindex"; //走控制器
+                    window.location.href = "/myindex.html"; //直接前台跳转
+                } else {
+                    vData.retInfo = result.msg;
+                }
+            })
+            .catch(function (error) {
+                console.log("系统错误");
+            })
+    }
+
+    function rememberPwd() {
+        if (vData.checked == false) {
+            myUtil.setLookie("save_pwd", 0, 24 * 30);
+        } else {
+            myUtil.setLookie("save_pwd", 1, 24 * 30);
+        }
+
+    }
+
+    $(function () {
+        if (myUtil.getLookie("save_pwd") == 1) {
+            vData.checked = true;
+        }
+        vData.form.ghid = myUtil.getAccountPwd();
+        vData.form.pass = myUtil.getLookie("pwd");
+    })
+</script>
+
+<style type="text/css">
+    .loginCard {
+        position: absolute;
+        top: 10%;
+        width: 400px;
+        right: 100px;
+        font-family: "lato", sans-serif;
+        font-weight: 300;
+
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background: #FFF url(/images/login/bg.png) no-repeat 0 0;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        background-size: 100%;
+    }
+</style>
+</html>

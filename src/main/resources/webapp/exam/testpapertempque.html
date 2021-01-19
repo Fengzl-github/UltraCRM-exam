@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考试计划添加试题</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+</head>
+<body>
+<div id="appVM" v-cloak>
+    <el-container>
+        <el-header>
+            <el-row>
+                <el-col :span="12" style="text-align:left;padding-left: 15px;">考试计划: {{planName}}</el-col>
+
+                <el-button-group v-for="Bm in PattType">
+                    <el-button type="primary" icon="el-icon-circle-plus-outline" size="small"
+                               :disabled="Bm.disable" @click="addPattern(Bm.K)">{{Bm.V}}
+                    </el-button>
+                </el-button-group>
+
+                <el-col :span="2" style="float: right">
+                    <el-button type="primary" size="small" icon="el-icon-setting">
+                        生成试卷
+                    </el-button>
+                </el-col>
+            </el-row>
+        </el-header>
+
+        <el-main>
+            <div v-if="ExamItems.length == 0">&nbsp;</div>
+            <template v-for="(wForm, wIndex) in ExamItems">
+                <!--单选-->
+                <el-card v-if="wForm.topicType == 1">
+                    <div>单选</div>
+                </el-card>
+
+                <!--多选-->
+                <el-card v-if="wForm.topicType == 2">
+                    <div>多选</div>
+                </el-card>
+
+                <!--填空-->
+                <el-card v-if="wForm.topicType == 3">
+                    <div>填空</div>
+                </el-card>
+
+                <!--判断-->
+                <el-card v-if="wForm.topicType == 4">
+                    <div>判断</div>
+                </el-card>
+
+                <!--简答-->
+                <el-card v-if="wForm.topicType == 5">
+                    <div>简答</div>
+                </el-card>
+            </template>
+        </el-main>
+    </el-container>
+</div>
+
+</body>
+<script type="text/javascript">
+
+    let vData = {
+        planId: '',
+        planName: '',
+        PattType: [  //题目类型
+            {K: "1", V: "单选", disable: false},
+            {K: "2", V: "多选", disable: false},
+            {K: "3", V: "填空", disable: false},
+            {K: "4", V: "判断", disable: false},
+            {K: "5", V: "简答", disable: false}
+        ],
+        ExamItems: [],
+        ExamTemp: {//每个模板的数据
+            formExam: {
+                topicType: [{
+                    value: '1',
+                    label: '单项选择题'
+                }, {
+                    value: '2',
+                    label: '多项选择题'
+                }, {
+                    value: '3',
+                    label: '填空题'
+                }, {
+                    value: '4',
+                    label: '判断题'
+                }, {
+                    value: '5',
+                    label: '简答题'
+                }],
+                ExamItem: []//试题数据
+            }
+        },
+    };
+
+    let vm = new Vue({
+        el: "#appVM",
+        data: vData,
+        methods: {
+            addPattern
+        }
+    });
+
+    function addPattern(key) {
+        let lForm = getJsonClone(vData.ExamTemp.formExam);
+        //给指定模板对象赋值TOPIC_TYPE
+        lForm.topicType = key;
+        vData.ExamItems.push(lForm);
+
+        updateProjDisable();
+        //console.log(vData.ExamItems);
+        vm.$nextTick(() => {
+            document.documentElement.scrollTop = document.body.scrollHeight;
+        })
+    }
+
+    //获取json对象克隆
+    function getJsonClone(val) {
+        return JSON.parse(JSON.stringify(val));
+    }
+
+    //更新按键的操作状态,是否只读
+    function updateProjDisable() {
+        for (let index = 0; index < vData.PattType.length; index++) {
+            const el = vData.PattType[index];
+            let isDisable = false;
+            for (let wi = 0; wi < vData.ExamItems.length; wi++) {
+                const elW = vData.ExamItems[wi];
+                if (elW.topicType == el.K) {
+                    isDisable = true;
+                    break;
+                }
+            }
+            el.disable = isDisable;
+        }
+    }
+
+    $(function () {
+        /*获取地址参数信息*/
+        vData.planId = myUtil.fun_querystring("planId");
+        vData.planName = decodeURI(myUtil.fun_querystring("planName"));
+    })
+
+
+</script>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+    .el-header {
+        background-color: #bad1ce;
+        color: #333;
+        text-align: center;
+        line-height: 60px;
+        position: fixed;
+        z-index: 15;
+        width: 100%;
+    }
+
+    .el-main {
+        padding-top: 65px;
+        background-color: #e1ecf3;
+        color: #333;
+        text-align: left;
+    }
+</style>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自主练习</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_open.js"></script>
+    <script type="text/javascript" src="/common/dialog/lhgdialog.js?self=false&skin=idialog"></script>
+</head>
+<body>
+<div id="appVM">
+    <el-card class="box-card">
+        <div slot="header" style="text-align:center;">
+            <h2>自主练习</h2>
+        </div>
+
+        <el-form label-width="80px">
+            <el-form-item label="题目条数">
+                <el-input-number size="medium" v-model="TOPIC_NUM" :min="10" :max="100"></el-input-number>
+            </el-form-item>
+
+            <el-form-item label="题目类型">
+                <el-checkbox-group v-model="TOPIC_TYPE">
+                    <el-checkbox label="1" name="TOPIC_TYPEtype">单项选择题</el-checkbox>
+                    <el-checkbox label="2" name="TOPIC_TYPEtype">多项选择题</el-checkbox>
+                    <el-checkbox label="3" name="TOPIC_TYPEtype">填空题</el-checkbox>
+                    <el-checkbox label="4" name="TOPIC_TYPEtype">判断题</el-checkbox>
+                    <el-checkbox label="5" name="TOPIC_TYPEtype">简答题</el-checkbox>
+                </el-checkbox-group>
+            </el-form-item>
+            <el-form-item label="难度等级">
+                <el-checkbox-group v-model="DIFFICULTY_LEVEL">
+                    <el-checkbox label="1" name="DIFFICULTY_LEVELtype">困难</el-checkbox>
+                    <el-checkbox label="2" name="DIFFICULTY_LEVELtype">较难</el-checkbox>
+                    <el-checkbox label="3" name="DIFFICULTY_LEVELtype">一般</el-checkbox>
+                    <el-checkbox label="4" name="DIFFICULTY_LEVELtype">较易</el-checkbox>
+                    <el-checkbox label="5" name="DIFFICULTY_LEVELtype">容易</el-checkbox>
+                </el-checkbox-group>
+
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit">开始模拟考试</el-button>
+            </el-form-item>
+        </el-form>
+
+    </el-card>
+</div>
+</body>
+<script>
+    var vData = {
+        TOPIC_NUM: 50,
+        TOPIC_TYPE: ['1', '2', '3', '4', '5'],
+        DIFFICULTY_LEVEL: ['1', '2', '3', '4', '5']
+    };
+
+    // 该对象被加入到一个 Vue 实例中
+    var vm = new Vue({
+        el: '#appVM',
+        data: vData,
+        methods: {
+            onSubmit() {
+                submitExam();
+            }
+        }
+    });
+
+    function submitExam() {
+
+        if (vData.TOPIC_TYPE.length <= 0) {
+            alert("题目类型不能一个都不选, 请重新选择! ")
+            return;
+        }
+        if (vData.DIFFICULTY_LEVEL.length <= 0) {
+            alert("难度等级不能一个都不选, 请重新选择! ")
+            return;
+        }
+
+        //题目类型
+        var vT = "";
+        if (vData.TOPIC_TYPE.length < 5) {//如果全选就没查询条件了
+            for (var index = 0; index < vData.TOPIC_TYPE.length; index++) {
+                if (vT.length > 0) vT += ",";
+                vT += vData.TOPIC_TYPE[index];
+            }
+        }
+
+        //难度等级
+        var vDL = "";
+        if (vData.DIFFICULTY_LEVEL.length < 5) {//如果全选就没查询条件了
+            for (var index = 0; index < vData.DIFFICULTY_LEVEL.length; index++) {
+                if (vDL.length > 0) vDL += ",";
+                vDL += vData.DIFFICULTY_LEVEL[index];
+            }
+        }
+
+        var vUrl = "page/exam/selfTrainingtest?tNum=" + vData.TOPIC_NUM + "&tTypeList=" + vT + "&tDlList=" + vDL;
+        win_openNoBtn(vUrl, '自主练习', window.screen.width - 50, window.screen.height - 200, false);
+    }
+
+
+</script>
+</html>

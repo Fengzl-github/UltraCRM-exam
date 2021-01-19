@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+</head>
+<body>
+<div id="vmApp">
+    <div>
+        <template v-for="(Que,idx) in ExamItem">
+            <el-input v-model="Que.input" placeholder="请输入内容" @change="changV(Que)"></el-input>
+        </template>
+    </div>
+
+
+</div>
+</body>
+
+<script type="text/javascript">
+
+    let vData = {
+        ExamItem: [{}, {}]
+    };
+
+    let vm = new Vue({
+        el: '#vmApp',
+        data: vData,
+        methods: {
+            changV
+        }
+    });
+
+    function changV(val) {
+        console.log(val, "====fsdfsd")
+    }
+
+    $(function () {
+
+    })
+</script>
+</html>

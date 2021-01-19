@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>模拟考试</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+</head>
+<body>
+<a href="#thisTop" target="_self" id="thisTop"></a>
+<div id="appVM" v-cloak>
+    <el-container>
+        <el-header>自主练习</el-header>
+        <el-dialog title="" :show-close="false" :close-on-click-modal="false" :visible.sync="dialogTableVisible"
+                   :modal="false" width="150px" top="60px" style="right:0px;left:auto;height:auto;text-align: center">
+            <el-button type="warning" style="width:100%;" @click="showAnswer">{{btnAnswerName}}</el-button>
+            <br> <br>
+            <el-button type="success" style="width:100%;" @click="closePage">关闭窗口</el-button>
+            <br> <br> <br> <br>
+            <el-tooltip content="回到顶部" placement="top" effect="light">
+                <el-button icon="el-icon-arrow-up" circle @click="goTop"></el-button>
+            </el-tooltip>
+        </el-dialog>
+        <el-main>
+            <div v-for="(testQue,index) in ExamItem">
+                <!-- 单选 -->
+                <div v-if="testQue.topicType == 1">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、
+                            ({{testQue.topicScore}}分、
+                            <topic-type :value="testQue.topicType"></topic-type>
+                            )
+                            {{testQue.topicDes}}
+                        </h5>
+                        <br>
+                        <template>
+                            <template v-for="(tRadio,indexR) in testQue.topicQueContent">
+                                <el-radio v-model="testQue.radionName" :label="indexR"
+                                          @change="changeValue(tRadio,index)">
+                                    {{tRadio.k}}、{{tRadio.v}}
+                                </el-radio>
+                                <br>
+                            </template>
+                        </template>
+                        <div v-show="isShowAnswer" class="KSanswerStyle"><br>您的答案：{{testQue.epReplay}}</div>
+                        <div v-show="isShowAnswer" class="answerStyle"><br>正确答案：{{testQue.correctAnswer}}</div>
+                        <div v-show="isShowAnswer==true && (testQue.epReplay!=testQue.correctAnswer)"
+                             class="answerStyle"><br>
+                            <el-tag type="danger">错误</el-tag>
+                        </div>
+                    </el-card>
+                </div>
+                <!--多选和判断-->
+                <div v-else-if="testQue.topicType==2  || testQue.topicType==4">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、
+                            ({{testQue.topicScore}}分、
+                            <topic-type :value="testQue.topicType"></topic-type>
+                            )
+                            {{testQue.topicDes}}
+                        </h5>
+                        <br>
+                        <template v-for="tMSelect in testQue.topicQueContent">
+                            <el-checkbox v-model="tMSelect.CH" @change="changeValue(tMSelect,index)">
+                                {{tMSelect.k}}、{{tMSelect.v}}
+                            </el-checkbox>
+                            <br>
+                        </template>
+                        <div v-show="isShowAnswer" class="KSanswerStyle"><br>您的答案：{{testQue.epReplay}}</div>
+                        <div v-show="isShowAnswer" class="answerStyle"><br>正确答案：{{testQue.correctAnswer}}</div>
+                        <div v-show="isShowAnswer==true && (testQue.epReplay!=testQue.correctAnswer)"
+                             class="answerStyle"><br>
+                            <el-tag type="danger">错误</el-tag>
+                        </div>
+
+                    </el-card>
+                </div>
+                <!--填空-->
+                <div v-else-if=" testQue.topicType==3">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、
+                            ({{testQue.topicScore}}分、
+                            <topic-type :value="testQue.topicType"></topic-type>
+                            )
+                            {{testQue.topicDes}}
+                        </h5>
+                        <br>
+                        <template v-for="(tMSelect,tInx) in testQue.topicQueContent">
+                            {{tInx+1}}）
+                            <el-input v-model="tMSelect.blackV" placeholder="请输入内容" style="width:300px;"
+                                      @change="changeValue(tMSelect,index)"></el-input>
+                            <br><br>
+                        </template>
+                        <div v-show="isShowAnswer" class="answerStyle"><br>答案：<br><br>
+                            <template v-for="(tMSelect,tInx) in testQue.topicQueContent">
+                                {{tInx+1}}）{{tMSelect.v}}<br><br>
+                            </template>
+                        </div>
+                    </el-card>
+                </div>
+                <!--简答-->
+                <div v-else-if="testQue.topicType==5">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、
+                            ({{testQue.topicScore}}分、
+                            <topic-type :value="testQue.topicType"></topic-type>
+                            )
+                            {{testQue.topicDes}}
+                        </h5>
+                        <br>
+                        <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入您的答案"
+                                  @change="changeValue(testQue,index)" v-model="testQue.epReplay" style="width:80%;"
+                                  :maxlength="200">
+                        </el-input>
+                        <div v-show="isShowAnswer" class="KSanswerStyle"><br>您的答案：{{testQue.epReplay}}</div>
+                        <div v-show="isShowAnswer" class="answerStyle"><br>正确答案：{{testQue.correctAnswer}}</div>
+                    </el-card>
+                </div>
+            </div>
+        </el-main>
+    </el-container>
+</div>
+<template id="myTopicType">
+    <span v-if="value==1">单选</span>
+    <span v-else-if="value==2">多选</span>
+    <span v-else-if="value==3">填空</span>
+    <span v-else-if="value==4">判断</span>
+    <span v-else-if="value==5">简答</span>
+</template>
+
+<script type="text/javascript">
+    //注册题目类型组件
+    Vue.component('topic-type', {
+        props: ['value'],
+        data: function () {
+            return {
+                value: 0
+            }
+        },
+        template: '#myTopicType'
+    });
+
+    let vData = {
+        dialogTableVisible: true,
+        btnAnswerName: '显示答案',
+        ExamItem: [],
+        isShowAnswer: false
+    };
+
+    let vm = new Vue({
+        el: '#appVM',
+        data: vData,
+        methods: {
+            showAnswer,
+            closePage,
+            goTop,
+            changeValue,
+            changeInput
+        }
+    });
+
+    function showAnswer() {
+        vData.btnAnswerName = vData.isShowAnswer == true ? "显示答案" : "隐藏答案";
+        vData.isShowAnswer = !vData.isShowAnswer;
+    }
+
+    function closePage() {
+        var dgRet = frameElement.api;
+
+        dgRet.close();
+    }
+
+    function goTop() {
+        $("#thisTop")[0].click();
+    }
+
+    function changeValue(val, idx) {
+        var vValue = vData.ExamItem[idx];
+        if (vValue.topicType == 1) {
+            vValue.epReplay = val.k;
+        } else if (vValue.topicType == 2 || vValue.topicType == 4) {
+            var vAns = "";
+            for (var i = 0; i < vValue.topicQueContent.length; i++) {
+                if (vValue.topicQueContent[i].CH) {
+                    vAns += vValue.topicQueContent[i].k;
+                }
+            }
+            vValue.epReplay = vAns;
+        } else if (vValue.topicType == 3) {
+            var vAns = [];
+            var isAll = true;//检测所有填空是不是为空,如果是答案则记录为空
+            for (var i = 0; i < vValue.topicQueContent.length; i++) {
+                if (vValue.topicQueContent[i].blackV) {
+                    vAns.push({"K": i, "V": vValue.topicQueContent[i].blackV});
+                    isAll = false;
+                } else {
+                    vAns.push({"K": i, "V": ""});
+                }
+            }
+            if (isAll) {
+                vValue.epReplay = "";
+            } else {
+                vValue.epReplay = JSON.stringify(vAns);
+            }
+        }
+    }
+
+    /*input 嵌套太深，检测不到视图刷新*/
+    function changeInput(val) {
+        console.log("刷新", val);
+
+        vm.$forceUpdate();
+    }
+
+    $(function () {
+        getExamInfo();
+
+
+    });
+
+    function getExamInfo() {
+        var tNum = myUtil.fun_querystring("tNum");
+        var tTypeList = myUtil.fun_querystring("tTypeList");
+        var tDlList = myUtil.fun_querystring("tDlList");
+        let vJsonData = {"tNum": tNum, "tTypeList": tTypeList, "tDlList": tDlList};
+        axios.post("/exam/getSelfExamInfo", vJsonData)
+            .then(function (response) {
+                let lret = response.data;
+                console.log(lret);
+
+                vData.ExamItem = lret.data.content.sort(function (a, b) {
+                    var i = a.topicType - b.topicType;
+                    if (i == 0) {
+                        return b.difficultyLevel - a.difficultyLevel;
+                    }
+                    return i;
+                });
+            })
+            .catch(function (error) {
+
+            });
+    }
+</script>
+<style>
+    .transition-box {
+        width: 100%;
+        border-radius: 4px;
+        background-color: #409EFF;
+        text-align: center;
+        color: #fff;
+        padding: 20px 20px;
+        box-sizing: border-box;
+        margin-right: 20px;
+        font-size: 20px;
+    }
+
+    .el-header,
+    .el-footer {
+        background-color: #D3DCE6;
+        color: #333;
+        text-align: center;
+        line-height: 60px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .el-aside {
+        background-color: #D3DCE6;
+        color: #333;
+        text-align: center;
+        line-height: 100px;
+    }
+
+    .el-main {
+        background-color: #FFF;
+        color: #333;
+        text-align: left;
+        line-height: 100%;
+        padding-left: 30px;
+
+    }
+
+    body > .el-container {
+        margin-bottom: 40px;
+        font-size: 18px;
+    }
+
+    .el-container:nth-child(5) .el-aside,
+    .el-container:nth-child(6) .el-aside {
+        line-height: 260px;
+    }
+
+    .el-container:nth-child(7) .el-aside {
+        line-height: 320px;
+    }
+
+    .el-checkbox__label {
+        font-size: 16px;
+    }
+
+    .answerStyle {
+        margin: 15px 15px;
+        color: #67c738;
+        font-size: 18px;
+        line-height: 23px;
+    }
+
+    .KSanswerStyle {
+        margin: 15px 15px;
+        color: rgb(78, 35, 235);
+        font-size: 18px;
+        line-height: 24px;
+    }
+</style>
+</body>
+</html>
