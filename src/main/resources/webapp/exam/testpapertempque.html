@@ -38,7 +38,68 @@
             <template v-for="(wForm, wIndex) in ExamItems">
                 <!--单选-->
                 <el-card v-if="wForm.topicType == 1">
-                    <div>单选</div>
+                    <el-row>
+                        <el-form :inline="true" :model="wForm" class="demo-form-inline">
+                            <el-form-item label="题型" size="small">
+                                <el-select v-model="wForm.topicType" placeholder="请选择" :disabled="true">
+                                    <el-option v-for="pattern in wForm.patterns" :key="pattern.value"
+                                               :label="pattern.label" :value="pattern.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="题量" size="small">
+                                <el-input-number v-model="wForm.cnt" size="mini" :min="0" :max="300"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="分值" size="small">
+                                <el-input-number v-model="wForm.score" size="mini" :min="1"
+                                                 :max="300"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="实际题量" size="small">
+                                <el-input v-model="wForm.actualCnt" placeholder="" :disabled="true"
+                                          style="width: 80px;"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="addTopic(wForm.topicType, wIndex)" size="small">
+                                    手动添加
+                                </el-button>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="batchImport(wForm.topicType, wIndex)" size="small">
+                                    批量导入
+                                </el-button>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="batchDelete(wIndex)" size="small">批量删除</el-button>
+                            </el-form-item>
+                            <el-button type="danger" style="float: right; margin-right:15px;" size="small"
+                                       icon="el-icon-delete" @click="delWeekly(wIndex)">
+                                移除当前模块
+                            </el-button>
+                        </el-form>
+                    </el-row>
+                    <el-row>
+                        <div v-for="(testQue,index) in wForm.ExamItem">
+                            <div v-if="testQue.topicType==1">
+                                <el-card shadow="always">
+                                    <h5>
+                                        {{index+1}}、 (
+                                        <topic-type :value="testQue.topicType"></topic-type>
+                                        ) {{testQue.topicDes}}
+                                    </h5>
+                                    <br>
+                                    <template v-for="(tRadio,indexR) in testQue.topicContentQue">
+                                        <el-radio v-model="testQue.radioName" :label="indexR">
+                                            {{tRadio.K}}、{{tRadio.V}}
+                                        </el-radio>
+                                        <br>
+                                    </template>
+                                    <div class="answerStyle">
+                                        <br>正确答案：{{testQue.correctAnswer}}
+                                    </div>
+                                </el-card>
+                            </div>
+                        </div>
+                    </el-row>
                 </el-card>
 
                 <!--多选-->
@@ -81,7 +142,7 @@
         ExamItems: [],
         ExamTemp: {//每个模板的数据
             formExam: {
-                topicType: [{
+                patterns: [{
                     value: '1',
                     label: '单项选择题'
                 }, {
@@ -97,6 +158,9 @@
                     value: '5',
                     label: '简答题'
                 }],
+                cnt: '',
+                score: '',
+                actualCnt: '',
                 ExamItem: []//试题数据
             }
         },
@@ -106,7 +170,11 @@
         el: "#appVM",
         data: vData,
         methods: {
-            addPattern
+            addPattern,
+            addTopic,
+            batchImport,
+            batchDelete,
+            delWeekly
         }
     });
 
@@ -121,6 +189,31 @@
         vm.$nextTick(() => {
             document.documentElement.scrollTop = document.body.scrollHeight;
         })
+    }
+
+    function addTopic(topicType, index) {
+        console.log('手动添加');
+    }
+
+    function batchImport(topicType, index) {
+        console.log("批量导入");
+    }
+
+    function batchDelete(index) {
+        console.log("批量删除");
+    }
+
+    function delWeekly(index) {
+        vm.$confirm('此操作将永久删除该内容, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            lockScroll: false,
+            type: 'warning'
+        }).then(() => {   //开始执行删除
+            vData.ExamItems.splice(index, 1);
+            updateProjDisable();
+        }).catch(() => {
+        });
     }
 
     //获取json对象克隆
