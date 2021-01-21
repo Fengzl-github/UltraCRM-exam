@@ -39,49 +39,20 @@
                 <!--单选-->
                 <el-card v-if="wForm.topicType == 1">
                     <el-row>
-                        <el-form :inline="true" :model="wForm" class="demo-form-inline">
-                            <el-form-item label="题型" size="small">
-                                <el-select v-model="wForm.topicType" placeholder="请选择" :disabled="true">
-                                    <el-option v-for="pattern in wForm.patterns" :key="pattern.value"
-                                               :label="pattern.label" :value="pattern.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="题量" size="small">
-                                <el-input-number v-model="wForm.cnt" size="mini" :min="0" :max="300"></el-input-number>
-                            </el-form-item>
-                            <el-form-item label="分值" size="small">
-                                <el-input-number v-model="wForm.score" size="mini" :min="1"
-                                                 :max="300"></el-input-number>
-                            </el-form-item>
-                            <el-form-item label="实际题量" size="small">
-                                <el-input v-model="wForm.actualCnt" placeholder="" :disabled="true"
-                                          style="width: 80px;"></el-input>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button type="primary" @click="addTopic(wForm.topicType, wIndex)" size="small">
-                                    手动添加
-                                </el-button>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button type="primary" @click="batchImport(wForm.topicType, wIndex)" size="small">
-                                    批量导入
-                                </el-button>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button type="primary" @click="batchDelete(wIndex)" size="small">批量删除</el-button>
-                            </el-form-item>
-                            <el-button type="danger" style="float: right; margin-right:15px;" size="small"
-                                       icon="el-icon-delete" @click="delWeekly(wIndex)">
-                                移除当前模块
-                            </el-button>
-                        </el-form>
+                        <head-label :model="wForm" :index="wIndex"></head-label>
                     </el-row>
                     <el-row>
                         <div v-for="(testQue,index) in wForm.ExamItem">
                             <div v-if="testQue.topicType==1">
                                 <el-card shadow="always">
                                     <h5>
+                                        <el-checkbox v-model="testQue.topicCheck" :true-label="testQue.topicId"
+                                                     :false-label="testQue.topicFalselabel"
+                                                     @change="getChecked(testQue.topicCheck)">
+                                            <h5>
+                                                <difficulty-level :value="testQue.difficultyLevel"></difficulty-level>
+                                            </h5>
+                                        </el-checkbox>
                                         {{index+1}}、 (
                                         <topic-type :value="testQue.topicType"></topic-type>
                                         ) {{testQue.topicDes}}
@@ -104,58 +75,215 @@
 
                 <!--多选-->
                 <el-card v-if="wForm.topicType == 2">
-                    <div>多选</div>
+                    <el-row>
+                        <head-label :model="wForm" :index="wIndex"></head-label>
+                    </el-row>
                 </el-card>
 
                 <!--填空-->
                 <el-card v-if="wForm.topicType == 3">
-                    <div>填空</div>
+                    <el-row>
+                        <head-label :model="wForm" :index="wIndex"></head-label>
+                    </el-row>
                 </el-card>
 
                 <!--判断-->
                 <el-card v-if="wForm.topicType == 4">
-                    <div>判断</div>
+                    <el-row>
+                        <head-label :model="wForm" :index="wIndex"></head-label>
+                    </el-row>
                 </el-card>
 
                 <!--简答-->
                 <el-card v-if="wForm.topicType == 5">
-                    <div>简答</div>
+                    <el-row>
+                        <head-label :model="wForm" :index="wIndex"></head-label>
+                    </el-row>
                 </el-card>
             </template>
+            <!--手动添加-->
+            <el-dialog title="手动添加" width="70%" :visible.sync="dialogFormVisible">
+                <el-form label-position="right" label-width="80px" :model="EditForm">
+                    <el-form-item label="题干">
+                        <el-input class="myText" type="textarea" v-model="EditForm.topicDes"></el-input>
+                    </el-form-item>
+                    <el-form-item label="题目类型">
+                        <template>
+                            <el-select v-model="EditForm.topicType" placeholder="请选择">
+                                <el-option v-for="item in ExamTemp.formExam.patterns"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </template>
+                    </el-form-item>
+                    <el-form-item label="难度等级">
+                        <el-select v-model="EditForm.difficultyLevel" placeholder="请选择">
+                            <el-option v-for="item in tpDifficultyLevelOptions"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="分值">
+                        <el-input-number v-model="EditForm.topicScore" :min="0.5" :max="20" :precision="1"
+                                         :step="0.5" :step-strictly="true"></el-input-number>
+                    </el-form-item>
+                    <el-form-item label="正确答案">
+                        <el-input class="myText" type="textarea" v-model="EditForm.correctAnswer"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div class="headLabel">选项集合</div>
+                <el-form label-position="right" label-width="100px" :model="topicContent">
+                    <el-form-item label="选项A">
+                        <el-input id="A" class="myText" type="textarea" v-model="topicContent.A"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项B">
+                        <el-input id="B" class="myText" type="textarea" v-model="topicContent.B"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项C">
+                        <el-input id="C" class="myText" type="textarea" v-model="topicContent.C"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项D">
+                        <el-input id="D" class="myText" type="textarea" v-model="topicContent.D"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项E">
+                        <el-input id="E" class="myText" type="textarea" v-model="topicContent.E"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项F">
+                        <el-input id="F" class="myText" type="textarea" v-model="topicContent.F"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项G">
+                        <el-input id="G" class="myText" type="textarea" v-model="topicContent.G"></el-input>
+                    </el-form-item>
+                </el-form>
+
+            </el-dialog>
         </el-main>
     </el-container>
 </div>
-
+<template id="myTopicType">
+    <span v-if="value==1">单选</span>
+    <span v-else-if="value==2">多选</span>
+    <span v-else-if="value==3">填空</span>
+    <span v-else-if="value==4">判断</span>
+    <span v-else-if="value==5">简答</span>
+</template>
+<template id="myDifficultyLevel">
+    <span v-if="value==1">困难</span>
+    <span v-else-if="value==2">较难</span>
+    <span v-else-if="value==3">一般</span>
+    <span v-else-if="value==4">较易</span>
+    <span v-else-if="value==5">容易</span>
+</template>
+<template id="myHeadLabel">
+    <el-form :inline="true" :model="model" class="demo-form-inline">
+        <el-form-item label="题型" size="small">
+            <el-select v-model="model.topicType" disabled="true">
+                <el-option v-for="pattern in model.patterns" :key="pattern.value" :label="pattern.label"
+                           :value="pattern.value">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="题量" size="small">
+            <el-input-number v-model="model.cnt" size="mini" :min="0" :max="300"></el-input-number>
+        </el-form-item>
+        <el-form-item label="分值" size="small">
+            <el-input-number v-model="model.score" size="mini" :min="1" :max="300"></el-input-number>
+        </el-form-item>
+        <el-form-item label="实际题量" size="small">
+            <el-input v-model="model.actualCnt" placeholder="" :disabled="true" style="width: 80px;"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="addTopic(model.topicType, index)" size="small">
+                手动添加
+            </el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="batchImport(model.topicType, index)" size="small">
+                批量导入
+            </el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="batchDelete(index)" size="small">批量删除</el-button>
+        </el-form-item>
+        <el-button type="danger" style="float: right; margin-right:15px;" size="small" icon="el-icon-delete"
+                   @click="delWeekly(index)">
+            移除当前模块
+        </el-button>
+    </el-form>
+</template>
 </body>
 <script type="text/javascript">
+    //注册题目类型组件,便于复用
+    Vue.component('topic-type', {
+        props: ['value'],
+        data: function () {
+            return {
+                value: 0
+            }
+        },
+        template: "#myTopicType"
+    });
+    //注册题目类型组件,便于复用
+    Vue.component('difficulty-level', {
+        props: ['value'],
+        data: function () {
+            return {
+                value: 0
+            }
+        },
+        template: "#myDifficultyLevel"
+    });
+
+    Vue.component('head-label', {
+        props: ['model', 'index'],
+        data: function () {
+            return {
+                model: {
+                    topicType: 0,
+                    patterns: [],
+                    cnt: 0,
+                    score: 0,
+                    actualCnt: 0,
+                    ExamItem: []
+                },
+                index: 0
+            }
+        },
+        template: '#myHeadLabel'
+    });
+
 
     let vData = {
         planId: '',
         planName: '',
         PattType: [  //题目类型
-            {K: "1", V: "单选", disable: false},
-            {K: "2", V: "多选", disable: false},
-            {K: "3", V: "填空", disable: false},
-            {K: "4", V: "判断", disable: false},
-            {K: "5", V: "简答", disable: false}
+            {K: 1, V: "单选", disable: false},
+            {K: 2, V: "多选", disable: false},
+            {K: 3, V: "填空", disable: false},
+            {K: 4, V: "判断", disable: false},
+            {K: 5, V: "简答", disable: false}
         ],
         ExamItems: [],
         ExamTemp: {//每个模板的数据
             formExam: {
                 patterns: [{
-                    value: '1',
+                    value: 1,
                     label: '单项选择题'
                 }, {
-                    value: '2',
+                    value: 2,
                     label: '多项选择题'
                 }, {
-                    value: '3',
+                    value: 3,
                     label: '填空题'
                 }, {
-                    value: '4',
+                    value: 4,
                     label: '判断题'
                 }, {
-                    value: '5',
+                    value: 5,
                     label: '简答题'
                 }],
                 cnt: '',
@@ -164,6 +292,25 @@
                 ExamItem: []//试题数据
             }
         },
+        tpDifficultyLevelOptions: [{
+            value: 1,
+            label: '困难'
+        }, {
+            value: 2,
+            label: '较难'
+        }, {
+            value: 3,
+            label: '一般'
+        }, {
+            value: 4,
+            label: '较易'
+        }, {
+            value: 5,
+            label: '容易'
+        }],
+        dialogFormVisible: false,
+        EditForm: {},
+        topicContent: {}
     };
 
     let vm = new Vue({
@@ -174,7 +321,8 @@
             addTopic,
             batchImport,
             batchDelete,
-            delWeekly
+            delWeekly,
+            dialogFormAdd
         }
     });
 
@@ -192,7 +340,49 @@
     }
 
     function addTopic(topicType, index) {
-        console.log('手动添加');
+        vData.EditForm = {};
+        vData.EditForm.topicType = topicType;
+        vData.EditForm.index = index;
+        vData.dialogFormVisible = true;
+    }
+
+    function dialogFormAdd() {
+        console.log("手动添加", vData.EditForm.index);
+        vData.EditForm.topicContent = vData.topicContent;
+        if (vData.EditForm.topicType == 1 || vData.EditForm.topicType == 2 || vData.EditForm.topicType == 4) {
+            let topicQueContent = [];
+            for (var index = 0; index < vTopic.length; index++) {
+                var vLeter = vTopic[index];
+                var vValue = $("#" + vLeter).val();
+                if (vValue.length > 0) {
+                    topicQueContent.push({"K": vLeter, "V": vValue, "CH": false})
+                }
+            }
+            vData.EditForm.topicQueContent = topicQueContent;
+        } else if (vData.EditForm.topicType == 3) {
+            var vMsg = "";  //存储汉字写入答案字段
+            var vJson = [];//存储json数据显示格式
+            for (var index = 0; index < vTopic.length; index++) {
+                var vLeter = vTopic[index];
+                var vValue = $("#" + vLeter).val();
+                if (vValue.length > 0) {
+                    vJson.push({"K": vLeter, "V": vValue});
+
+                    if (vMsg.length > 0) {
+                        vMsg += ";";
+                    }
+                    vMsg += vValue;
+                }
+            }
+            vData.EditForm.topicQueContent = vJson;
+            vData.EditForm.correctAnswer = vMsg;
+        } else {
+            vData.EditForm.topicContent = {};
+        }
+        console.log(vData.EditForm);
+
+        //加入
+
     }
 
     function batchImport(topicType, index) {
@@ -265,6 +455,20 @@
         background-color: #e1ecf3;
         color: #333;
         text-align: left;
+    }
+
+    .myInput {
+        width: 219px;
+    }
+
+    .myText {
+        width: 300px;
+    }
+
+    .headLabel {
+        text-align: center;
+        font-size: 22px;
+        padding: 1px 0 34px 0;
     }
 </style>
 </html>
