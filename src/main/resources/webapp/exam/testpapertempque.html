@@ -17,7 +17,7 @@
     <el-container>
         <el-header>
             <el-row>
-                <el-col :span="12" style="text-align:left;padding-left: 15px;">考试计划: {{planName}}</el-col>
+                <el-col :span="8" style="text-align:left;padding-left: 15px;">考试计划: {{planName}}</el-col>
 
                 <el-button-group v-for="Bm in PattType">
                     <el-button type="primary" icon="el-icon-circle-plus-outline" size="small"
@@ -25,8 +25,10 @@
                     </el-button>
                 </el-button-group>
 
-                <el-col :span="2" style="float: right">
-                    <el-button type="primary" size="small" icon="el-icon-setting">
+                <el-col :span="6" style="float: right">
+                    <span>生成几套试卷</span>
+                    <el-input-number v-model="paperCnt" size="mini" :min="1" :max="5"></el-input-number>
+                    <el-button type="primary" size="small" icon="el-icon-setting" @click="prodThePaper">
                         生成试卷
                     </el-button>
                 </el-col>
@@ -49,19 +51,15 @@
                                         <el-checkbox v-model="testQue.topicCheck" :true-label="testQue.topicId"
                                                      :false-label="testQue.topicFalselabel"
                                                      @change="getChecked(testQue.topicCheck)">
-                                            <h5>
-                                                <difficulty-level :value="testQue.difficultyLevel"></difficulty-level>
-                                            </h5>
+                                            <difficulty-level :value="testQue.difficultyLevel"></difficulty-level>
                                         </el-checkbox>
                                         {{index+1}}、 (
                                         <topic-type :value="testQue.topicType"></topic-type>
                                         ) {{testQue.topicDes}}
                                     </h5>
                                     <br>
-                                    <template v-for="(tRadio,indexR) in testQue.topicContentQue">
-                                        <el-radio v-model="testQue.radioName" :label="indexR">
-                                            {{tRadio.K}}、{{tRadio.V}}
-                                        </el-radio>
+                                    <template v-for="(tRadio,indexR) in testQue.topicQueContent">
+                                        {{tRadio.K}}、{{tRadio.V}}
                                         <br>
                                     </template>
                                     <div class="answerStyle">
@@ -78,12 +76,71 @@
                     <el-row>
                         <head-label :model="wForm" :index="wIndex"></head-label>
                     </el-row>
+                    <el-row>
+                        <div v-for="(testQue,index) in wForm.ExamItem">
+                            <div v-if="testQue.topicType==2">
+                                <el-card shadow="always">
+                                    <h5>
+                                        <el-checkbox v-model="testQue.topicCheck" :true-label="testQue.topicId"
+                                                     :false-label="testQue.topicFalselabel"
+                                                     @change="getChecked(testQue.topicCheck)">
+                                            <h5>
+                                                <difficulty-level :value="testQue.difficultyLevel"></difficulty-level>
+                                            </h5>
+                                        </el-checkbox>
+                                        {{index+1}}、 (
+                                        <topic-type :value="testQue.topicType"></topic-type>
+                                        ) {{testQue.topicDes}}
+                                    </h5>
+                                    <br>
+                                    <template v-for="tMSelect in testQue.topicQueContent">
+                                        {{tMSelect.K}}、{{tMSelect.V}}
+                                        <br>
+                                    </template>
+                                    <div class="answerStyle">
+                                        <br>正确答案：{{testQue.correctAnswer}}
+                                    </div>
+                                </el-card>
+                            </div>
+                        </div>
+                    </el-row>
                 </el-card>
 
                 <!--填空-->
                 <el-card v-if="wForm.topicType == 3">
                     <el-row>
                         <head-label :model="wForm" :index="wIndex"></head-label>
+                    </el-row>
+                    <el-row>
+                        <div v-for="(testQue,index) in wForm.ExamItem">
+                            <div v-if="testQue.topicType==3">
+                                <el-card shadow="always">
+                                    <h5>
+                                        <el-checkbox v-model="testQue.topicCheck" :true-label="testQue.topicId"
+                                                     :false-label="testQue.topicFalselabel"
+                                                     @change="getChecked(testQue.topicCheck)">
+                                            <h5>
+                                                <difficulty-level :value="testQue.difficultyLevel"></difficulty-level>
+                                            </h5>
+                                        </el-checkbox>
+                                        {{index+1}}、 (
+                                        <topic-type :value="testQue.topicType"></topic-type>
+                                        ) {{testQue.topicDes}}
+                                    </h5>
+                                    <br>
+                                    <div class="answerStyle">
+                                        <br>答案：
+                                        <br>
+                                        <br>
+                                        <template v-for="(tMSelect,tInx) in testQue.topicQueContent">
+                                            {{tInx+1}}）{{tMSelect.V}}
+                                            <br>
+                                            <br>
+                                        </template>
+                                    </div>
+                                </el-card>
+                            </div>
+                        </div>
                     </el-row>
                 </el-card>
 
@@ -92,6 +149,34 @@
                     <el-row>
                         <head-label :model="wForm" :index="wIndex"></head-label>
                     </el-row>
+                    <el-row>
+                        <div v-for="(testQue,index) in wForm.ExamItem">
+                            <div v-if="testQue.topicType==4">
+                                <el-card shadow="always">
+                                    <h5>
+                                        <el-checkbox v-model="testQue.topicCheck" :true-label="testQue.topicId"
+                                                     :false-label="testQue.topicFalselabel"
+                                                     @change="getChecked(testQue.topicCheck)">
+                                            <h5>
+                                                <difficulty-level :value="testQue.difficultyLevel"></difficulty-level>
+                                            </h5>
+                                        </el-checkbox>
+                                        {{index+1}}、 (
+                                        <topic-type :value="testQue.topicType"></topic-type>
+                                        ) {{testQue.topicDes}}
+                                    </h5>
+                                    <br>
+                                    <template v-for="tMSelect in testQue.topicQueContent">
+                                        {{tMSelect.K}}、{{tMSelect.V}}
+                                        <br>
+                                    </template>
+                                    <div class="answerStyle">
+                                        <br>正确答案：{{testQue.correctAnswer}}
+                                    </div>
+                                </el-card>
+                            </div>
+                        </div>
+                    </el-row>
                 </el-card>
 
                 <!--简答-->
@@ -99,66 +184,96 @@
                     <el-row>
                         <head-label :model="wForm" :index="wIndex"></head-label>
                     </el-row>
+                    <el-row>
+                        <div v-for="(testQue,index) in wForm.ExamItem">
+                            <div v-if="testQue.topicType==5">
+                                <el-card shadow="always">
+                                    <h5>
+                                        <el-checkbox v-model="testQue.topicCheck" :true-label="testQue.topicId"
+                                                     :false-label="testQue.topicFalselabel"
+                                                     @change="getChecked(testQue.topicCheck)">
+                                            <h5>
+                                                <difficulty-level :value="testQue.difficultyLevel"></difficulty-level>
+                                            </h5>
+                                        </el-checkbox>
+                                        {{index+1}}、 (
+                                        <topic-type :value="testQue.topicType"></topic-type>
+                                        ) {{testQue.topicDes}}
+                                    </h5>
+                                    <br>
+                                    <div class="answerStyle">
+                                        <br>正确答案：{{testQue.correctAnswer}}
+                                    </div>
+                                </el-card>
+                            </div>
+                        </div>
+                    </el-row>
                 </el-card>
             </template>
             <!--手动添加-->
-            <el-dialog title="手动添加" width="70%" :visible.sync="dialogFormVisible">
-                <el-form label-position="right" label-width="80px" :model="EditForm">
-                    <el-form-item label="题干">
-                        <el-input class="myText" type="textarea" v-model="EditForm.topicDes"></el-input>
-                    </el-form-item>
-                    <el-form-item label="题目类型">
-                        <template>
-                            <el-select v-model="EditForm.topicType" placeholder="请选择">
-                                <el-option v-for="item in ExamTemp.formExam.patterns"
-                                           :key="item.value"
-                                           :label="item.label"
-                                           :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </template>
-                    </el-form-item>
-                    <el-form-item label="难度等级">
-                        <el-select v-model="EditForm.difficultyLevel" placeholder="请选择">
-                            <el-option v-for="item in tpDifficultyLevelOptions"
-                                       :key="item.value"
-                                       :label="item.label"
-                                       :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="分值">
-                        <el-input-number v-model="EditForm.topicScore" :min="0.5" :max="20" :precision="1"
-                                         :step="0.5" :step-strictly="true"></el-input-number>
-                    </el-form-item>
-                    <el-form-item label="正确答案">
-                        <el-input class="myText" type="textarea" v-model="EditForm.correctAnswer"></el-input>
-                    </el-form-item>
-                </el-form>
-                <div class="headLabel">选项集合</div>
-                <el-form label-position="right" label-width="100px" :model="topicContent">
-                    <el-form-item label="选项A">
-                        <el-input id="A" class="myText" type="textarea" v-model="topicContent.A"></el-input>
-                    </el-form-item>
-                    <el-form-item label="选项B">
-                        <el-input id="B" class="myText" type="textarea" v-model="topicContent.B"></el-input>
-                    </el-form-item>
-                    <el-form-item label="选项C">
-                        <el-input id="C" class="myText" type="textarea" v-model="topicContent.C"></el-input>
-                    </el-form-item>
-                    <el-form-item label="选项D">
-                        <el-input id="D" class="myText" type="textarea" v-model="topicContent.D"></el-input>
-                    </el-form-item>
-                    <el-form-item label="选项E">
-                        <el-input id="E" class="myText" type="textarea" v-model="topicContent.E"></el-input>
-                    </el-form-item>
-                    <el-form-item label="选项F">
-                        <el-input id="F" class="myText" type="textarea" v-model="topicContent.F"></el-input>
-                    </el-form-item>
-                    <el-form-item label="选项G">
-                        <el-input id="G" class="myText" type="textarea" v-model="topicContent.G"></el-input>
-                    </el-form-item>
-                </el-form>
+            <el-dialog title="手动添加" width="50%" :visible.sync="dialogFormVisible">
+                <div id="theDiv">
+                    <div id="leftDiv">
+                        <el-form label-position="right" label-width="80px" :model="EditForm">
+                            <el-form-item label="题干">
+                                <el-input class="myText" type="textarea" v-model="EditForm.topicDes"></el-input>
+                            </el-form-item>
+                            <el-form-item label="题目类型">
+                                <template>
+                                    <el-select v-model="EditForm.topicType" disabled="true">
+                                        <el-option v-for="item in ExamTemp.formExam.patterns"
+                                                   :key="item.value"
+                                                   :label="item.label"
+                                                   :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </template>
+                            </el-form-item>
+                            <el-form-item label="难度等级">
+                                <el-select v-model="EditForm.difficultyLevel" placeholder="请选择">
+                                    <el-option v-for="item in tpDifficultyLevelOptions"
+                                               :key="item.value"
+                                               :label="item.label"
+                                               :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="正确答案">
+                                <el-input class="myText" type="textarea" v-model="EditForm.correctAnswer"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="dialogFormAdd">确定</el-button>
+                                <el-button type="primary">取消</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div id="rightDiv">
+                        <div class="headLabel">选项集合</div>
+                        <el-form label-position="right" label-width="100px" :model="topicContent">
+                            <el-form-item label="选项A">
+                                <el-input id="A" class="myText" type="textarea" v-model="topicContent.A"></el-input>
+                            </el-form-item>
+                            <el-form-item label="选项B">
+                                <el-input id="B" class="myText" type="textarea" v-model="topicContent.B"></el-input>
+                            </el-form-item>
+                            <el-form-item label="选项C">
+                                <el-input id="C" class="myText" type="textarea" v-model="topicContent.C"></el-input>
+                            </el-form-item>
+                            <el-form-item label="选项D">
+                                <el-input id="D" class="myText" type="textarea" v-model="topicContent.D"></el-input>
+                            </el-form-item>
+                            <el-form-item label="选项E">
+                                <el-input id="E" class="myText" type="textarea" v-model="topicContent.E"></el-input>
+                            </el-form-item>
+                            <el-form-item label="选项F">
+                                <el-input id="F" class="myText" type="textarea" v-model="topicContent.F"></el-input>
+                            </el-form-item>
+                            <el-form-item label="选项G">
+                                <el-input id="G" class="myText" type="textarea" v-model="topicContent.G"></el-input>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </div>
 
             </el-dialog>
         </el-main>
@@ -260,6 +375,7 @@
     let vData = {
         planId: '',
         planName: '',
+        paperCnt: '',
         PattType: [  //题目类型
             {K: 1, V: "单选", disable: false},
             {K: 2, V: "多选", disable: false},
@@ -322,7 +438,8 @@
             batchImport,
             batchDelete,
             delWeekly,
-            dialogFormAdd
+            dialogFormAdd,
+            prodThePaper
         }
     });
 
@@ -341,10 +458,13 @@
 
     function addTopic(topicType, index) {
         vData.EditForm = {};
+        vData.topicContent = {};
         vData.EditForm.topicType = topicType;
         vData.EditForm.index = index;
         vData.dialogFormVisible = true;
     }
+
+    var vTopic = ["A", "B", "C", "D", "E", "F", "G"];
 
     function dialogFormAdd() {
         console.log("手动添加", vData.EditForm.index);
@@ -367,7 +487,6 @@
                 var vValue = $("#" + vLeter).val();
                 if (vValue.length > 0) {
                     vJson.push({"K": vLeter, "V": vValue});
-
                     if (vMsg.length > 0) {
                         vMsg += ";";
                     }
@@ -381,8 +500,13 @@
         }
         console.log(vData.EditForm);
 
-        //加入
-
+        /*---------------------------加入---------------------------*/
+        //合并内容
+        vData.ExamItems[vData.EditForm.index].ExamItem.push(vData.EditForm);
+        //计算试题题量
+        vData.ExamItems[vData.EditForm.index].actualCnt = vData.ExamItems[vData.EditForm.index].ExamItem.length;
+        //关闭弹出框
+        vData.dialogFormVisible = false;
     }
 
     function batchImport(topicType, index) {
@@ -404,6 +528,30 @@
             updateProjDisable();
         }).catch(() => {
         });
+    }
+
+    //生成试卷
+    function prodThePaper() {
+        vm.$confirm("确认生成试卷吗？")
+            .then(_ => {
+                var vJson = {
+                    "planId": vData.planId,
+                    "planName": vData.planName,
+                    "paperCnt": vData.paperCnt,
+                    "examDatas": vData.ExamItems
+                };
+                axios.post("/exam/prodThePaperTemp", vJson)
+                    .then(function (response) {
+                        let lret = response.data;
+                        myEl.elAlert(lret.code, lret.msg);
+                    })
+                    .catch(function (error) {
+
+                    })
+            })
+            .catch(_ => {
+
+            })
     }
 
     //获取json对象克隆
@@ -469,6 +617,23 @@
         text-align: center;
         font-size: 22px;
         padding: 1px 0 34px 0;
+    }
+
+    #theDiv {
+        display: flex;
+        width: 100%;
+        height: 100%;
+    }
+
+    #leftDiv {
+        width: 50%;
+        height: 100%;
+        margin-top: 50px;
+    }
+
+    #rightDiv {
+        width: 50%;
+        height: 100%;
     }
 </style>
 </html>

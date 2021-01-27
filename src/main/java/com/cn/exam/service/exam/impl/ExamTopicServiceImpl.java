@@ -78,7 +78,7 @@ public class ExamTopicServiceImpl implements ExamTopicService {
 
         //新增
         if (MyString.isEmpty(examTopic.getId())) {
-            examTopic.setTopicId("TP" + DateTime.Now().ToString("yyyyMMddHHmmss"));
+            examTopic.setTopicId("TP" + DateTime.Now().ToString("yyyyMMddHHmmss")+MyString.getRandom(4));
         }
         examTopicDao.saveAndFlush(examTopic);
     }

@@ -2,6 +2,8 @@ package com.cn.exam.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *@Author fengzhilong
@@ -28,5 +30,26 @@ public class ExamUtil {
         }
 
         return list;
+    }
+
+
+    /**
+     * @Author fengzhilong
+     * @Desc 获取指定个指定范围内的随机数
+     * @Date 2021/1/27 16:45
+     * @param max 最大范围值
+     * @param resNum 获取几个
+     * @return Set
+     **/
+    public static Set<Integer> getRandom(int max, int resNum) {
+        Set<Integer> set = new TreeSet();
+
+        while (set.size() != resNum) {
+            int n = (int) (0 + Math.random() * max);
+            set.add(n);
+        }
+        System.out.println(set);
+
+        return set;
     }
 }

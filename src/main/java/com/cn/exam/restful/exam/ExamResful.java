@@ -5,13 +5,11 @@ import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.MyString;
 import com.cn.common.vo.ResCode;
 import com.cn.common.vo.ResResult;
-import com.cn.exam.dto.exam.ExamPlanDTO;
-import com.cn.exam.dto.exam.ExamTopicDTO;
-import com.cn.exam.dto.exam.SelfTrainingDTO;
-import com.cn.exam.dto.exam.TestPaperDTO;
+import com.cn.exam.dto.exam.*;
 import com.cn.exam.entity.exam.ExamPlan;
 import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.service.exam.ExamPlanService;
+import com.cn.exam.service.exam.ExamTempService;
 import com.cn.exam.service.exam.ExamTopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,6 +31,8 @@ public class ExamResful {
     private ExamTopicService examTopicService;
     @Autowired
     private ExamPlanService examPlanService;
+    @Autowired
+    private ExamTempService examTempService;
 
 
     /**
@@ -151,7 +151,7 @@ public class ExamResful {
      * @Desc 发布考试计划/公布成绩
      * @Date 2021/1/15 10:39
      * @param planId
-	 * @param status
+     * @param status
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/updatePlanStatus")
@@ -189,5 +189,18 @@ public class ExamResful {
     }
 
 
-    /*生成几套试卷*/
+    /**
+     * @Author fengzhilong
+     * @Desc  生成几套试卷模板 - 新生成的全部不生效，需要单独操作使它们生效
+     * @Date 2021/1/27 16:55
+     * @param examProdPaperDTO
+     * @return com.cn.common.vo.ResResult
+     **/
+    @PostMapping("/prodThePaperTemp")
+    ResResult prodThePaperTemp(@RequestBody ExamProdPaperDTO examProdPaperDTO) throws FzlException {
+
+        examTempService.prodThePaperTemp(examProdPaperDTO);
+
+        return ResCode.OK.msg("生成试卷成功");
+    }
 }

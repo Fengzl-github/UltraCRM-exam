@@ -71,7 +71,7 @@ public class ExamPlanServiceImpl implements ExamPlanService {
 
         if (examPlan.getId() == null) { //新增
 
-            examPlan.setPlanId("PL" + DateTime.Now().ToString("yyyyMMddHHmmss"));
+            examPlan.setPlanId("PL" + DateTime.Now().ToString("yyyyMMddHHmmss")+MyString.getRandom(4));
         }
 
         examPlanDao.saveAndFlush(examPlan);
