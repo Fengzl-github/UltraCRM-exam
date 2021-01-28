@@ -18,13 +18,11 @@
         <el-header>
             <el-row>
                 <el-col :span="8" style="text-align:left;padding-left: 15px;">考试计划: {{planName}}</el-col>
-
                 <el-button-group v-for="Bm in PattType">
                     <el-button type="primary" icon="el-icon-circle-plus-outline" size="small"
                                :disabled="Bm.disable" @click="addPattern(Bm.K)">{{Bm.V}}
                     </el-button>
                 </el-button-group>
-
                 <el-col :span="6" style="float: right">
                     <span>生成几套试卷</span>
                     <el-input-number v-model="paperCnt" size="mini" :min="1" :max="5"></el-input-number>
@@ -34,7 +32,6 @@
                 </el-col>
             </el-row>
         </el-header>
-
         <el-main>
             <div v-if="ExamItems.length == 0">&nbsp;</div>
             <template v-for="(wForm, wIndex) in ExamItems">
@@ -70,7 +67,6 @@
                         </div>
                     </el-row>
                 </el-card>
-
                 <!--多选-->
                 <el-card v-if="wForm.topicType == 2">
                     <el-row>
@@ -105,7 +101,6 @@
                         </div>
                     </el-row>
                 </el-card>
-
                 <!--填空-->
                 <el-card v-if="wForm.topicType == 3">
                     <el-row>
@@ -143,7 +138,6 @@
                         </div>
                     </el-row>
                 </el-card>
-
                 <!--判断-->
                 <el-card v-if="wForm.topicType == 4">
                     <el-row>
@@ -178,7 +172,6 @@
                         </div>
                     </el-row>
                 </el-card>
-
                 <!--简答-->
                 <el-card v-if="wForm.topicType == 5">
                     <el-row>
@@ -274,11 +267,15 @@
                         </el-form>
                     </div>
                 </div>
-
             </el-dialog>
             <!-- 批量导入 -->
             <el-dialog title="批量导入" width="80%" :visible.sync="dialogTableVisible">
+                <div style="margin-bottom: 20px">
+                    <el-button @click="setSelect()">确定</el-button>
+                    <el-button>取消</el-button>
+                </div>
                 <el-table :data="tableData" stripe border highlight-current-row
+                          @selection-change="handleSelectionChange"
                           style="width: 98%">
                     <el-table-column type="selection" width="55"></el-table-column>
                     </el-table-column>
@@ -467,6 +464,9 @@
         EditForm: {},
         topicContent: {},
         tableData: [],
+        tabletType: '',
+        tabletIndex: 0,
+        multipleSelection: [],
         pageable: {
             size: 10,
             page: 1,
@@ -486,7 +486,9 @@
             dialogFormAdd,
             prodThePaper,
             handleSizeChange,
-            handleCurrentChange
+            handleCurrentChange,
+            handleSelectionChange,
+            setSelect
         }
     });
 
@@ -558,12 +560,14 @@
 
     function batchImport(topicType, index) {
         console.log("批量导入");
-        getData(topicType);
+        vData.tabletType = topicType;
+        vData.tabletIndex = index;
+        getData();
         vData.dialogTableVisible = true;
     }
 
-    function getData(topicType) {
-        let lJsonData = {"topicType": topicType};
+    function getData() {
+        let lJsonData = {"topicType": vData.tabletType};
         lJsonData.pageable = vData.pageable;
         axios.post("/exam/listExamTopicPage", lJsonData)
             .then(function (response) {
@@ -585,6 +589,23 @@
 
     function handleCurrentChange(val) {
         getData();
+    }
+
+    function handleSelectionChange(val) {
+        vData.multipleSelection = val;
+    }
+
+    /*批量加入*/
+    function setSelect() {
+        //合并内容
+        for (n in vData.multipleSelection) {
+            vData.multipleSelection[n].topicQueContent = JSON.parse(vData.multipleSelection[n].topicQueContent);
+            vData.ExamItems[vData.tabletIndex].ExamItem.push(vData.multipleSelection[n]);
+        }
+        //计算试题题量
+        vData.ExamItems[vData.tabletIndex].actualCnt = vData.ExamItems[vData.tabletIndex].ExamItem.length;
+        //关闭弹出框
+        vData.dialogTableVisible = false;
     }
 
     function batchDelete(index) {
