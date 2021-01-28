@@ -1,5 +1,9 @@
 package com.cn.exam.restful.exam;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.cn.common.exception.FzlException;
 import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.MyString;
@@ -11,12 +15,20 @@ import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.service.exam.ExamPlanService;
 import com.cn.exam.service.exam.ExamTempService;
 import com.cn.exam.service.exam.ExamTopicService;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *@Author fengzhilong
@@ -87,6 +99,55 @@ public class ExamResful {
         } else {
             return ResCode.ERROR.msg("缺少参数");
         }
+    }
+
+
+    @PostMapping("uploadTopic")
+    ResResult uploadTopic(@RequestParam(value = "fileU") MultipartFile file) {
+        System.out.println(file.getOriginalFilename());
+        OutputStream os = null;
+        InputStream in = null;
+        String path = "";
+        File tempFile = null;
+        try {
+            path = ResourceUtils.getURL("classpath:").getPath() + "webapp/app_data/";
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            in = file.getInputStream();
+            byte[] bs = new byte[1024];
+            int len;
+            tempFile = new File(path);
+            if (!tempFile.exists()) {
+                tempFile.mkdirs();
+            }
+            os = new FileOutputStream(tempFile.getPath() + "/" + file.getOriginalFilename());
+            while ((len = in.read(bs)) != -1) {
+                os.write(bs, 0, len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                in.close();
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            ExcelReader reader = ExcelUtil.getReader(FileUtil.file(tempFile.getPath() + "/" + file.getOriginalFilename()));
+
+            List<Map<String, Object>> list = reader.readAll();
+            System.out.println(JSONObject.toJSONString(list));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return ResCode.OK;
     }
 
 
@@ -191,7 +252,7 @@ public class ExamResful {
 
     /**
      * @Author fengzhilong
-     * @Desc  生成几套试卷模板 - 新生成的全部不生效，需要单独操作使它们生效
+     * @Desc 生成几套试卷模板 - 新生成的全部不生效，需要单独操作使它们生效
      * @Date 2021/1/27 16:55
      * @param examProdPaperDTO
      * @return com.cn.common.vo.ResResult

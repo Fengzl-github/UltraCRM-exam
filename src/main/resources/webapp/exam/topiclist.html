@@ -45,7 +45,26 @@
                     <el-button type="primary" @click="resetQuery">重置</el-button>
                 </el-form-item>
 
-                <el-button style="float: right; margin-right: 150px" type="primary" @click="addData">新增</el-button>
+                <el-button style="float: right; margin-right: 120px" type="primary" @click="addData">新增</el-button>
+                <el-popover style="float: right; margin-right: 10px"
+                            placement="bottom"
+                            width="400"
+                            trigger="click">
+                    <div>
+                        <el-upload drag :limit=limitNum :auto-upload="false" accept=".xlsx" :action="UploadUrl()"
+                                   :before-upload="beforeUploadFile" :on-change="fileChange" :on-exceed="exceedFile"
+                                   :on-success="handleSuccess" :on-error="handleError" :file-list="fileList">
+                            <i class="el-icon-upload"></i>
+                            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                            <div class="el-upload__tip" slot="tip">只能上传xlsx文件，且不超过10M</div>
+                        </el-upload>
+                        <br/>
+                        <el-button size="small" type="primary" @click="importData">确定</el-button>
+                        <el-button size="small">取消</el-button>
+                    </div>
+                    <el-button type="primary" slot="reference">导入</el-button>
+                </el-popover>
+                <el-button style="float: right; margin-right: 10px" type="primary" @click="exportData">导出</el-button>
             </el-form>
         </div>
         <el-table :height="tableHeight" :data="tableData" stripe border highlight-current-row style="width: 98%">
@@ -248,7 +267,9 @@
         }, {
             value: 5,
             label: '容易'
-        }]
+        }],
+        limitNum: 1,  // 上传excell时，同时允许上传的最大数
+        fileList: []   // excel文件列表
 
     };
 
@@ -263,7 +284,15 @@
             handleSizeChange,
             handleCurrentChange,
             saveData,
-            addData
+            addData,
+            exportData,
+            importData,
+            exceedFile,
+            fileChange,
+            beforeUploadFile,
+            handleSuccess,
+            handleError,
+            UploadUrl
 
         }
 
@@ -412,6 +441,68 @@
         vData.EditDrawer.drawer = true;
     }
 
+    /*导出数据*/
+    function exportData() {
+
+    }
+
+    /*导入数据*/
+    function importData() {
+        if (vData.fileList.length === 0) {
+            vm.$message.warning('请上传文件');
+        } else {
+            let form = new FormData();
+            form.append('fileU', vData.fileList[0]);
+            axios({
+                method: "post",
+                url: "/exam/uploadTopic",
+                headers: {
+                    'Content-type': 'multipart/form-data'
+                },
+                data: form
+            }).then(
+                res => {
+
+                }, err => {
+                });
+        }
+    }
+
+    // 文件超出个数限制时的钩子
+    function exceedFile(files, fileList) {
+        vm.$message.warning(`只能选择 ${vData.limitNum} 个文件，当前共选择了 ${files.length + fileList.length} 个`);
+    };
+    // 文件状态改变时的钩子
+    function fileChange(file, fileList) {
+        console.log(file.raw);
+        vData.fileList.push(file.raw);
+        console.log(vData.fileList);
+    };
+    // 上传文件之前的钩子, 参数为上传的文件,若返回 false 或者返回 Promise 且被 reject，则停止上传
+    function beforeUploadFile(file) {
+        console.log('before upload');
+        console.log(file);
+        let extension = file.name.substring(file.name.lastIndexOf('.') + 1);
+        let size = file.size / 1024 / 1024;
+        if (extension !== 'xlsx') {
+            vm.$message.warning('只能上传后缀是.xlsx的文件');
+        }
+        if (size > 10) {
+            vm.$message.warning('文件大小不得超过10M');
+        }
+    };
+    // 文件上传成功时的钩子
+    function handleSuccess(res, file, fileList) {
+        vm.$message.success('文件上传成功');
+    };
+    // 文件上传失败时的钩子
+    function handleError(err, file, fileList) {
+        vm.$message.error('文件上传失败');
+    };
+    function UploadUrl() {
+        // 因为action参数是必填项，我们使用二次确认进行文件上传时，直接填上传文件的url会因为没有参数导致api报404，所以这里将action设置为一个返回为空的方法就行，避免抛错
+        return "";
+    };
 </script>
 
 <style>
