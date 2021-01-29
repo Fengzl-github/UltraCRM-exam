@@ -15,16 +15,13 @@ import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.service.exam.ExamPlanService;
 import com.cn.exam.service.exam.ExamTempService;
 import com.cn.exam.service.exam.ExamTopicService;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.cn.exam.service.excel.upload.ExcelUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +42,8 @@ public class ExamResful {
     private ExamPlanService examPlanService;
     @Autowired
     private ExamTempService examTempService;
+    @Autowired
+    private ExcelUploadService excelUploadService;
 
 
     /**
@@ -103,51 +102,11 @@ public class ExamResful {
 
 
     @PostMapping("uploadTopic")
-    ResResult uploadTopic(@RequestParam(value = "fileU") MultipartFile file) {
-        System.out.println(file.getOriginalFilename());
-        OutputStream os = null;
-        InputStream in = null;
-        String path = "";
-        File tempFile = null;
-        try {
-            path = ResourceUtils.getURL("classpath:").getPath() + "webapp/app_data/";
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    ResResult uploadTopic(@RequestParam(value = "fileU") MultipartFile file,String ghid, String operator) {
 
-        try {
-            in = file.getInputStream();
-            byte[] bs = new byte[1024];
-            int len;
-            tempFile = new File(path);
-            if (!tempFile.exists()) {
-                tempFile.mkdirs();
-            }
-            os = new FileOutputStream(tempFile.getPath() + "/" + file.getOriginalFilename());
-            while ((len = in.read(bs)) != -1) {
-                os.write(bs, 0, len);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-                os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        excelUploadService.uploadTopic(file,ghid,operator);
 
-        try {
-            ExcelReader reader = ExcelUtil.getReader(FileUtil.file(tempFile.getPath() + "/" + file.getOriginalFilename()));
-
-            List<Map<String, Object>> list = reader.readAll();
-            System.out.println(JSONObject.toJSONString(list));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        return ResCode.OK;
+        return ResCode.OK.msg("上传成功");
     }
 
 
