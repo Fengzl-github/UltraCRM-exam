@@ -1,9 +1,5 @@
 package com.cn.exam.restful.exam;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.poi.excel.ExcelReader;
-import cn.hutool.poi.excel.ExcelUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.cn.common.exception.FzlException;
 import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.MyString;
@@ -18,14 +14,11 @@ import com.cn.exam.service.exam.ExamTopicService;
 import com.cn.exam.service.excel.upload.ExcelUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *@Author fengzhilong

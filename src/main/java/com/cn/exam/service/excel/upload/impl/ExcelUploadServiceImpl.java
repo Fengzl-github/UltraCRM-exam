@@ -92,14 +92,15 @@ public class ExcelUploadServiceImpl implements ExcelUploadService {
 
                 ExamTopic examTopic = new ExamTopic();
                 examTopic.setTopicId("TP" + DateTime.Now().ToString("yyyyMMddHHmmss") + MyString.getRandom(4));
-                examTopic.setGhid(ghid);
-                examTopic.setOperator(operator);
+                //todo
+                examTopic.setGhid("8600");
+                examTopic.setOperator("管理员");
                 examTopic.setTopicScore(5);
                 examTopic.setTopicDes(strValOf(map.get("题目题干")));
                 examTopic.setTopicType(intValOf(map.get("题目类型")));
                 examTopic.setDifficultyLevel(intValOf(map.get("难度等级")));
                 examTopic.setCorrectAnswer(strValOf(map.get("正确答案")));
-                // 3.1 合成选项
+                // 3.1 合成选项内容
                 for (int i = 0; i < content.length; i++) {
                     mOption = new HashMap<>();
                     if (MyString.isNotEmpty(strValOf(map.get(content[i])))) {
@@ -109,7 +110,7 @@ public class ExcelUploadServiceImpl implements ExcelUploadService {
                         if (examTopic.getTopicType() == 1 || examTopic.getTopicType() == 2) {
                             mOption.put("CH", false);
                         }
-                        lTopicQueContent.set(i,mOption);
+                        lTopicQueContent.add(i, mOption);
                     }
                 }
                 examTopic.setTopicContent(JSONObject.toJSONString(mTopicContent));
