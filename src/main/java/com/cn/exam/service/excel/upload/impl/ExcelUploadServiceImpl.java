@@ -92,9 +92,9 @@ public class ExcelUploadServiceImpl implements ExcelUploadService {
 
                 ExamTopic examTopic = new ExamTopic();
                 examTopic.setTopicId("TP" + DateTime.Now().ToString("yyyyMMddHHmmss") + MyString.getRandom(4));
-                //todo
-                examTopic.setGhid("8600");
-                examTopic.setOperator("管理员");
+                // 添加操作人信息
+                examTopic.setGhid(ghid);
+                examTopic.setOperator(operator);
                 examTopic.setTopicScore(5);
                 examTopic.setTopicDes(strValOf(map.get("题目题干")));
                 examTopic.setTopicType(intValOf(map.get("题目类型")));
