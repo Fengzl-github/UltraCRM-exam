@@ -13,10 +13,12 @@ import com.cn.exam.entity.exam.ExamTestQues;
 import com.cn.exam.service.exam.ExamTempService;
 import com.cn.exam.util.ExamUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,5 +88,28 @@ public class ExamTempServiceImpl implements ExamTempService {
                 }
             }
         }
+    }
+
+
+    /**
+     * @Desc 计划下试卷列表
+     * @param planId
+     **/
+    @Override
+    public List<ExamTestPaper> testPaperList(String planId) {
+
+        List<ExamTestPaper> list = examTestPaperDao.findByPlanId(planId);
+        return list;
+    }
+
+    /**
+     * @Desc 设置试卷是否生效
+     * @param paperId
+     * @param isUsed
+     **/
+    @Override
+    public void updateIsUsed(String paperId, Integer isUsed) {
+
+        examTestPaperDao.updateIsUsed(paperId, isUsed);
     }
 }

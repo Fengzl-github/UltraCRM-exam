@@ -7,6 +7,7 @@ import com.cn.common.vo.ResCode;
 import com.cn.common.vo.ResResult;
 import com.cn.exam.dto.exam.*;
 import com.cn.exam.entity.exam.ExamPlan;
+import com.cn.exam.entity.exam.ExamTestPaper;
 import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.service.exam.ExamPlanService;
 import com.cn.exam.service.exam.ExamTempService;
@@ -118,10 +119,10 @@ public class ExamResful {
         return ResCode.OK.msg("上传成功");
     }
 
-    
+
     /**
-     * @Author fengzhilong 
-     * @Desc  下载试题导入说明模板
+     * @Author fengzhilong
+     * @Desc 下载试题导入说明模板
      * @Date 2021/2/3 11:31
      * @param response
      * @return void
@@ -255,4 +256,33 @@ public class ExamResful {
 
         return ResCode.OK.msg("生成试卷成功");
     }
+
+
+    /*查看该计划下有几套试卷*/
+    @PostMapping("/testPaperList")
+    ResResult testPaperList(String planId) {
+        if (MyString.isNotEmpty(planId)) {
+            List<ExamTestPaper> list = examTempService.testPaperList(planId);
+            return ResCode.OK.msg("查询成功")
+                    .putData("content", list);
+        } else {
+            return ResCode.ERROR.msg("缺少参数");
+        }
+    }
+
+
+    /*设置试卷是否有效*/
+    ResResult updateIsUsed(String paperId, Integer isUsed){
+        examTempService.updateIsUsed(paperId, isUsed);
+
+        return ResCode.OK.msg("操作成功");
+    }
+
+
+    /*添加考试人员*/
+
+    /*分配试卷*/
+
+
+    /*考试结果*/
 }
