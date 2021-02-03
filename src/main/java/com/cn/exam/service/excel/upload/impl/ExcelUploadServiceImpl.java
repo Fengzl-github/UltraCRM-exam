@@ -43,7 +43,7 @@ public class ExcelUploadServiceImpl implements ExcelUploadService {
         File tempFile = null;
         // 1. 先把文件保存在项目classpath下
         try {
-            path = ResourceUtils.getURL("classpath:").getPath() + "webapp/app_data/";
+            path = ResourceUtils.getURL("classpath:").getPath() + "webapp/app_data/"+DateTime.Now().ToString("yyyyMMdd")+"/";
             log.info("====把文件存入到===路径【" + path + "】");
         } catch (FileNotFoundException e) {
             e.printStackTrace();

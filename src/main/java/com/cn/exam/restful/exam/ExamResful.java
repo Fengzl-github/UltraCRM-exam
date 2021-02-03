@@ -11,12 +11,17 @@ import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.service.exam.ExamPlanService;
 import com.cn.exam.service.exam.ExamTempService;
 import com.cn.exam.service.exam.ExamTopicService;
+import com.cn.exam.service.excel.down.ExcelDownService;
 import com.cn.exam.service.excel.upload.ExcelUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +42,8 @@ public class ExamResful {
     private ExamTempService examTempService;
     @Autowired
     private ExcelUploadService excelUploadService;
+    @Autowired
+    private ExcelDownService excelDownService;
 
 
     /**
@@ -94,12 +101,44 @@ public class ExamResful {
     }
 
 
+    /**
+     * @Author fengzhilong
+     * @Desc 批量导入试题
+     * @Date 2021/2/1 16:51
+     * @param file
+     * @param ghid
+     * @param operator
+     * @return com.cn.common.vo.ResResult
+     **/
     @PostMapping("uploadTopic")
-    ResResult uploadTopic(@RequestParam(value = "fileU") MultipartFile file,String ghid, String operator) {
+    ResResult uploadTopic(@RequestParam(value = "fileU") MultipartFile file, String ghid, String operator) {
 
-        excelUploadService.uploadTopic(file,ghid,operator);
+        excelUploadService.uploadTopic(file, ghid, operator);
 
         return ResCode.OK.msg("上传成功");
+    }
+
+    
+    /**
+     * @Author fengzhilong 
+     * @Desc  下载试题导入说明模板
+     * @Date 2021/2/3 11:31
+     * @param response
+     * @return void
+     **/
+    @GetMapping("/downTopicTemp")
+    public void downTopicTemp(HttpServletResponse response) throws IOException {
+        // 1. 模板文件名称
+        String fileName = "试题导入模板.xlsx";
+        OutputStream out = response.getOutputStream();
+        response.reset();
+
+        String headStr = "attachment; filename=" + URLEncoder.encode(fileName, "utf-8");
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setHeader("Content-Disposition", headStr);
+
+        excelDownService.downTopicTemp(out);
+
     }
 
 
