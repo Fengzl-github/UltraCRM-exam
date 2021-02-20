@@ -42,4 +42,10 @@ public class PageRestful {
     public String testPaperTempQue() {
         return "exam/testpapertempque";
     }
+
+    /*考试计划下试卷列表*/
+    @GetMapping("/exam/paperlist")
+    public String examPaperList() {
+        return "exam/paperlist";
+    }
 }

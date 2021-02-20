@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>试卷管理</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_open.js"></script>
+    <script type="text/javascript" src="/common/dialog/lhgdialog.js?self=false&skin=idialog"></script>
+</head>
+<body>
+<div id="appVM" v-cloak>
+    <el-card>
+        <div>
+            <el-form :inline="true" :model="queryForm" class="demo-form-inline">
+                <el-form-item label="计划名称">
+                    <el-input v-model="queryForm.planName" placeholder="请输入计划名称"></el-input>
+                </el-form-item>
+                <el-form-item label="状态">
+                    <el-select v-model="queryForm.status" placeholder="请选择">
+                        <el-option v-for="item in statusOptions"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="queryUser">查询</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="resetQuery">重置</el-button>
+                </el-form-item>
+
+                <el-button style="float: right; margin-right: 150px" type="primary" @click="addData">新增</el-button>
+            </el-form>
+        </div>
+        <el-table :height="tableHeight" :data="tableData" stripe border highlight-current-row style="width: 98%">
+            <el-table-column type="index" width="50">
+            </el-table-column>
+            <el-table-column prop="planName" label="计划名称"></el-table-column>
+            <el-table-column prop="testStartTime" label="考试开始时间"></el-table-column>
+            <el-table-column prop="testEndTime" label="考试结束时间"></el-table-column>
+            <el-table-column prop="testForm" label="考试形式">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.testForm == 0">闭卷</span>
+                    <span v-if="scope.row.testForm == 1">开卷</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="testType" label="发卷类型">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.testForm == 0">随机</span>
+                    <span v-if="scope.row.testForm == 1">轮询</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="status" label="计划状态">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.status == 0">未发布</span>
+                    <span v-if="scope.row.status == 1">已发布</span>
+                    <span v-if="scope.row.status == 2">待公布</span>
+                    <span v-if="scope.row.status == 3">已公布</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="operator" label="创建人"></el-table-column>
+            <el-table-column label="操作" width="350">
+                <template slot-scope="scope">
+                    <el-button size="mini" type="success"
+                               @click="addTextPaper(scope.$index, scope.row)">试卷信息
+                    </el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination
+                background
+                :page-sizes="[10, 50, 100, 200]"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :page-size="pageable.size"
+                :current-page.sync="pageable.page"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pageable.total">
+        </el-pagination>
+    </el-card>
+    <!--edit页面 抽屉-->
+    <el-drawer ref="drawer" :title="EditDrawer.title" :visible.sync="EditDrawer.drawer" direction="rtl"
+               destroy-on-close="true"
+               custom-class="demo-drawer" :show-close="false" size="80%">
+        <div class="demo-drawer__content" style="margin: 5px 50px 10px 5px">
+            <el-col :span="6"></el-col>
+            <el-col :span="12">
+                <el-form label-position="right" label-width="200px" :model="EditForm">
+                    <el-form-item label="计划编号">
+                        <el-input class="myInput" v-model="EditForm.planId" disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="计划名称">
+                        <el-input class="myInput" v-model="EditForm.planName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="考试开始时间">
+                        <el-date-picker v-model="EditForm.testStartTime"
+                                        value-format="yyyy-MM-dd HH:mm:ss"
+                                        type="datetime"
+                                        placeholder="选择日期时间">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="考试结束时间">
+                        <el-date-picker v-model="EditForm.testEndTime"
+                                        value-format="yyyy-MM-dd HH:mm:ss"
+                                        type="datetime"
+                                        placeholder="选择日期时间">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="考试形式">
+                        <template>
+                            <el-select v-model="EditForm.testForm" placeholder="请选择">
+                                <el-option v-for="item in testFormOptions"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </template>
+                    </el-form-item>
+                    <el-form-item label="发卷类型">
+                        <el-select v-model="EditForm.testType" placeholder="请选择">
+                            <el-option v-for="item in testTypeOptions"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="计划状态">
+                        <el-select v-model="EditForm.status" placeholder="请选择">
+                            <el-option v-for="item in statusOptions"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="创建时间">
+                        <el-date-picker v-model="EditForm.createTime" readonly
+                                        value-format="yyyy-MM-dd HH:mm:ss"
+                                        type="datetime"
+                                        placeholder="选择日期时间"
+                                        disabled="true">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="创建人">
+                        <el-input class="myInput" v-model="EditForm.operator" disabled="true"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div class="demo-drawer__footer" style="text-align: right">
+                    <el-button type="primary" @click="saveData">保 存</el-button>
+                </div>
+            </el-col>
+            <el-col :span="6"></el-col>
+
+        </div>
+    </el-drawer>
+</div>
+</body>
+<script>
+    let vData = {
+        tableHeight: $(document).height() - 150,
+        queryForm: {
+            planName: '',
+            status: ''
+        },
+        tableData: [],
+        pageable: {
+            size: 10,
+            page: 1,
+            total: 0
+        },
+        EditDrawer: {
+            title: '',
+            drawer: false
+        },
+        EditForm: {},
+        testFormOptions: [{
+            value: 0,
+            label: '闭卷'
+        }, {
+            value: 1,
+            label: '开卷'
+        }],
+        testTypeOptions: [{
+            value: 0,
+            label: '随机'
+        }, {
+            value: 1,
+            label: '轮询'
+        }],
+        statusOptions: [{
+            value: 0,
+            label: '未发布'
+        }, {
+            value: 1,
+            label: '已发布'
+        }, {
+            value: 2,
+            label: '待公布'
+        }, {
+            value: 3,
+            label: '已公布'
+        }]
+
+    };
+
+    let vm = new Vue({
+        el: '#appVM',
+        data: vData,
+        method: {
+            queryUser,
+            resetQuery,
+            handleSizeChange,
+            handleCurrentChange,
+            saveData,
+            addData,
+            addTextPaper
+        }
+    });
+
+    $(function () {
+        getData();
+    });
+
+    function getData() {
+        let lJsonData = vData.queryForm;
+        lJsonData.pageable = vData.pageable;
+        axios.post("/exam/listExamPlanPage", lJsonData)
+            .then(function (response) {
+                let lret = response.data;
+                console.log(lret);
+                vData.tableData = lret.data.content;
+                vData.pageable.total = lret.data.total;
+            })
+            .catch(function (error) {
+
+            });
+
+    }
+
+    function queryUser() {
+        vData.pageable.page = 1;
+        getData();
+    }
+
+    function resetQuery() {
+        vData.queryForm.planName = '';
+        vData.queryForm.status = '';
+    }
+
+
+    function addTextPaper(idx, row) {
+        var vUrl = "page/exam/testPaperTempQue?planId=" + row.planId + "&planName=" + row.planName;
+        win_openNoBtn(vUrl, '添加试卷', window.screen.width - 50, window.screen.height - 200, true);
+    }
+
+    function handleSizeChange(val) {
+        vData.pageable.page = 1;
+        vData.pageable.size = val;
+        getData();
+    }
+
+    function handleCurrentChange(val) {
+        getData();
+    }
+
+
+    function saveData() {
+        let vJsonData = vData.EditForm;
+        vJsonData.ghid = myUtil.getAccountPwd();
+        vJsonData.operator = myUtil.getUname();
+
+        axios.post("/exam/saveExamPlan", vJsonData)
+            .then(function (response) {
+                let lret = response.data;
+                if (lret.code == 200) {
+                    vData.EditDrawer.drawer = false;
+                    getData();
+                }
+                myEl.elAlert(lret.code, lret.msg);
+            })
+            .catch(function (error) {
+
+            });
+    }
+
+    function addData() {
+        vData.EditForm = {
+            "status": 1,
+            "isDel": 0
+        };
+        console.log("新增", JSON.stringify(vData.EditForm));
+        vData.EditDrawer.drawer = true;
+    }
+
+</script>
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+    .myInput {
+        width: 219px;
+    }
+
+    .myText {
+        width: 500px;
+    }
+
+    .headLabel {
+        text-align: center;
+        font-size: 22px;
+        padding: 1px 0 34px 0;
+    }
+
+
+</style>
+</html>

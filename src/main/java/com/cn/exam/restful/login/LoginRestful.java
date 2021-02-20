@@ -38,7 +38,7 @@ public class LoginRestful {
                     .putData("content", user)
                     .putData("loginToken", token);
         } else {
-            log.info("================>账号：" + loginDTO.getGhid() + " 登录登录失败,原因：账号或密码错误");
+            log.info("================>账号：" + loginDTO.getGhid() + " 登录失败,原因：账号或密码错误");
             return ResCode.ERROR.msg("账号或密码错误");
         }
     }

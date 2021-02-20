@@ -2,7 +2,6 @@ package com.cn.exam.service.exam;
 
 import com.cn.exam.dto.exam.ExamProdPaperDTO;
 import com.cn.exam.entity.exam.ExamTestPaper;
-import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * @Author fengzhilong
  * @Date 2020/9/25 14:35
- * @Desc //TODO 定时更新token的secret秘钥
+ * @Desc // 定时更新token的secret秘钥
  **/
 @Slf4j
 @Component

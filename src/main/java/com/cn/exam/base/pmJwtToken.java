@@ -14,13 +14,13 @@ import java.util.UUID;
 /**
  * @Author fengzhilong
  * @Date 2020/9/24 16:04
- * @Desc //TODO 设计验证token的规则
+ * @Desc // 设计验证token的规则
  **/
 public class pmJwtToken {
     /**
      * 合法验证的token规则的秘钥
      */
-    public static String jwtTokenSecret="B15FF867ADE345638E7CD86225668AE7";
+    public static String jwtTokenSecret = "B15FF867ADE345638E7CD86225668AE7";
 
     /**
      * 设置新的token的秘钥
@@ -28,9 +28,8 @@ public class pmJwtToken {
      * 2.每天凌晨定时器会触发token改变,最多维持24小时,此项规则暂时应用于 当前论坛程序中,其他程序采用要根据自己实际情况做处理
      */
     public static void setNewTokenSecret() {
-        jwtTokenSecret= UUID.randomUUID().toString().replaceAll("-", "").toUpperCase();
+        jwtTokenSecret = UUID.randomUUID().toString().replaceAll("-", "").toUpperCase();
     }
-
 
 
     /**
@@ -39,7 +38,7 @@ public class pmJwtToken {
      * @param strLoginInfo
      * @return
      */
-    public static String getJwtToken(String strUid,String strLoginInfo) {
+    public static String getJwtToken(String strUid, String strLoginInfo) {
 		/* 可设置失效日期的处理
         //设置签名过期时间  5秒
 		    Date iatDate=new Date();
@@ -53,10 +52,10 @@ public class pmJwtToken {
 				.sign(Algorithm.HMAC256(jwtTokenSecret));*/
 
         //设置token 2个小时过期,2小时必须重登陆
-        Date iatDate=new Date();
-        Calendar nowTime=Calendar.getInstance();
-        nowTime.add(Calendar.HOUR,2);
-        Date expiresDate=nowTime.getTime();
+        Date iatDate = new Date();
+        Calendar nowTime = Calendar.getInstance();
+        nowTime.add(Calendar.HOUR, 2);
+        Date expiresDate = nowTime.getTime();
 
         String token = JWT.create().withClaim("pmAgent", strLoginInfo)
                 .withAudience(strUid)
@@ -68,12 +67,12 @@ public class pmJwtToken {
     }
 
     //用于软件加密授权的license
-    public static String getLicenseJwtToken(String strLoginInfo,String strSecret) {
-        String token =JWT.create().withClaim("fsinfo", strLoginInfo)
+    public static String getLicenseJwtToken(String strLoginInfo, String strSecret) {
+        String token = JWT.create().withClaim("fsinfo", strLoginInfo)
                 .withAudience("fstoken")
                 .sign(Algorithm.HMAC256(strSecret));
 
-        token=token.replace(".", "").toUpperCase();
+        token = token.replace(".", "").toUpperCase();
 
         return token;
     }
@@ -85,7 +84,7 @@ public class pmJwtToken {
      * @return
      */
     public static String getPmAgent(String token) {
-        String strPmAgent="";
+        String strPmAgent = "";
         DecodedJWT jwt = null;
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(jwtTokenSecret)).build();
@@ -98,7 +97,7 @@ public class pmJwtToken {
 
         Map<String, Claim> claims = jwt.getClaims();
         Claim user_id_claim = claims.get("pmAgent");
-        strPmAgent=user_id_claim.asString();
+        strPmAgent = user_id_claim.asString();
 
         return strPmAgent;
     }
