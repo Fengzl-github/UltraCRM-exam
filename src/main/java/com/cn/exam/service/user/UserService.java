@@ -2,6 +2,7 @@ package com.cn.exam.service.user;
 
 import com.cn.exam.dto.login.LoginDTO;
 import com.cn.exam.entity.user.User;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface UserService {
     List<User> findAllUser();
 
     User findByGhidAndPass(LoginDTO loginDTO);
+
+    Page<User> findTestUserList();
 }

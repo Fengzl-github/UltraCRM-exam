@@ -9,11 +9,13 @@ import com.cn.exam.dto.exam.*;
 import com.cn.exam.entity.exam.ExamPlan;
 import com.cn.exam.entity.exam.ExamTestPaper;
 import com.cn.exam.entity.exam.ExamTopic;
+import com.cn.exam.entity.user.User;
 import com.cn.exam.service.exam.ExamPlanService;
 import com.cn.exam.service.exam.ExamTempService;
 import com.cn.exam.service.exam.ExamTopicService;
 import com.cn.exam.service.excel.down.ExcelDownService;
 import com.cn.exam.service.excel.upload.ExcelUploadService;
+import com.cn.exam.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +47,8 @@ public class ExamResful {
     private ExcelUploadService excelUploadService;
     @Autowired
     private ExcelDownService excelDownService;
+    @Autowired
+    private UserService userService;
 
 
     /**
@@ -293,7 +297,21 @@ public class ExamResful {
     }
 
 
-    /*添加考试人员*/
+    /**
+     * @Author fengzhilong
+     * @Desc 添加考试人员
+     * @Date 2021/2/22 13:50
+     * @param
+     * @return com.cn.common.vo.ResResult
+     **/
+    @PostMapping("/findTestUserList")
+    ResResult findTestUserList() {
+
+        Page<User> page = userService.findTestUserList();
+
+        return ResCode.OK.putData("content", page.getContent())
+                .putData("total", page.getTotalElements());
+    }
 
     /*分配试卷*/
 

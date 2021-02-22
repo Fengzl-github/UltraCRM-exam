@@ -5,6 +5,7 @@ import com.cn.exam.dao.user.UserDao;
 import com.cn.exam.dto.login.LoginDTO;
 import com.cn.exam.entity.user.User;
 import com.cn.exam.service.user.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -45,5 +46,22 @@ public class UserServiceImpl implements UserService {
         User user = userDao.findByGhidAndPass(loginDTO.getGhid(), loginDTO.getPass());
 
         return user;
+    }
+
+    /**
+     * @Author fengzhilong
+     * @Desc  获取参考人员列表
+     * @Date 2021/2/22 13:46
+     * @param
+     * @return org.springframework.data.domain.Page<com.cn.exam.entity.user.User>
+     **/
+    @Override
+    public Page<User> findTestUserList() {
+        String hql = "";
+        Map<String, Object> params = new HashMap<>();
+        hql = "select u from User u where ghid not in " +
+                "";
+
+        return null;
     }
 }
