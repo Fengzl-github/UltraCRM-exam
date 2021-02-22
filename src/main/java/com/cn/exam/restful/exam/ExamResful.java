@@ -258,7 +258,13 @@ public class ExamResful {
     }
 
 
-    /*查看该计划下有几套试卷*/
+    /**
+     * @Author fengzhilong
+     * @Desc 查看该计划下有几套试卷
+     * @Date 2021/2/20 11:34
+     * @param planId
+     * @return com.cn.common.vo.ResResult
+     **/
     @PostMapping("/testPaperList")
     ResResult testPaperList(String planId) {
         if (MyString.isNotEmpty(planId)) {
@@ -271,8 +277,16 @@ public class ExamResful {
     }
 
 
-    /*设置试卷是否有效*/
-    ResResult updateIsUsed(String paperId, Integer isUsed){
+    /**
+     * @Author fengzhilong
+     * @Desc 设置试卷是否有效
+     * @Date 2021/2/20 11:34
+     * @param paperId
+     * @param isUsed
+     * @return com.cn.common.vo.ResResult
+     **/
+    @PostMapping("/updateIsUsed")
+    ResResult updateIsUsed(String paperId, Integer isUsed) {
         examTempService.updateIsUsed(paperId, isUsed);
 
         return ResCode.OK.msg("操作成功");

@@ -39,6 +39,8 @@ public class ExamPlan extends BaseIntIdEntity {
     private String ghid;
     @Column(columnDefinition = "varchar(50) NOT NULL COMMENT '创建人姓名'")
     private String operator;
+    @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否添加试卷：0:否,1:是'")
+    private Integer isPaper;
     @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除：0:正常,1:删除'")
     private Integer isDel;
 

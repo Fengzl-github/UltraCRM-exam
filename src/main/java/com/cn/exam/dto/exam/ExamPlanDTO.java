@@ -9,8 +9,10 @@ import lombok.Data;
  **/
 @Data
 public class ExamPlanDTO {
-
+    /*计划名称*/
     private String planName;
-
+    /*计划状态*/
     private Integer status;
+    /*是否已添加试卷*/
+    private Integer isPaper;
 }

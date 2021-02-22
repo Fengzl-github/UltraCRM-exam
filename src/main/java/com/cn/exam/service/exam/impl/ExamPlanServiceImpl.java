@@ -49,6 +49,9 @@ public class ExamPlanServiceImpl implements ExamPlanService {
                 if (examPlanDTO.getStatus() != null) {
                     predicateList.add(criteriaBuilder.equal(root.get("status"), examPlanDTO.getStatus()));
                 }
+                if (examPlanDTO.getIsPaper() != null) {
+                    predicateList.add(criteriaBuilder.equal(root.get("isPaper"), examPlanDTO.getIsPaper()));
+                }
                 predicateList.add(criteriaBuilder.notEqual(root.get("isDel"), 1));
 
                 return criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()]));
@@ -71,7 +74,7 @@ public class ExamPlanServiceImpl implements ExamPlanService {
 
         if (examPlan.getId() == null) { //新增
 
-            examPlan.setPlanId("PL" + DateTime.Now().ToString("yyyyMMddHHmmss")+MyString.getRandom(4));
+            examPlan.setPlanId("PL" + DateTime.Now().ToString("yyyyMMddHHmmss") + MyString.getRandom(4));
         }
 
         examPlanDao.saveAndFlush(examPlan);

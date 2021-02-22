@@ -48,4 +48,10 @@ public class PageRestful {
     public String examPaperList() {
         return "exam/paperlist";
     }
+
+    /*预览试卷*/
+    @GetMapping("/exam/previewPaper")
+    public String previewPaper() {
+        return "exam/previewPaper";
+    }
 }

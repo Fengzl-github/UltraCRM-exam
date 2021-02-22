@@ -37,8 +37,6 @@
                 <el-form-item>
                     <el-button type="primary" @click="resetQuery">重置</el-button>
                 </el-form-item>
-
-                <el-button style="float: right; margin-right: 150px" type="primary" @click="addData">新增</el-button>
             </el-form>
         </div>
         <el-table :height="tableHeight" :data="tableData" stripe border highlight-current-row style="width: 98%">
@@ -70,8 +68,21 @@
             <el-table-column prop="operator" label="创建人"></el-table-column>
             <el-table-column label="操作" width="350">
                 <template slot-scope="scope">
+                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                     <el-button size="mini" type="success"
-                               @click="addTextPaper(scope.$index, scope.row)">试卷信息
+                               @click="examPaperInfo(scope.$index, scope.row)">试卷信息
+                    </el-button>
+                    <el-button v-show="scope.row.status === 0" size="mini" type="primary"
+                               @click="updatePlanStatus(scope.$index, scope.row,1,'发布试卷')">发布试卷
+                    </el-button>
+                    <el-button v-show="scope.row.status === 1" size="mini" type="primary"
+                               @click="updatePlanStatus(scope.$index, scope.row,2,'开始阅卷')">开始阅卷
+                    </el-button>
+                    <el-button v-show="scope.row.status === 2" size="mini" type="primary"
+                               @click="updatePlanStatus(scope.$index, scope.row,3,'公布成绩')">公布成绩
+                    </el-button>
+                    <el-button size="mini" type="danger"
+                               @click="handleRemove(scope.$index, scope.row)">删除
                     </el-button>
                 </template>
             </el-table-column>
@@ -91,7 +102,7 @@
     <el-drawer ref="drawer" :title="EditDrawer.title" :visible.sync="EditDrawer.drawer" direction="rtl"
                destroy-on-close="true"
                custom-class="demo-drawer" :show-close="false" size="80%">
-        <div class="demo-drawer__content" style="margin: 5px 50px 10px 5px">
+        <div v-if="EditDrawer.flag == 0" class="demo-drawer__content" style="margin: 5px 50px 10px 5px">
             <el-col :span="6"></el-col>
             <el-col :span="12">
                 <el-form label-position="right" label-width="200px" :model="EditForm">
@@ -163,6 +174,37 @@
             <el-col :span="6"></el-col>
 
         </div>
+        <!-- 试卷列表 -->
+        <div v-if="EditDrawer.flag == 1">
+            <el-table :height="tableHeight" :data="paperData" stripe border highlight-current-row style="width: 98%">
+                <el-table-column type="index" width="50">
+                </el-table-column>
+                <el-table-column prop="planName" label="计划名称"></el-table-column>
+                <el-table-column prop="paperName" label="试卷名称"></el-table-column>
+                <el-table-column prop="isUsed" label="是否有效">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.isUsed == 0">未使用</span>
+                        <span v-if="scope.row.isUsed == 1">使用</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="350">
+                    <template slot-scope="scope">
+                        <el-button v-show="scope.row.isUsed === 0" size="mini" type="primary"
+                                   @click="updateIsUsed(scope.$index, scope.row,1,'使用')">使用
+                        </el-button>
+                        <el-button v-show="scope.row.isUsed === 1" size="mini" type="primary"
+                                   @click="updateIsUsed(scope.$index, scope.row,0,'禁用')">禁用
+                        </el-button>
+                        <el-button size="mini" type="success"
+                                   @click="previewPaper(scope.$index, scope.row)">预览
+                        </el-button>
+                        <el-button size="mini" type="danger"
+                                   @click="handleRemove(scope.$index, scope.row)">删除
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
     </el-drawer>
 </div>
 </body>
@@ -174,6 +216,7 @@
             status: ''
         },
         tableData: [],
+        paperData: [],
         pageable: {
             size: 10,
             page: 1,
@@ -181,7 +224,8 @@
         },
         EditDrawer: {
             title: '',
-            drawer: false
+            drawer: false,
+            flag: 0
         },
         EditForm: {},
         testFormOptions: [{
@@ -220,11 +264,14 @@
         method: {
             queryUser,
             resetQuery,
+            handleEdit,
             handleSizeChange,
             handleCurrentChange,
             saveData,
-            addData,
-            addTextPaper
+            examPaperInfo,
+            updatePlanStatus,
+            updateIsUsed,
+            previewPaper
         }
     });
 
@@ -235,6 +282,7 @@
     function getData() {
         let lJsonData = vData.queryForm;
         lJsonData.pageable = vData.pageable;
+        lJsonData.isPaper = 1;
         axios.post("/exam/listExamPlanPage", lJsonData)
             .then(function (response) {
                 let lret = response.data;
@@ -253,15 +301,33 @@
         getData();
     }
 
+    function handleEdit(idx, row) {
+        vData.EditDrawer.flag = 0;
+        vData.EditDrawer.drawer = true;
+        vData.EditDrawer.title = "编辑计划-" + row.planName;
+        vData.EditForm = row;
+        console.log("编辑---- ", JSON.stringify(vData.EditForm));
+    }
+
     function resetQuery() {
         vData.queryForm.planName = '';
         vData.queryForm.status = '';
     }
 
 
-    function addTextPaper(idx, row) {
-        var vUrl = "page/exam/testPaperTempQue?planId=" + row.planId + "&planName=" + row.planName;
-        win_openNoBtn(vUrl, '添加试卷', window.screen.width - 50, window.screen.height - 200, true);
+    function examPaperInfo(idx, row) {
+        vData.EditDrawer.flag = 1;
+        vData.EditDrawer.drawer = true;
+        vData.EditDrawer.title = "试卷信息-" + row.planName;
+        // 试卷信息
+        axios.post("/exam/testPaperList", {"planId": row.planId})
+            .then(function (res) {
+                let lret = res.data;
+                vData.paperData = lret.data.content;
+            })
+            .catch(function (e) {
+
+            });
     }
 
     function handleSizeChange(val) {
@@ -294,14 +360,53 @@
             });
     }
 
-    function addData() {
-        vData.EditForm = {
-            "status": 1,
-            "isDel": 0
-        };
-        console.log("新增", JSON.stringify(vData.EditForm));
-        vData.EditDrawer.drawer = true;
+    function updatePlanStatus(idx, row, status, msg) {
+        vm.$confirm("确认" + msg + "吗？")
+            .then(_ => {
+                let lJsonData = {"planId": row.planId, "status": status};
+                axios.post("/exam/updatePlanStatus", lJsonData)
+                    .then(function (response) {
+                        let lret = response.data;
+                        if (lret.code == 200) {
+                            getData();
+                        }
+                        myEl.elAlert(lret.code, lret.msg);
+                    })
+                    .catch(function (error) {
+
+                    });
+            })
+            .catch(_ => {
+
+            })
     }
+
+    function updateIsUsed(idx, row, isUsed, msg) {
+        vm.$confirm("确认" + msg + "吗？")
+            .then(_ => {
+                let lJsonData = {"paperId": row.paperId, "isUsed": isUsed};
+                axios.post("/exam/updateIsUsed", lJsonData)
+                    .then(function (response) {
+                        let lret = response.data;
+                        if (lret.code == 200) {
+                            vData.paperData[idx].isUsed = isUsed;
+                        }
+                        myEl.elAlert(lret.code, lret.msg);
+                    })
+                    .catch(function (error) {
+
+                    });
+            })
+            .catch(_ => {
+
+            })
+    }
+
+    function previewPaper(idx, row) {
+        var vUrl = "page/exam/previewPaper?paperId=" + row.paperId + "&paperName=" + row.paperName;
+        win_openNoBtn(vUrl, '预览试卷', window.screen.width - 50, window.screen.height - 200, true);
+    }
+
 
 </script>
 

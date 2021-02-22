@@ -1,5 +1,7 @@
 package com.cn.exam.restful.login;
 
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.LineCaptcha;
 import com.alibaba.fastjson.JSONObject;
 import com.cn.common.vo.ResCode;
 import com.cn.common.vo.ResResult;
@@ -9,10 +11,13 @@ import com.cn.exam.entity.user.User;
 import com.cn.exam.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  *@Author fengzhilong
@@ -41,6 +46,33 @@ public class LoginRestful {
             log.info("================>账号：" + loginDTO.getGhid() + " 登录失败,原因：账号或密码错误");
             return ResCode.ERROR.msg("账号或密码错误");
         }
+    }
+
+    /**
+     * @Author fengzhilong
+     * @Desc 获取验证码图片
+     * @Date 2021/2/22 10:55
+     * @param response
+     * @return void
+     **/
+    @GetMapping("/getCaptcha")
+    public void getCaptcha(HttpServletResponse response) throws IOException {
+
+        LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(110, 40, 4, 20);
+
+        response.reset();
+        OutputStream out = response.getOutputStream();
+
+        lineCaptcha.setBackground(Color.LIGHT_GRAY);
+        lineCaptcha.write(out);
+        String code = lineCaptcha.getCode();
+
+        Cookie cookie = new Cookie("captchaCode", code);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        out.flush();
+        out.close();
     }
 
 }

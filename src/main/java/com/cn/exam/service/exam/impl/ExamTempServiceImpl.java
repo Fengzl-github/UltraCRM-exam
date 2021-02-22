@@ -87,6 +87,9 @@ public class ExamTempServiceImpl implements ExamTempService {
                 }
             }
         }
+        // 修改计划为已添加试卷
+        examPlan.setIsPaper(1);
+        examPlanDao.saveAndFlush(examPlan);
     }
 
 
