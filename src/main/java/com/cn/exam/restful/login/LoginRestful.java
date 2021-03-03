@@ -70,6 +70,7 @@ public class LoginRestful {
         Cookie cookie = new Cookie("captchaCode", code);
         cookie.setPath("/");
         response.addCookie(cookie);
+        log.info("[登录]---[获取验证码]->code：{}", code);
 
         out.flush();
         out.close();

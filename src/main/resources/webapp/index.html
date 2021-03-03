@@ -33,7 +33,7 @@
                                       @keyup.enter.native="login"></el-input>
                         </el-form-item>
                         <el-form-item label="">
-                            <el-col :span="12"><img src="/login/getCaptcha" /></el-col>
+                            <el-col :span="12"><img id="captcha" src="/login/getCaptcha" @click="restCaptcha" /></el-col>
                             <el-col :span="12"><el-input v-model="form.captcha" autocomplete="off" placeholder="验证码"
                                                          @keyup.enter.native="login"></el-input></el-col>
                         </el-form-item>
@@ -84,12 +84,16 @@
             }
         });
     }
+    function restCaptcha() {
+        $("#captcha").attr('src', '/login/getCaptcha');
+    }
 
     function submitLogin() {
         // 验证验证码
         let captchaCode = myUtil.getCookie('captchaCode');
         if (captchaCode != vData.form.captcha){
             vData.retInfo = "验证码错误";
+            restCaptcha();
             return;
         }
         if (myUtil.getLookie("save_pwd") == 1) {
