@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ExamTopicDao extends JpaRepository<ExamTopic, Integer>, JpaSpecificationExecutor<ExamTopic> {
 
 
+    ExamTopic findByTopicId(String topicId);
+
     @Transactional
     @Modifying
     @Query("update ExamTopic et set et.isDel = :isDel where et.topicId = :topicId")

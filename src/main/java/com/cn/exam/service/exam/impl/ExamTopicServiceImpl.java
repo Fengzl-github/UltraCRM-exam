@@ -77,8 +77,11 @@ public class ExamTopicServiceImpl implements ExamTopicService {
     public void saveExamTopic(ExamTopic examTopic) throws FzlException {
 
         //新增
-        if (MyString.isEmpty(examTopic.getId())) {
+        if (MyString.isEmpty(examTopic.getTopicId())) {
             examTopic.setTopicId("TP" + DateTime.Now().ToString("yyyyMMddHHmmss")+MyString.getRandom(4));
+        }else {
+            ExamTopic byTopicId = examTopicDao.findByTopicId(examTopic.getTopicId());
+            examTopic.setId(byTopicId.getId());
         }
         examTopicDao.saveAndFlush(examTopic);
     }

@@ -98,13 +98,12 @@
                 <div>
                     <el-tabs v-model="tabValue" @tab-remove="removeTab">
                         <el-tab-pane key='a' name="a">
-                            <span slot="label" :style="{color:textColor}"><i class="el-icon-bell"></i>首页</span>
+                            <span slot="label"><i class="el-icon-bell"></i>首页</span>
                             <iframe src="./main.html" scrolling="auto" frameborder="0" marginheight="0"
                                     marginwidth="0" :style="frameStyle"></iframe>
                         </el-tab-pane>
                         <el-tab-pane closable v-for="(item,index) in ableTabs" :key="item.key" :name="item.name">
-                            <span slot="label" :style="{color:textColor}"
-                                  @dblclick="dblclickIfream(item,index)">{{item.title}}</span>
+                            <span slot="label" @dblclick="dblclickIfream(item,index)">{{item.title}}</span>
                             <iframe :id="item.key" :src="item.tabUrl" scrolling="auto" frameborder="0"
                                     marginheight="0" marginwidth="0" :style="frameStyle"></iframe>
                         </el-tab-pane>

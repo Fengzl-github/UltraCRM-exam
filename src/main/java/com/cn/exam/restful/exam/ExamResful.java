@@ -10,18 +10,23 @@ import com.cn.exam.entity.exam.ExamPlan;
 import com.cn.exam.entity.exam.ExamTestPaper;
 import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.entity.user.User;
+import com.cn.exam.mapper.exam.ExamTopicMapper;
 import com.cn.exam.service.exam.ExamPlanService;
 import com.cn.exam.service.exam.ExamTempService;
 import com.cn.exam.service.exam.ExamTopicService;
 import com.cn.exam.service.excel.down.ExcelDownService;
 import com.cn.exam.service.excel.upload.ExcelUploadService;
 import com.cn.exam.service.user.UserService;
+import com.cn.exam.vo.exam.ExamTopicVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
@@ -33,6 +38,7 @@ import java.util.List;
  *@Date 2021/1/8 13:44
  *@Desc 关于考试的接口控制器
  **/
+@Validated
 @RestController
 @RequestMapping("/exam")
 public class ExamResful {
@@ -74,13 +80,13 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 保存和修改题目
      * @Date 2021/1/8 17:57
-     * @param examTopic
+     * @param examTopicVO
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/saveExamTopic")
-    ResResult saveExamTopic(@RequestBody ExamTopic examTopic) throws FzlException {
+    ResResult saveExamTopic(@Validated @RequestBody ExamTopicVO examTopicVO) throws FzlException {
 
-        examTopicService.saveExamTopic(examTopic);
+        examTopicService.saveExamTopic(ExamTopicMapper.INSTANCE.toExamTopic(examTopicVO));
 
         return ResCode.OK.msg("操作成功");
     }
@@ -92,8 +98,8 @@ public class ExamResful {
      * @param topicId 重启
      * @return
      **/
-    @PostMapping("/removeOrRebootTopic")
-    ResResult removeOrRebootTopic(String topicId, Integer isDel) throws FzlException {
+    @GetMapping("/removeOrRebootTopic")
+    ResResult removeOrRebootTopic(@NotBlank(message = "缺少topicId") String topicId, @NotNull(message = "缺少禁用状态") Integer isDel) throws FzlException {
 
         if (MyString.isNotEmpty(topicId)) {
 
@@ -155,7 +161,7 @@ public class ExamResful {
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/getSelfExamInfo")
-    ResResult getSelfExamInfo(@RequestBody SelfTrainingDTO selfTrainingDTO) {
+    ResResult getSelfExamInfo(@Validated @RequestBody SelfTrainingDTO selfTrainingDTO) {
         List<ExamTopic> examList = examTopicService.getSelfExamData(selfTrainingDTO);
 //        System.out.println(examList);
         //转换为前端可解析的数据结构

@@ -62,7 +62,8 @@
                         <el-button size="small" type="primary" v-loading="loading"
                                    @click="importData">确定
                         </el-button>
-                        <el-link type="primary" href="/exam/downTopicTemp">下载模板 <i class="el-icon-download"></i></el-link>
+                        <el-link type="primary" href="/exam/downTopicTemp">下载模板 <i class="el-icon-download"></i>
+                        </el-link>
                     </div>
                     <el-button type="primary" slot="reference" @click="visible = !visible">导入</el-button>
                 </el-popover>
@@ -340,8 +341,9 @@
     function handleRemove(idx, row, status) {
         vm.$confirm("确认禁用'" + row.topicDes + "'吗？")
             .then(_ => {
-                let lJsonData = {"topicId": row.topicId, "isDel": status};
-                axios.post("/exam/removeOrRebootTopic", lJsonData)
+                let lJsonData = {'topicId': row.topicId, 'isDel': status};
+                lJsonData = {'params':lJsonData};
+                axios.get("/exam/removeOrRebootTopic" ,lJsonData)
                     .then(function (response) {
                         let lret = response.data;
                         if (lret.code == 200) {
