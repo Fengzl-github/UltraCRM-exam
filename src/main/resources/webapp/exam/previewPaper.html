@@ -15,9 +15,287 @@
     <script type="text/javascript" src="/common/dialog/lhgdialog.js?self=false&skin=idialog"></script>
 </head>
 <body>
-    预览试卷
+<a href="#thisTop" target="_self" id="thisTop"></a>
+<div id="examlook">
+    <el-container>
+        <el-header>试卷预览</el-header>
+
+        <el-dialog title="剩余时间" :show-close="false" :close-on-click-modal="false" :visible.sync="dialogTableVisible"
+                   :modal="false" width="200px" top="60px" style="right:0px;left:auto;height:auto;text-align: center">
+            <transition name="el-zoom-in-top">
+                <div class="transition-box">{{TimerDes}}</div>
+            </transition>
+            <br>
+            <el-button type="warning" style="width:100%;" @click="showAnswer">{{btnAnswerName}}</el-button>
+            <br> <br>
+            <el-button type="success" style="width:100%;" @click="ClosePage">关闭窗口</el-button>
+            <br> <br>
+            <el-tooltip content="回到顶部" placement="top" effect="light">
+                <el-button icon="el-icon-arrow-up" circle @click="goTop"></el-button>
+            </el-tooltip>
+        </el-dialog>
+
+        <el-main>
+            <div v-for="(testQue,index) in ExamItem">
+
+                <div v-if="testQue.topicType==1">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、
+                            ({{testQue.topicScore}}分、
+                            <topic-type :value="testQue.topicType"></topic-type>
+                            )
+                            {{testQue.topicDes}}
+                        </h5>
+                        <br>
+                        <template v-for="(tRadio,indexR) in testQue.topicQueContent">
+                            <el-radio v-model="testQue.radionName" :label="indexR" @change="ChangeValue(tRadio,index)">
+                                {{tRadio.k}}、{{tRadio.v}}
+                            </el-radio>
+                            <br>
+                        </template>
+                        <div v-show="isShowAnswer" class="answerStyle"><br>答案：{{testQue.correctAnswer}}</div>
+                    </el-card>
+                </div>
+
+                <div v-else-if="testQue.topicType==2  || testQue.topicType==4">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、
+                            ({{testQue.topicScore}}分、
+                            <topic-type :value="testQue.topicType"></topic-type>
+                            )
+                            {{testQue.topicDes}}
+                        </h5>
+                        <br>
+                        <template v-for="tMSelect in testQue.topicQueContent">
+                            <el-checkbox v-model="tMSelect.CH" @change="ChangeValue(tMSelect,index)">
+                                {{tMSelect.k}}、{{tMSelect.v}}
+                            </el-checkbox>
+                            <br>
+                        </template>
+                        <div v-show="isShowAnswer" class="answerStyle"><br>答案：{{testQue.correctAnswer}}</div>
+                    </el-card>
+                </div>
+
+                <div v-else-if=" testQue.topicType==3">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、
+                            ({{testQue.topicScore}}分、
+                            <topic-type :value="testQue.topicType"></topic-type>
+                            )
+                            {{testQue.topicDes}}
+                        </h5>
+                        <br>
+                        <template v-for="(tMSelect,tInx) in testQue.topicQueContent">
+                            {{tInx+1}}）
+                            <el-input v-model="tMSelect.INPUT" placeholder="请输入内容" style="width:300px;"
+                                      @change="ChangeValue(tMSelect,index)" :maxlength="200" size="medium"></el-input>
+                            <br><br>
+                        </template>
+                        <div v-show="isShowAnswer" class="answerStyle"><br>答案：<br><br>
+                            <template v-for="(tMSelect,tInx) in testQue.topicQueContent">
+                                {{tInx+1}}）{{tMSelect.v}}<br><br>
+                            </template>
+                        </div>
+                    </el-card>
+                </div>
+
+
+                <div v-else-if="testQue.topicType==5">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、
+                            ({{testQue.topicScore}}分、
+                            <topic-type :value="testQue.topicType"></topic-type>
+                            )
+                            {{testQue.topicDes}}
+                        </h5>
+                        <br>
+                        <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入您的答案"
+                                  @change="ChangeValue(testQue,index)" v-model="testQue.epReplay" style="width:80%;"
+                                  :maxlength="200">
+                        </el-input>
+
+                        <div v-show="isShowAnswer" class="answerStyle"><br>答案：{{testQue.correctAnswer}}</div>
+                    </el-card>
+                </div>
+            </div>
+        </el-main>
+    </el-container>
+</div>
+<template id="myTopicType">
+    <span v-if="value==1">单选</span>
+    <span v-else-if="value==2">多选</span>
+    <span v-else-if="value==3">填空</span>
+    <span v-else-if="value==4">判断</span>
+    <span v-else-if="value==5">简答</span>
+</template>
 </body>
 <script>
 
+    //注册题目类型组件,便于复用
+    Vue.component('topic-type', {
+        props: ['value'],
+        data: function () {
+            return {
+                value: 0
+            }
+        },
+        template: "#myTopicType"
+    });
+
+
+    var vData = {
+        Timer: "",
+        TimerDes: "",
+        dialogTableVisible: true,
+        btnAnswerName: "显示答案",
+        isShowAnswer: false, //是否显示答案
+        ExamItem: []             //试卷整体信息
+    };
+
+    // 该对象被加入到一个 Vue 实例中
+    var vm = new Vue({
+        el: '#examlook',
+        data: vData,
+        methods: {
+            showAnswer() {
+                this.btnAnswerName = this.isShowAnswer == true ? "显示答案" : "隐藏答案";
+                this.isShowAnswer = !this.isShowAnswer;
+            },
+            ClosePage() {
+                CloseWin();
+            },
+            ChangeValue(val, index) {
+
+                console.log(val.INPUT);
+                /* var vValue = vData.ExamItem[index];
+                if (vValue.TOPIC_TYPE == 1) {
+                  console.log("单选答案:" + val.K);
+                }
+                else if (vValue.TOPIC_TYPE == 2 || vValue.TOPIC_TYPE == 3 || vValue.TOPIC_TYPE == 4) {
+                  var vAns = "";
+                  for (var i = 0; i < vValue.TOPIC_CONTENT.length; i++) {
+                    if (vValue.TOPIC_CONTENT[i].CH) {
+                      vAns += vValue.TOPIC_CONTENT[i].K;
+                    }
+                  }
+                  console.log("多选答案:" + vAns);
+
+                }
+                else if (vValue.TOPIC_TYPE == 5) {
+                  console.log("填空题答案:" + vValue.REPLY);
+                } */
+            },
+            goTop() { //回到顶部
+                $("#thisTop")[0].click();
+            }
+        }
+    });
+
+
+    $(function () {
+
+        var paperId = myUtil.fun_querystring('paperId');
+        var planId = myUtil.fun_querystring('planId');
+        getData(planId, paperId);
+
+    });
+
+    function getData(planId, paperId) {
+        let lJsonForm = {'planId': planId, 'paperId': paperId};
+        axios.post('/exam/previewPaperData', lJsonForm)
+            .then(function (response) {
+                console.log(response.data);
+                let lret = response.data;
+                vData.ExamItem = lret.data.content;
+                vData.Timer = lret.data.Timer * 60;
+                examTimerCountdown();
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    }
+
+    //考试倒计时
+    function examTimerCountdown() {
+        if (vData.Timer <= 0) {
+            return;
+        }
+        vData.Timer--;
+        vData.TimerDes = parseInt(vData.Timer / 60) + " 分 " + vData.Timer % 60 + " 秒";
+        setTimeout(() => {
+            examTimerCountdown();
+        }, 1000);
+    }
+
+    function CloseWin() {
+        var dgRet = frameElement.api;
+        dgRet.close();
+    }
 </script>
+
+
+<style>
+    .transition-box {
+        width: 100%;
+        border-radius: 4px;
+        background-color: #409EFF;
+        text-align: center;
+        color: #fff;
+        padding: 20px 20px;
+        box-sizing: border-box;
+        margin-right: 20px;
+        font-size: 20px;
+    }
+
+    .el-header,
+    .el-footer {
+        background-color: #D3DCE6;
+        color: #333;
+        text-align: center;
+        line-height: 60px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .el-aside {
+        background-color: #D3DCE6;
+        color: #333;
+        text-align: center;
+        line-height: 100px;
+    }
+
+    .el-main {
+        background-color: #FFF;
+        color: #333;
+        text-align: left;
+        line-height: 100%;
+        padding-left: 30px;
+
+    }
+
+    body > .el-container {
+        margin-bottom: 40px;
+        font-size: 18px;
+    }
+
+    .el-container:nth-child(5) .el-aside,
+    .el-container:nth-child(6) .el-aside {
+        line-height: 260px;
+    }
+
+    .el-container:nth-child(7) .el-aside {
+        line-height: 320px;
+    }
+
+    .el-checkbox__label {
+        font-size: 16px;
+    }
+
+    .answerStyle {
+        margin: 15px 15px;
+        color: #67c738;
+        font-size: 18px;
+        line-height: 23px;
+    }
+</style>
 </html>

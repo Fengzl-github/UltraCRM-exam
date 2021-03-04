@@ -8,6 +8,7 @@ import com.cn.common.vo.ResResult;
 import com.cn.exam.dto.exam.*;
 import com.cn.exam.entity.exam.ExamPlan;
 import com.cn.exam.entity.exam.ExamTestPaper;
+import com.cn.exam.entity.exam.ExamTestQues;
 import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.entity.user.User;
 import com.cn.exam.mapper.exam.ExamTopicMapper;
@@ -317,6 +318,20 @@ public class ExamResful {
 
         return ResCode.OK.putData("content", page.getContent())
                 .putData("total", page.getTotalElements());
+    }
+
+    /*试卷预览*/
+    @PostMapping("/previewPaperData")
+    public ResResult previewPaperData(String planId, String paperId) {
+        if (MyString.isNotEmpty(paperId) && MyString.isNotEmpty(planId)) {
+
+            return examTempService.previewPaperData(planId, paperId);
+
+
+        } else {
+            return ResCode.ERROR.msg("缺少参数");
+        }
+
     }
 
     /*分配试卷*/

@@ -1,6 +1,7 @@
 package com.cn.exam.dto.exam;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cn.exam.entity.exam.ExamTestQues;
 import com.cn.exam.entity.exam.ExamTopic;
 import lombok.Data;
 
@@ -43,6 +44,19 @@ public class TestPaperDTO {
         this.isDel = examTopic.getIsDel();
     }
 
+
+    public TestPaperDTO(ExamTestQues examTestQues) {
+
+        this.id = examTestQues.getId();
+        this.topicId = examTestQues.getTopicId();
+        this.topicType = examTestQues.getTopicType();
+        this.topicDes = examTestQues.getTopicDes();
+        this.correctAnswer = examTestQues.getCorrectAnswer();
+        this.topicScore = examTestQues.getTopicScore();
+        this.difficultyLevel = examTestQues.getDifficultyLevel();
+        this.topicContent = examTestQues.getTopicContent();
+        this.topicQueContent = JSONObject.parseArray(examTestQues.getTopicQueContent(), ExamOptionDTO.class);
+    }
 
     public TestPaperDTO() {
     }

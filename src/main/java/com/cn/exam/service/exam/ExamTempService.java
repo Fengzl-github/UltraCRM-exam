@@ -1,7 +1,9 @@
 package com.cn.exam.service.exam;
 
+import com.cn.common.vo.ResResult;
 import com.cn.exam.dto.exam.ExamProdPaperDTO;
 import com.cn.exam.entity.exam.ExamTestPaper;
+import com.cn.exam.entity.exam.ExamTestQues;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -22,4 +24,7 @@ public interface ExamTempService {
 
     /*设置试卷是否生效*/
     void updateIsUsed(String paperId, Integer isUsed);
+
+    /*试卷预览*/
+    ResResult previewPaperData(String planId, String paperId);
 }

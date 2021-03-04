@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  *@Author fengzhilong
  *@Date 2021/1/27 16:53
@@ -12,4 +14,7 @@ import org.springframework.stereotype.Repository;
  **/
 @Repository
 public interface ExamTestQuesDao extends JpaRepository<ExamTestQues, Integer>, JpaSpecificationExecutor<ExamTestQues> {
+
+
+    List<ExamTestQues> findByPaperId(String paperId);
 }

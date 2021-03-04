@@ -403,7 +403,7 @@
     }
 
     function previewPaper(idx, row) {
-        var vUrl = "page/exam/previewPaper?paperId=" + row.paperId + "&paperName=" + row.paperName;
+        var vUrl = "page/exam/previewPaper?planId="+row.planId+"&paperId=" + row.paperId + "&paperName=" + row.paperName;
         win_openNoBtn(vUrl, '预览试卷', window.screen.width - 50, window.screen.height - 200, true);
     }
 

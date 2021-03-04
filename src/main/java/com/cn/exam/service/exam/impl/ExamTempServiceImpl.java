@@ -2,11 +2,14 @@ package com.cn.exam.service.exam.impl;
 
 import com.cn.common.utils.DateTime;
 import com.cn.common.utils.MyString;
+import com.cn.common.vo.ResCode;
+import com.cn.common.vo.ResResult;
 import com.cn.exam.dao.exam.ExamPlanDao;
 import com.cn.exam.dao.exam.ExamTestPaperDao;
 import com.cn.exam.dao.exam.ExamTestQuesDao;
 import com.cn.exam.dto.exam.ExamProdPaperDTO;
 import com.cn.exam.dto.exam.ExamTempDTO;
+import com.cn.exam.dto.exam.TestPaperDTO;
 import com.cn.exam.entity.exam.ExamPlan;
 import com.cn.exam.entity.exam.ExamTestPaper;
 import com.cn.exam.entity.exam.ExamTestQues;
@@ -16,10 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  *@Author fengzhilong
@@ -113,5 +113,26 @@ public class ExamTempServiceImpl implements ExamTempService {
     public void updateIsUsed(String paperId, Integer isUsed) {
 
         examTestPaperDao.updateIsUsed(paperId, isUsed);
+    }
+
+    /**
+     * @Desc 试卷预览
+     * @param paperId
+     **/
+    @Override
+    public ResResult previewPaperData(String planId, String paperId) {
+
+        List<ExamTestQues> quesList = examTestQuesDao.findByPaperId(paperId);
+        ExamPlan examPlan = examPlanDao.findByPlanId(planId);
+        //计算两个时间有多少分钟
+
+        //转换为前端可解析的数据结构
+        List<TestPaperDTO> list = new ArrayList<>();
+        for (ExamTestQues examTestQues : quesList) {
+            list.add(new TestPaperDTO(examTestQues));
+        }
+        return ResCode.OK.msg("操作成功")
+                .putData("content", list)
+                .putData("Timer", 60);
     }
 }
