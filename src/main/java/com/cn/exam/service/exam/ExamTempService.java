@@ -1,5 +1,6 @@
 package com.cn.exam.service.exam;
 
+import com.cn.common.exception.FzlException;
 import com.cn.common.vo.ResResult;
 import com.cn.exam.dto.exam.ExamProdPaperDTO;
 import com.cn.exam.entity.exam.ExamTestPaper;
@@ -27,4 +28,7 @@ public interface ExamTempService {
 
     /*试卷预览*/
     ResResult previewPaperData(String planId, String paperId);
+
+    /*分配试卷*/
+    void allotPaper(String planId) throws FzlException;
 }

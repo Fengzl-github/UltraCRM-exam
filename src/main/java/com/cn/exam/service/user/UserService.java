@@ -19,5 +19,5 @@ public interface UserService {
 
     User findByGhidAndPass(LoginDTO loginDTO);
 
-    Page<User> findTestUserList();
+    List<User> findTestUserList(String planId);
 }

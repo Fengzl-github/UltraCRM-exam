@@ -52,4 +52,21 @@ public class ExamUtil {
 
         return set;
     }
+
+
+    /**
+     * @Author fengzhilong
+     * @Desc 获取一个指定范围内的随机数
+     * @Date 2021/1/27 16:45
+     * @param max 最大范围值
+     * @return Integer
+     **/
+    public static Integer getOneRandom(int max) {
+
+        int n = (int) (0 + Math.random() * max);
+        System.out.println(n);
+
+        return n;
+    }
+
 }

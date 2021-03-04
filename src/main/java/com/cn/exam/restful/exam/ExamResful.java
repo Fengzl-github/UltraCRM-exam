@@ -312,15 +312,21 @@ public class ExamResful {
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/findTestUserList")
-    ResResult findTestUserList() {
+    ResResult findTestUserList(String planId) {
 
-        Page<User> page = userService.findTestUserList();
+        List<User> list = userService.findTestUserList(planId);
 
-        return ResCode.OK.putData("content", page.getContent())
-                .putData("total", page.getTotalElements());
+        return ResCode.OK.setData(list);
     }
 
-    /*试卷预览*/
+    /**
+     * @Author fengzhilong
+     * @Desc  试卷预览
+     * @Date 2021/3/4 16:38
+     * @param planId
+	 * @param paperId
+     * @return com.cn.common.vo.ResResult
+     **/
     @PostMapping("/previewPaperData")
     public ResResult previewPaperData(String planId, String paperId) {
         if (MyString.isNotEmpty(paperId) && MyString.isNotEmpty(planId)) {
@@ -335,6 +341,13 @@ public class ExamResful {
     }
 
     /*分配试卷*/
+    @PostMapping("/allotPaper")
+    public ResResult allotPaper(String planId) throws FzlException{
+
+        examTempService.allotPaper(planId);
+
+        return ResCode.OK.msg("操作成功");
+    }
 
 
     /*考试结果*/

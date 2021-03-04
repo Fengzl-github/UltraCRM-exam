@@ -33,9 +33,9 @@ public class ExamTestPerson extends BaseIntIdEntity {
     private String paperId;
     @Column(columnDefinition = "varchar(64) NULL DEFAULT NULL COMMENT '试卷名称'")
     private String paperName;
-    @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 1 COMMENT '答卷状态：1:未作答,1:已作答'")
+    @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 1 COMMENT '答卷状态：1:未作答,2:已作答'")
     private Integer testStatus;
-    @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 1 COMMENT '阅卷状态：1:未阅卷,1:已阅卷'")
+    @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 1 COMMENT '阅卷状态：1:未阅卷,2:已阅卷'")
     private Integer scoringStatus;
     @Column(columnDefinition = "varchar(64) NULL DEFAULT NULL COMMENT '提交试卷时间'")
     private String submitTime;

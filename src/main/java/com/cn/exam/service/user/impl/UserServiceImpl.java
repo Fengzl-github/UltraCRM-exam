@@ -50,18 +50,23 @@ public class UserServiceImpl implements UserService {
 
     /**
      * @Author fengzhilong
-     * @Desc  获取参考人员列表
+     * @Desc 获取参考人员列表
      * @Date 2021/2/22 13:46
-     * @param
+     * @param planId
      * @return org.springframework.data.domain.Page<com.cn.exam.entity.user.User>
      **/
     @Override
-    public Page<User> findTestUserList() {
+    public List<User> findTestUserList(String planId) {
         String hql = "";
         Map<String, Object> params = new HashMap<>();
-        hql = "select u from User u where ghid not in " +
-                "";
+        hql = "select u from User u where u.ghid not in " +
+                "(select e.ghid from ExamTestPerson e where e.planId = :planId) ";
+        params.put("planId", planId);
 
-        return null;
+        hql += "order by u.ghid asc ";
+
+        List<User> list = jpaUtil.list(hql, params, User.class);
+
+        return list;
     }
 }

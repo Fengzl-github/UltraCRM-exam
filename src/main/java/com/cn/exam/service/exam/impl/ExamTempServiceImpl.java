@@ -1,17 +1,21 @@
 package com.cn.exam.service.exam.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.cn.common.exception.FzlException;
 import com.cn.common.utils.DateTime;
 import com.cn.common.utils.MyString;
 import com.cn.common.vo.ResCode;
 import com.cn.common.vo.ResResult;
 import com.cn.exam.dao.exam.ExamPlanDao;
 import com.cn.exam.dao.exam.ExamTestPaperDao;
+import com.cn.exam.dao.exam.ExamTestPersonDao;
 import com.cn.exam.dao.exam.ExamTestQuesDao;
 import com.cn.exam.dto.exam.ExamProdPaperDTO;
 import com.cn.exam.dto.exam.ExamTempDTO;
 import com.cn.exam.dto.exam.TestPaperDTO;
 import com.cn.exam.entity.exam.ExamPlan;
 import com.cn.exam.entity.exam.ExamTestPaper;
+import com.cn.exam.entity.exam.ExamTestPerson;
 import com.cn.exam.entity.exam.ExamTestQues;
 import com.cn.exam.service.exam.ExamTempService;
 import com.cn.exam.util.ExamUtil;
@@ -36,6 +40,8 @@ public class ExamTempServiceImpl implements ExamTempService {
     private ExamTestPaperDao examTestPaperDao;
     @Resource
     private ExamTestQuesDao examTestQuesDao;
+    @Resource
+    private ExamTestPersonDao examTestPersonDao;
 
 
     /**
@@ -134,5 +140,59 @@ public class ExamTempServiceImpl implements ExamTempService {
         return ResCode.OK.msg("操作成功")
                 .putData("content", list)
                 .putData("Timer", 60);
+    }
+
+
+    /**
+     * @Desc 分配试卷
+     * @param planId
+     **/
+    @Override
+    public void allotPaper(String planId) throws FzlException {
+        log.info("【分配试卷】---【计划id】->{}", planId);
+        // 1. 获取考试计划下所有需要分配试卷的人员
+        List<ExamTestPerson> personList = examTestPersonDao.findByPlanIdAndPaperId(planId);
+        if (personList.size() == 0) {
+            log.info("【分配试卷】---【没有需要分配的人员】");
+            throw new FzlException("没有需要分配的人员");
+        }
+
+        // 2. 获取发卷方式
+        ExamPlan examPlan = examPlanDao.findByPlanId(planId);
+
+        Integer type = examPlan.getTestType() == null ? 0 : examPlan.getTestType();/*0:随机,1:轮询*/
+        log.info("【分配试卷】---【发卷方式】->{}", type == 0 ? "随机" : "轮询");
+        // 3. 获取考试计划下所有有效试卷
+        List<ExamTestPaper> paperList = examTestPaperDao.findByPlanIdAndIsUsed(planId, 1);
+        Integer paperCnt = paperList.size();
+        if (paperCnt == 0) {
+            log.info("【分配试卷】---【没有有效试卷】");
+            throw new FzlException("没有有效试卷");
+        }
+        log.info("【分配试卷】---【人员信息】->{}，【试卷信息】->{}", JSONObject.toJSONString(personList), JSONObject.toJSON(paperList));
+        // 4. 分配
+        for (int i = 0; i < personList.size(); i++) {
+            ExamTestPerson examTestPerson = personList.get(i);
+            // 随机分配
+            ExamTestPaper examTestPaper = null;
+            Integer random;
+            if (type == 0) {
+                random = ExamUtil.getOneRandom(paperCnt);
+                examTestPaper = paperList.get(random);
+            } else { // 轮询
+                random = i % (paperCnt - 1);
+                examTestPaper = paperList.get(random);
+            }
+
+            // 添加试卷信息
+            examTestPerson.setPaperId(examTestPaper.getPaperId());
+            examTestPerson.setPaperName(examTestPaper.getPaperName());
+
+            log.info("【分配试卷】---【分配结果】---【人员】>{}，【试卷】->{}", examTestPerson.getName(), examTestPerson.getPaperName());
+            examTestPersonDao.saveAndFlush(examTestPerson);
+
+        }
+
+
     }
 }
