@@ -130,7 +130,6 @@ public class ExamTempServiceImpl implements ExamTempService {
 
         List<ExamTestQues> quesList = examTestQuesDao.findByPaperId(paperId);
         ExamPlan examPlan = examPlanDao.findByPlanId(planId);
-        //计算两个时间有多少分钟
 
         //转换为前端可解析的数据结构
         List<TestPaperDTO> list = new ArrayList<>();
@@ -139,7 +138,7 @@ public class ExamTempServiceImpl implements ExamTempService {
         }
         return ResCode.OK.msg("操作成功")
                 .putData("content", list)
-                .putData("Timer", 60);
+                .putData("Timer", examPlan.getTestTime());
     }
 
 

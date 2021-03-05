@@ -30,9 +30,10 @@ public class SysMenuServiceImpl implements SysMenuService {
     public ResResult getSysMenuData(Integer level) {
 
         List<SysMenu> sysMenus1 = sysMenuDao.getMenu1Data(level);
-        JSONArray json = getJsonListFormat(sysMenus1, level);
+        StringBuilder sb = getJsonListFormat(sysMenus1, level);
 
-        System.out.println(json);
+        System.out.println(sb);
+        JSONArray json = JSONArray.parseArray(sb.toString());
 
         return ResCode.OK.msg("获取成功")
                 .putData("content", json);
@@ -40,11 +41,11 @@ public class SysMenuServiceImpl implements SysMenuService {
 
 
     /**
-     * @Desc 转换成json数组格式
+     * @Desc 递归生成菜单数据
      * @param menuData
      * @param level
      **/
-    public JSONArray getJsonListFormat(List<SysMenu> menuData, Integer level) {
+    public StringBuilder getJsonListFormat(List<SysMenu> menuData, Integer level) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -62,45 +63,15 @@ public class SysMenuServiceImpl implements SysMenuService {
             sb.append("\"url\": \"" + menu.getUrl() + "\", ");
             //是否有下一级菜单
             List<SysMenu> menuByPIdData = sysMenuDao.getNextMenuData(menuId, level);
-            String strMenu2 = "";
-            if (menuByPIdData != null) {
-                strMenu2 = getJsonFormatMenu2(menuByPIdData);
+            if (menuByPIdData.size() > 0) {
+                sb.append("\"children\": " + getJsonListFormat(menuByPIdData, level));
             }
-            sb.append("\"children\": [" + strMenu2 + "]");
 
             sb.append("}");
         }
 
         sb.append("]");
-        JSONArray jsonArray = JSONArray.parseArray(sb.toString());
-        return jsonArray;
+        return sb;
     }
 
-
-    /**
-     * @Desc 获取2级菜单
-     * @param menu2Data
-     **/
-    public String getJsonFormatMenu2(List<SysMenu> menu2Data) {
-        StringBuilder sb = new StringBuilder();
-        SysMenu menu = null;
-        String menuId = "";
-
-        for (int i = 0; i < menu2Data.size(); i++) {
-            menu = menu2Data.get(i);
-            menuId = menu.getMId();
-
-            if (i > 0) sb.append(",");
-            sb.append("{");
-            sb.append("\"id\": \"" + menuId + "\", ");
-            sb.append("\"title\": \"" + menu.getTitle() + "\", ");
-            sb.append("\"icon\": \"" + menu.getIcon() + "\", ");
-            sb.append("\"url\": \"" + menu.getUrl() + "\"");
-
-
-            sb.append("}");
-        }
-
-        return sb.toString();
-    }
 }

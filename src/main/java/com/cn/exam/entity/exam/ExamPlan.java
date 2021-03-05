@@ -29,6 +29,8 @@ public class ExamPlan extends BaseIntIdEntity {
     private String testStartTime;
     @Column(columnDefinition = "varchar(20) NOT NULL COMMENT '考试结束时间'")
     private String testEndTime;
+    @Column(columnDefinition = "int(4) NOT NULL DEFAULT 60 COMMENT '考试时长(分)'")
+    private Integer testTime;
     @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 0 COMMENT '考试形式：0:闭卷,1:开卷'")
     private Integer testForm;
     @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 0 COMMENT '发卷类型：0:随机,1:轮询'")

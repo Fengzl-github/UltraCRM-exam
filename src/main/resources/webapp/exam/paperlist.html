@@ -45,6 +45,7 @@
             <el-table-column prop="planName" label="计划名称"></el-table-column>
             <el-table-column prop="testStartTime" label="考试开始时间"></el-table-column>
             <el-table-column prop="testEndTime" label="考试结束时间"></el-table-column>
+            <el-table-column prop="testTime" label="考试时长(分)"></el-table-column>
             <el-table-column prop="testForm" label="考试形式">
                 <template slot-scope="scope">
                     <span v-if="scope.row.testForm == 0">闭卷</span>
@@ -126,6 +127,9 @@
                                         placeholder="选择日期时间">
                         </el-date-picker>
                     </el-form-item>
+                    <el-form-item label="考试时长(分)">
+                        <el-input class="myInput" v-model="EditForm.testTime" disabled="true"></el-input>
+                    </el-form-item>
                     <el-form-item label="考试形式">
                         <template>
                             <el-select v-model="EditForm.testForm" placeholder="请选择">
@@ -176,6 +180,11 @@
         </div>
         <!-- 试卷列表 -->
         <div v-if="EditDrawer.flag == 1">
+            <div id="editHead">
+                <el-button-group>
+                    <el-button type="primary" href="">添加人员</el-button>
+                </el-button-group>
+            </div>
             <el-table :height="tableHeight" :data="paperData" stripe border highlight-current-row style="width: 98%">
                 <el-table-column type="index" width="50">
                 </el-table-column>
@@ -403,7 +412,7 @@
     }
 
     function previewPaper(idx, row) {
-        var vUrl = "page/exam/previewPaper?planId="+row.planId+"&paperId=" + row.paperId + "&paperName=" + row.paperName;
+        var vUrl = "page/exam/previewPaper?planId=" + row.planId + "&paperId=" + row.paperId + "&paperName=" + row.paperName;
         win_openNoBtn(vUrl, '预览试卷', window.screen.width - 50, window.screen.height - 200, true);
     }
 

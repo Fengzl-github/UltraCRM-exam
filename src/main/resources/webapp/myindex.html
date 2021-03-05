@@ -66,9 +66,11 @@
         </el-header>
         <el-container>
             <el-aside :width="asideStyle.asidewidth">
+                <!--                <tree-menu :list="MenuItems"></tree-menu>-->
                 <el-menu :collapse="asideStyle.isCollapse" :collapse-transition="false" :background-color="styleColor"
                          :text-color="textColor" active-text-color="#ffd04b" style="height:100%;">
-                    <template v-for="item in MenuItems">
+                    <tree-menu :list="MenuItems" :iconStyle="iconStyle()"></tree-menu>
+                    <!--<template v-for="item in MenuItems">
                         <template v-if="item.children">
                             <el-submenu :index="item.id" :key="item.id">
                                 <template slot="title">
@@ -91,7 +93,7 @@
                                 <span :title="item.title">{{ item.title }}</span>
                             </el-menu-item>
                         </template>
-                    </template>
+                    </template>-->
                 </el-menu>
             </el-aside>
             <el-main>
@@ -123,10 +125,41 @@
         </el-container>
     </el-container>
 </div>
+<template id="myTreeMenus">
+    <div>
+        <template v-for="item in list">
+            <template v-if="item.children">
+                <el-submenu :index="item.id" :key="item.id">
+                    <template slot="title">
+                        <i :class="item.icon" :style="iconStyle"></i>
+                        <span slot="title">{{ item.title }}</span>
+                    </template>
+                    <tree-menu :list="item.children"></tree-menu>
+                </el-submenu>
+            </template>
+            <template v-else>
+                <el-menu-item :index="item.id" :key="item.id" @click="addTab(item.id,item.title,item.url)">
+                    <i :class="item.icon" :style="iconStyle"></i>
+                    <span slot="title">{{ item.title }}</span>
+                </el-menu-item>
+            </template>
+        </template>
+    </div>
+</template>
 </body>
 <script>
+    Vue.component('tree-menu', {
+        props: ['list', 'iconStyle'],
+        data: function () {
+            return {
+                list: [],
+                iconStyle: ''
+            }
+        },
+        template: "#myTreeMenus"
+    });
     var vData = {
-        defalutColor: 'rgba(185, 211, 211, 1)',
+        defalutColor: 'rgb(25, 50, 92)',
         loginName: '',
         MenuItems: [],
         tabValue: 'a',
@@ -140,8 +173,8 @@
             isCollapse: false
         },
         frameStyle: "minHeight:" + (window.innerHeight - 140) + "px;width:100%;",
-        styleColor: 'rgba(185, 211, 211, 1)',
-        textColor: '#2C3B3B',
+        styleColor: 'rgb(25, 50, 92)',
+        textColor: '#DBE7E7',
         predefineColors: [
             '#ff4500',
             '#ff8c00',
@@ -166,7 +199,7 @@
         computed: {
             iconStyle() {
                 return function () {
-                    return "color:" + vData.textColor + ";";
+                    return "color:" + vData.textColor + " !important;";
                 }
             }
         },
