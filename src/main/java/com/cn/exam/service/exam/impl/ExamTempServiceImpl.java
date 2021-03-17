@@ -191,7 +191,17 @@ public class ExamTempServiceImpl implements ExamTempService {
             examTestPersonDao.saveAndFlush(examTestPerson);
 
         }
+    }
 
+    /**
+     * @Desc 获取参考人列表
+     * @param planId
+     **/
+    @Override
+    public List<ExamTestPerson> getTestPerson(String planId) throws FzlException {
 
+        List<ExamTestPerson> list = examTestPersonDao.findbyPlanId(planId);
+
+        return list;
     }
 }

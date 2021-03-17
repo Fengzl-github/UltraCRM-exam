@@ -8,17 +8,20 @@ import com.cn.common.vo.ResResult;
 import com.cn.exam.dto.exam.*;
 import com.cn.exam.entity.exam.ExamPlan;
 import com.cn.exam.entity.exam.ExamTestPaper;
-import com.cn.exam.entity.exam.ExamTestQues;
+import com.cn.exam.entity.exam.ExamTestPerson;
 import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.entity.user.User;
 import com.cn.exam.mapper.exam.ExamTopicMapper;
 import com.cn.exam.service.exam.ExamPlanService;
 import com.cn.exam.service.exam.ExamTempService;
+import com.cn.exam.service.exam.ExamTestService;
 import com.cn.exam.service.exam.ExamTopicService;
 import com.cn.exam.service.excel.down.ExcelDownService;
 import com.cn.exam.service.excel.upload.ExcelUploadService;
 import com.cn.exam.service.user.UserService;
+import com.cn.exam.vo.exam.EditTestPersonVO;
 import com.cn.exam.vo.exam.ExamTopicVO;
+import com.cn.exam.vo.exam.TestPersonVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
@@ -56,6 +59,8 @@ public class ExamResful {
     private ExcelDownService excelDownService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ExamTestService examTestService;
 
 
     /**
@@ -321,10 +326,25 @@ public class ExamResful {
 
     /**
      * @Author fengzhilong
-     * @Desc  试卷预览
+     * @Desc 参考人员列表
+     * @Date 2021/3/12 15:01
+     * @param planId
+     * @return com.cn.common.vo.ResResult
+     **/
+    @PostMapping("/getTestPerson")
+    ResResult getTestPerson(String planId) {
+
+        List<ExamTestPerson> list = examTempService.getTestPerson(planId);
+
+        return ResCode.OK.setData(list);
+    }
+
+    /**
+     * @Author fengzhilong
+     * @Desc 试卷预览
      * @Date 2021/3/4 16:38
      * @param planId
-	 * @param paperId
+     * @param paperId
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/previewPaperData")
@@ -342,12 +362,43 @@ public class ExamResful {
 
     /*分配试卷*/
     @PostMapping("/allotPaper")
-    public ResResult allotPaper(String planId) throws FzlException{
+    public ResResult allotPaper(String planId) throws FzlException {
 
         examTempService.allotPaper(planId);
 
         return ResCode.OK.msg("操作成功");
     }
+
+    /*获取考生信息*/
+    @PostMapping("/getTestPersonInfo")
+    public ResResult getTestPersonInfo(@Validated @RequestBody TestPersonVO testPersonVO) throws FzlException {
+
+        TestPersonDTO testPersonDTO = examTestService.getTestPersonInfo(testPersonVO);
+
+        return ResCode.OK.msg("操作成功")
+                .setData(testPersonDTO);
+    }
+
+    /*编辑参考人员(移入/移出)*/
+
+    @PostMapping("/editTestPaperToPlan")
+    public ResResult editTestPaperToPlan(@Validated @RequestBody EditTestPersonVO editTestPersonVO) {
+        examTestService.editTestPaperToPlan(editTestPersonVO);
+
+        return ResCode.OK.msg("添加成功");
+    }
+
+
+
+
+    /*删除参考人员*/
+
+
+    /*获取试卷信息 - 同试卷预览*/
+
+
+    /*提交试卷*/
+
 
 
     /*考试结果*/

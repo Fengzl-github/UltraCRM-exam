@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>参考人员</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+</head>
+<body>
+<div id="vmApp" v-cloak>
+    <div id="vmLeft">
+        <el-card>
+            <span>参考人员</span>
+
+            <el-table ref="multipleTable" :data="testInfo" tooltip-effect="dark" style="width: 98%"
+                      @selection-change="testSelectChange">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="ghid" label="工号" width="120"></el-table-column>
+                <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+                <el-table-column prop="paperName" label="试卷名称"></el-table-column>
+            </el-table>
+        </el-card>
+
+    </div>
+    <div id="vmRight">
+        <el-card>
+            <span>选择人员</span>
+            <el-table ref="multipleTable" :data="userInfo" tooltip-effect="dark" style="width: 100%"
+                      @selection-change="userSelectChange">
+                <el-table-column type="selection" width="55"></el-table-column>
+                <el-table-column prop="name" label="工号" width="120"></el-table-column>
+                <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+            </el-table>
+        </el-card>
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript">
+
+    let vData = {
+        testInfo: [], //参考人员
+        userInfo: [], // 所有人员
+
+        testSelection: [],
+        userSelection: []
+    };
+
+    let vm = new Vue({
+        el: '#vmApp',
+        data: vData,
+        methods: {
+            toggleSelection(rows) {
+                if (rows) {
+                    rows.forEach(row => {
+                        this.$refs.multipleTable.toggleRowSelection(row);
+                    });
+                } else {
+                    this.$refs.multipleTable.clearSelection();
+                }
+            },
+            testSelectChange(val) {
+                this.testSelection = val;
+            },
+            userSelectChange(val) {
+                this.userSelection = val;
+            }
+        }
+    });
+
+    $(function () {
+        getData();
+    });
+
+    function getData() {
+        var planId = myUtil.fun_querystring("planId");
+        getTestPerson(planId);
+        findTestUserList(planId);
+    }
+
+    function getTestPerson(planId) {
+        let lJsonForm = {"planId": planId};
+        axios.post("/exam/getTestPerson", lJsonForm)
+            .then(function (response) {
+                console.log(response.data);
+                let lret = response.data;
+                vData.testInfo = lret.data;
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    }
+
+    function findTestUserList(planId) {
+        let lJsonForm = {"planId": planId};
+        axios.post("/exam/findTestUserList", lJsonForm)
+            .then(function (response) {
+                console.log(response.data);
+                let lret = response.data;
+                vData.userInfo = lret.data;
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    }
+
+</script>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+    #vmApp {
+        display: flex;
+        width: 98%;
+        height: 98%;
+    }
+
+    #vmLeft {
+        width: 50%;
+        height: 98%;
+    }
+
+    #vmRight {
+        width: 50%;
+        height: 98%;
+    }
+
+</style>
+</html>

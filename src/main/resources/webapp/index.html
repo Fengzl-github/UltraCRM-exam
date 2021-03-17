@@ -91,12 +91,12 @@
 
     function submitLogin() {
         // 验证验证码
-        let captchaCode = myUtil.getCookie('captchaCode');
+        /*let captchaCode = myUtil.getCookie('captchaCode');
         if (captchaCode != vData.form.captcha){
             vData.retInfo = "验证码错误";
             restCaptcha();
             return;
-        }
+        }*/
         if (myUtil.getLookie("save_pwd") == 1) {
             myUtil.setLookie("pwd", vData.form.pass, 24 * 30);
         } else {

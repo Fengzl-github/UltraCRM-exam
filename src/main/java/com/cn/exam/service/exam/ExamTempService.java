@@ -4,6 +4,7 @@ import com.cn.common.exception.FzlException;
 import com.cn.common.vo.ResResult;
 import com.cn.exam.dto.exam.ExamProdPaperDTO;
 import com.cn.exam.entity.exam.ExamTestPaper;
+import com.cn.exam.entity.exam.ExamTestPerson;
 import com.cn.exam.entity.exam.ExamTestQues;
 import org.springframework.validation.annotation.Validated;
 
@@ -31,4 +32,7 @@ public interface ExamTempService {
 
     /*分配试卷*/
     void allotPaper(String planId) throws FzlException;
+
+    /*参考人员列表*/
+    List<ExamTestPerson> getTestPerson(String planId) throws FzlException;
 }

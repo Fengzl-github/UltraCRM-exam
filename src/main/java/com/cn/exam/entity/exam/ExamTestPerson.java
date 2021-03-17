@@ -40,7 +40,7 @@ public class ExamTestPerson extends BaseIntIdEntity {
     @Column(columnDefinition = "varchar(64) NULL DEFAULT NULL COMMENT '提交试卷时间'")
     private String submitTime;
     @Column(columnDefinition = "double(5,1) COMMENT '考试总分'")
-    private double totalScore;
+    private Double totalScore;
     @Column(columnDefinition = "varchar(64) NULL DEFAULT NULL COMMENT '考试用时'")
     private String usedTime;
 }

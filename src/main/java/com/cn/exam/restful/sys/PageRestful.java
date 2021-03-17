@@ -54,4 +54,10 @@ public class PageRestful {
     public String previewPaper() {
         return "exam/previewPaper";
     }
+
+    /*参加考试的人员管理*/
+    @GetMapping("/exam/testPerson")
+    public String testPerson() {
+        return "exam/testPerson";
+    }
 }

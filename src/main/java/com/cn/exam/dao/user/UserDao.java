@@ -14,4 +14,6 @@ import org.springframework.stereotype.Repository;
 public interface UserDao extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
     User findByGhidAndPass(String ghid, String pass);
+
+    User findByGhid(String ghid);
 }

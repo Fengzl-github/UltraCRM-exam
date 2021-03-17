@@ -182,7 +182,7 @@
         <div v-if="EditDrawer.flag == 1">
             <div id="editHead">
                 <el-button-group>
-                    <el-button type="primary" href="">添加人员</el-button>
+                    <el-button type="primary" @click="addPerson">添加人员</el-button>
                 </el-button-group>
             </div>
             <el-table :height="tableHeight" :data="paperData" stripe border highlight-current-row style="width: 98%">
@@ -280,7 +280,8 @@
             examPaperInfo,
             updatePlanStatus,
             updateIsUsed,
-            previewPaper
+            previewPaper,
+            addPerson
         }
     });
 
@@ -414,6 +415,11 @@
     function previewPaper(idx, row) {
         var vUrl = "page/exam/previewPaper?planId=" + row.planId + "&paperId=" + row.paperId + "&paperName=" + row.paperName;
         win_openNoBtn(vUrl, '预览试卷', window.screen.width - 50, window.screen.height - 200, true);
+    }
+
+    function addPerson() {
+        var vUrl = "page/exam/testPerson?planId=" + vData.paperData[0].planId;
+        win_openNoBtn(vUrl, '添加人员', 1500, 700, true);
     }
 
 

@@ -66,34 +66,9 @@
         </el-header>
         <el-container>
             <el-aside :width="asideStyle.asidewidth">
-                <!--                <tree-menu :list="MenuItems"></tree-menu>-->
                 <el-menu :collapse="asideStyle.isCollapse" :collapse-transition="false" :background-color="styleColor"
                          :text-color="textColor" active-text-color="#ffd04b" style="height:100%;">
                     <tree-menu :list="MenuItems" :iconStyle="iconStyle()"></tree-menu>
-                    <!--<template v-for="item in MenuItems">
-                        <template v-if="item.children">
-                            <el-submenu :index="item.id" :key="item.id">
-                                <template slot="title">
-                                    <i :class="item.icon" :style="iconStyle()"></i>
-                                    <span :title="item.title">{{ item.title }}</span>
-                                </template>
-                                <template v-for="subItem2 in item.children">
-                                    <el-menu-item :index="subItem2.id" :key="subItem2.id"
-                                                  @click="addTab(subItem2.id, subItem2.title, subItem2.url)">
-                                        <i :class="item.icon" :style="iconStyle()"></i>
-                                        <span :title="subItem2.title">{{ subItem2.title }}</span>
-                                    </el-menu-item>
-                                </template>
-                            </el-submenu>
-                        </template>
-                        <template v-else>
-                            <el-menu-item :index="item.id" :key="item.id"
-                                          @click="addTab(item.id, item.title, item.url)">
-                                <i :class="item.icon" :style="iconStyle()"></i>
-                                <span :title="item.title">{{ item.title }}</span>
-                            </el-menu-item>
-                        </template>
-                    </template>-->
                 </el-menu>
             </el-aside>
             <el-main>
