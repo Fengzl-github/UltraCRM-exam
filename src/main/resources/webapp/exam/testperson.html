@@ -17,8 +17,10 @@
     <div id="vmLeft">
         <el-card>
             <span>参考人员</span>
-
-            <el-table ref="multipleTable" :data="testInfo" tooltip-effect="dark" style="width: 98%"
+            <el-row>
+                <el-button type="primary" size="small" @click="editPerson(2)">删除</el-button>
+            </el-row>
+            <el-table ref="multipleTest" :data="testInfo" tooltip-effect="dark" style="width: 98%"
                       @selection-change="testSelectChange">
                 <el-table-column type="selection" width="55"></el-table-column>
                 <el-table-column prop="ghid" label="工号" width="120"></el-table-column>
@@ -31,7 +33,10 @@
     <div id="vmRight">
         <el-card>
             <span>选择人员</span>
-            <el-table ref="multipleTable" :data="userInfo" tooltip-effect="dark" style="width: 100%"
+            <el-row>
+                <el-button type="primary" size="small" @click="editPerson(1)">添加</el-button>
+            </el-row>
+            <el-table ref="multipleUser" :data="userInfo" tooltip-effect="dark" style="width: 100%"
                       @selection-change="userSelectChange">
                 <el-table-column type="selection" width="55"></el-table-column>
                 <el-table-column prop="name" label="工号" width="120"></el-table-column>
@@ -46,6 +51,7 @@
 <script type="text/javascript">
 
     let vData = {
+        planId: '',
         testInfo: [], //参考人员
         userInfo: [], // 所有人员
 
@@ -57,36 +63,32 @@
         el: '#vmApp',
         data: vData,
         methods: {
-            toggleSelection(rows) {
-                if (rows) {
-                    rows.forEach(row => {
-                        this.$refs.multipleTable.toggleRowSelection(row);
-                    });
-                } else {
-                    this.$refs.multipleTable.clearSelection();
-                }
-            },
             testSelectChange(val) {
-                this.testSelection = val;
+                vm.testSelection = val;
+                console.log("删除选择：",val)
             },
             userSelectChange(val) {
-                this.userSelection = val;
+                vm.userSelection = val;
+                console.log("添加选择：",val)
+            },
+            editPerson(flag){
+                editTestPaperToPlan(flag);
             }
         }
     });
 
     $(function () {
+        vm.planId = myUtil.fun_querystring("planId");
         getData();
     });
 
     function getData() {
-        var planId = myUtil.fun_querystring("planId");
-        getTestPerson(planId);
-        findTestUserList(planId);
+        getTestPerson();
+        findTestUserList();
     }
 
-    function getTestPerson(planId) {
-        let lJsonForm = {"planId": planId};
+    function getTestPerson() {
+        let lJsonForm = {"planId": vData.planId};
         axios.post("/exam/getTestPerson", lJsonForm)
             .then(function (response) {
                 console.log(response.data);
@@ -98,13 +100,32 @@
             })
     }
 
-    function findTestUserList(planId) {
-        let lJsonForm = {"planId": planId};
+    function findTestUserList() {
+        let lJsonForm = {"planId": vm.planId};
         axios.post("/exam/findTestUserList", lJsonForm)
             .then(function (response) {
                 console.log(response.data);
                 let lret = response.data;
                 vData.userInfo = lret.data;
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    }
+    //添加或删除
+    function editTestPaperToPlan(flag) {
+        let lJsonForm = {"planId": vm.planId, "flag":flag};
+        let lJson = JSON.parse(lJsonForm);
+        if (flag == 1){
+            lJson.put("selectMul", vm.userSelection);
+        }else if (flag == 2){
+            lJson.put("selectMul", vm.testSelection);
+        }
+        axios.post("/exam/findTestUserList", lJsonForm)
+            .then(function (response) {
+                console.log(response.data);
+                let lret = response.data;
+                myEl.elAlert(lret.code,lret.msg);
             })
             .catch(function (error) {
                 console.log(error);
