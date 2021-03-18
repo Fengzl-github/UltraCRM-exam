@@ -8,6 +8,7 @@ import com.cn.exam.dao.exam.ExamPlanDao;
 import com.cn.exam.dao.exam.ExamTestPersonDao;
 import com.cn.exam.dao.user.UserDao;
 import com.cn.exam.dto.exam.TestPersonDTO;
+import com.cn.exam.dto.login.UserDTO;
 import com.cn.exam.entity.exam.ExamPlan;
 import com.cn.exam.entity.exam.ExamTestPerson;
 import com.cn.exam.entity.user.User;
@@ -97,27 +98,25 @@ public class ExamTestServiceImpl implements ExamTestService {
     public void editTestPaperToPlan(EditTestPersonVO editTestPersonVO) throws FzlException {
 
         //1. 获取要操作的ghid
-        String selMuls = editTestPersonVO.getSelectMul();
+        List<UserDTO> selectMul = editTestPersonVO.getSelectMul();
         //2. 获取操作类型 1-添加 2-删除
         Integer flag = editTestPersonVO.getFlag();
         //3. 执行编辑
-        String[] ghids = selMuls.split(",");
-        for (String ghid : ghids) {
+        for (UserDTO userDTO : selectMul) {
             if (flag == 1) {
                 // 执行添加操作
                 ExamPlan examPlan = examPlanDao.findByPlanId(editTestPersonVO.getPlanId());
-                User user = userDao.findByGhid(ghid);
 
                 ExamTestPerson examTestPerson = new ExamTestPerson();
                 examTestPerson.setPlanId(examPlan.getPlanId());
                 examTestPerson.setPlanName(examPlan.getPlanName());
-                examTestPerson.setGhid(user.getGhid());
-                examTestPerson.setName(user.getName());
+                examTestPerson.setGhid(userDTO.getGhid());
+                examTestPerson.setName(userDTO.getName());
 
                 examTestPersonDao.saveAndFlush(examTestPerson);
             } else if (flag == 2) {
                 // 执行删除操作
-                examTestPersonDao.removePerson(editTestPersonVO.getPlanId(), ghid);
+                examTestPersonDao.removePerson(editTestPersonVO.getPlanId(), userDTO.getGhid());
             }
         }
 

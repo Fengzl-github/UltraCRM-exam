@@ -18,6 +18,7 @@
         <el-card>
             <span>参考人员</span>
             <el-row>
+                <el-button type="primary" size="small" @click="allotPaper">分配试卷</el-button>
                 <el-button type="primary" size="small" @click="editPerson(2)">删除</el-button>
             </el-row>
             <el-table ref="multipleTest" :data="testInfo" tooltip-effect="dark" style="width: 98%"
@@ -39,7 +40,7 @@
             <el-table ref="multipleUser" :data="userInfo" tooltip-effect="dark" style="width: 100%"
                       @selection-change="userSelectChange">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="name" label="工号" width="120"></el-table-column>
+                <el-table-column prop="ghid" label="工号" width="120"></el-table-column>
                 <el-table-column prop="name" label="姓名" width="120"></el-table-column>
             </el-table>
         </el-card>
@@ -65,14 +66,25 @@
         methods: {
             testSelectChange(val) {
                 vm.testSelection = val;
-                console.log("删除选择：",val)
             },
             userSelectChange(val) {
                 vm.userSelection = val;
-                console.log("添加选择：",val)
             },
             editPerson(flag){
                 editTestPaperToPlan(flag);
+            },
+            allotPaper(){
+                let lJsonForm = {"planId": vData.planId};
+                axios.post("/exam/allotPaper", lJsonForm)
+                    .then(function (response) {
+                        console.log(response.data);
+                        let lret = response.data;
+                        myEl.elAlert(lret.code,lret.msg);
+                        getData();
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    })
             }
         }
     });
@@ -115,17 +127,16 @@
     //添加或删除
     function editTestPaperToPlan(flag) {
         let lJsonForm = {"planId": vm.planId, "flag":flag};
-        let lJson = JSON.parse(lJsonForm);
         if (flag == 1){
-            lJson.put("selectMul", vm.userSelection);
+            lJsonForm.selectMul= vm.userSelection;
         }else if (flag == 2){
-            lJson.put("selectMul", vm.testSelection);
+            lJsonForm.selectMul = vm.testSelection;
         }
-        axios.post("/exam/findTestUserList", lJsonForm)
+        axios.post("/exam/editTestPaperToPlan", lJsonForm)
             .then(function (response) {
-                console.log(response.data);
                 let lret = response.data;
                 myEl.elAlert(lret.code,lret.msg);
+                getData();
             })
             .catch(function (error) {
                 console.log(error);

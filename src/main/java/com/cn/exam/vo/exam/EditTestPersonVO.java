@@ -1,11 +1,13 @@
 package com.cn.exam.vo.exam;
 
+import com.cn.exam.dto.login.UserDTO;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  *@Author fengzhilong
@@ -16,8 +18,7 @@ import javax.validation.constraints.NotNull;
 public class EditTestPersonVO {
 
     /*选择的ghid*/
-    @NotBlank(message = "先选择要操作的数据")
-    private String selectMul;
+    private List<UserDTO> selectMul;
     @NotBlank(message = "缺少计划id")
     private String planId;
     /*操作标记 1-添加 2-删除*/

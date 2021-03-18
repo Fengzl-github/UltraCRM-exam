@@ -391,9 +391,6 @@ public class ExamResful {
 
 
 
-    /*删除参考人员*/
-
-
     /*获取试卷信息 - 同试卷预览*/
 
 
