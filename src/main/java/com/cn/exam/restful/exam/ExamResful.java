@@ -360,16 +360,13 @@ public class ExamResful {
 
     }
 
-    /*分配试卷*/
-    @PostMapping("/allotPaper")
-    public ResResult allotPaper(String planId) throws FzlException {
-
-        examTempService.allotPaper(planId);
-
-        return ResCode.OK.msg("操作成功");
-    }
-
-    /*获取考生信息*/
+    /**
+     * @Author fengzhilong
+     * @Desc  获取考生信息
+     * @Date 2021/3/18 16:21
+     * @param testPersonVO
+     * @return com.cn.common.vo.ResResult
+     **/
     @PostMapping("/getTestPersonInfo")
     public ResResult getTestPersonInfo(@Validated @RequestBody TestPersonVO testPersonVO) throws FzlException {
 
@@ -379,8 +376,13 @@ public class ExamResful {
                 .setData(testPersonDTO);
     }
 
-    /*编辑参考人员(移入/移出)*/
-
+    /**
+     * @Author fengzhilong
+     * @Desc  编辑参考人员(移入/移出)
+     * @Date 2021/3/18 16:21
+     * @param editTestPersonVO
+     * @return com.cn.common.vo.ResResult
+     **/
     @PostMapping("/editTestPaperToPlan")
     public ResResult editTestPaperToPlan(@Validated @RequestBody EditTestPersonVO editTestPersonVO) {
         examTestService.editTestPaperToPlan(editTestPersonVO);
@@ -388,7 +390,20 @@ public class ExamResful {
         return ResCode.OK.msg("添加成功");
     }
 
+    /**
+     * @Author fengzhilong
+     * @Desc  分配试卷
+     * @Date 2021/3/18 16:22
+     * @param planId
+     * @return com.cn.common.vo.ResResult
+     **/
+    @PostMapping("/allotPaper")
+    public ResResult allotPaper(String planId) throws FzlException {
 
+        examTempService.allotPaper(planId);
+
+        return ResCode.OK.msg("操作成功");
+    }
 
 
     /*获取试卷信息 - 同试卷预览*/
