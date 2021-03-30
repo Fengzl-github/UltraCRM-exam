@@ -5,7 +5,6 @@ import com.cn.common.vo.ResResult;
 import com.cn.exam.dto.exam.ExamProdPaperDTO;
 import com.cn.exam.entity.exam.ExamTestPaper;
 import com.cn.exam.entity.exam.ExamTestPerson;
-import com.cn.exam.entity.exam.ExamTestQues;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;

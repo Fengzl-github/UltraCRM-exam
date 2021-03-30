@@ -7,6 +7,7 @@ import com.cn.common.utils.MyString;
 import com.cn.exam.dao.exam.ExamPlanDao;
 import com.cn.exam.dao.exam.ExamTestPersonDao;
 import com.cn.exam.dao.user.UserDao;
+import com.cn.exam.dto.exam.TestInfoDTO;
 import com.cn.exam.dto.exam.TestPersonDTO;
 import com.cn.exam.dto.login.UserDTO;
 import com.cn.exam.entity.exam.ExamPlan;
@@ -15,6 +16,7 @@ import com.cn.exam.entity.user.User;
 import com.cn.exam.service.exam.ExamTestService;
 import com.cn.exam.vo.exam.EditTestPersonVO;
 import com.cn.exam.vo.exam.TestPersonVO;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -119,7 +121,21 @@ public class ExamTestServiceImpl implements ExamTestService {
                 examTestPersonDao.removePerson(editTestPersonVO.getPlanId(), userDTO.getGhid());
             }
         }
+    }
 
+    /**
+     * @Author fengzhilong
+     * @Desc  获取考试信息
+     * @Date 2021/3/30 10:14
+     * @param planId
+	 * @param ghid
+     * @return org.springframework.data.domain.Page<com.cn.exam.dto.exam.TestInfoDTO>
+     **/
+    @Override
+    public TestInfoDTO getTestInfo(String planId, String ghid) throws FzlException {
 
+        TestInfoDTO testInfo = examTestPersonDao.getTestInfo(planId, ghid);
+
+        return testInfo;
     }
 }

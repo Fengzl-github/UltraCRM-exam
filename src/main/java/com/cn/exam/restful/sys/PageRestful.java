@@ -60,4 +60,10 @@ public class PageRestful {
     public String testPerson() {
         return "exam/testPerson";
     }
+
+    /*参考人列表*/
+    @GetMapping("/exam/personlist")
+    public String personlist() {
+        return "exam/personlist";
+    }
 }

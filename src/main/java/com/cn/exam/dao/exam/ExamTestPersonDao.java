@@ -1,5 +1,6 @@
 package com.cn.exam.dao.exam;
 
+import com.cn.exam.dto.exam.TestInfoDTO;
 import com.cn.exam.entity.exam.ExamTestPerson;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -36,4 +37,20 @@ public interface ExamTestPersonDao extends JpaRepository<ExamTestPerson, Integer
     @Modifying
     @Query("delete from ExamTestPerson ep where ep.planId = :planId and ep.ghid = :ghid")
     void removePerson(@Param("planId") String planId, @Param("ghid") String ghid);
+
+
+    /**
+     * @Author fengzhilong
+     * @Desc  获取考试信息
+     * @Date 2021/3/30 10:52
+     * @param planId
+	 * @param ghid
+     * @return com.cn.exam.dto.exam.TestInfoDTO
+     **/
+    @Query("select new com.cn.exam.dto.exam.TestInfoDTO(ps,ep,tp) from ExamTestPerson ps " +
+            "left join ExamPlan ep on ep.planId = ps.planId and ep.isDel = 0 " +
+            "left join ExamTestPaper tp on tp.paperId = ps.paperId and tp.isDel = 0 " +
+            "where 1=1 " +
+            "and ps.planId = :planId and ps.ghid = :ghid ")
+    TestInfoDTO getTestInfo(@Param("planId") String planId, @Param("ghid") String ghid);
 }

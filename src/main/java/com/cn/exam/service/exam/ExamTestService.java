@@ -1,10 +1,13 @@
 package com.cn.exam.service.exam;
 
 import com.cn.common.exception.FzlException;
+import com.cn.exam.dto.exam.TestInfoDTO;
 import com.cn.exam.dto.exam.TestPersonDTO;
 import com.cn.exam.vo.exam.EditTestPersonVO;
 import com.cn.exam.vo.exam.TestPersonVO;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 /**
  *@Author fengzhilong
@@ -19,4 +22,7 @@ public interface ExamTestService {
 
     /*编辑参考人*/
     void editTestPaperToPlan(EditTestPersonVO editTestPersonVO) throws FzlException;
+
+    /*获取考试信息*/
+    TestInfoDTO getTestInfo(String planId, String ghid) throws FzlException;
 }

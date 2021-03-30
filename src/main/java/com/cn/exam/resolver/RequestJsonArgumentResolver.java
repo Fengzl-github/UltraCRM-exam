@@ -3,6 +3,7 @@ package com.cn.exam.resolver;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.cn.common.utils.MyString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -29,8 +30,35 @@ import java.util.Map;
  *@Date 2021/1/7 17:00
  *@Desc
  **/
+@Slf4j
 public class RequestJsonArgumentResolver extends AbstractNamedValueMethodArgumentResolver implements UriComponentsContributor {
 
+
+    /**
+     * @Author fengzhilong 
+     * @Desc  用于判定是否需要处理该参数分解
+     *        没有注解或者有RequestJson注解要分解
+     * @Date 2021/3/26 15:43
+     * @param parameter 
+     * @return boolean true-需要，并执行下面的resolveName
+     **/
+    @Override
+    public boolean supportsParameter(MethodParameter parameter) {
+        log.info("【ParameterAnnotations是否为null】-> {}",parameter.getParameterAnnotations() == null);
+        log.info("【ParameterAnnotations是否长度为0】-> {}",parameter.getParameterAnnotations().length == 0);
+        log.info("【ParameterAnnotations是否有RequestJson注解】-> {}",parameter.hasParameterAnnotation(RequestJson.class));
+
+        return parameter.getParameterAnnotations() == null
+                || parameter.getParameterAnnotations().length == 0
+                || parameter.hasParameterAnnotation(RequestJson.class);
+    }
+
+    @Override
+    protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) {
+        RequestJson ann = parameter.getParameterAnnotation(RequestJson.class);
+        log.info("【RequestJson注解参数】-> {}", JSONObject.toJSONString(ann));
+        return (ann != null ? new RequestJsonNamedValueInfo(ann) : new RequestJsonNamedValueInfo());
+    }
 
     @Override
     protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception {
@@ -111,18 +139,9 @@ public class RequestJsonArgumentResolver extends AbstractNamedValueMethodArgumen
 
 
 
-    @Override
-    public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterAnnotations() == null
-                || parameter.getParameterAnnotations().length == 0
-                || parameter.hasParameterAnnotation(RequestJson.class);
-    }
+    
 
-    @Override
-    protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) {
-        RequestJson ann = parameter.getParameterAnnotation(RequestJson.class);
-        return (ann != null ? new RequestJsonNamedValueInfo(ann) : new RequestJsonNamedValueInfo());
-    }
+
 
     @Override
     protected void handleMissingValue(String name, MethodParameter parameter, NativeWebRequest request) throws Exception {

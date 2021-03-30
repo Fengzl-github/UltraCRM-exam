@@ -408,6 +408,22 @@ public class ExamResful {
 
     /*获取试卷信息 - 同试卷预览*/
 
+    /**
+     * @Author fengzhilong
+     * @Desc  获取考试信息
+     * @Date 2021/3/30 10:56
+     * @param planId
+	 * @param ghid
+     * @return
+     **/
+    @GetMapping("/getTestInfo")
+    public ResResult getTestInfo(@NotBlank(message = "缺少计划id") String planId, @NotBlank(message = "缺少工号") String ghid){
+
+        TestInfoDTO testInfo = examTestService.getTestInfo(planId, ghid);
+
+        return ResCode.OK.setData(testInfo);
+    }
+
 
     /*提交试卷*/
 
