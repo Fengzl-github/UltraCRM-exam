@@ -1,6 +1,7 @@
 package com.cn.exam.service.exam;
 
 import com.cn.common.exception.FzlException;
+import com.cn.exam.dto.exam.PersonTestingDTO;
 import com.cn.exam.dto.exam.TestInfoDTO;
 import com.cn.exam.dto.exam.TestPersonDTO;
 import com.cn.exam.vo.exam.EditTestPersonVO;
@@ -25,4 +26,7 @@ public interface ExamTestService {
 
     /*获取考试信息*/
     TestInfoDTO getTestInfo(String planId, String ghid) throws FzlException;
+
+    /*提交试卷*/
+    void submitPage(PersonTestingDTO personTestingDTO) throws FzlException;
 }

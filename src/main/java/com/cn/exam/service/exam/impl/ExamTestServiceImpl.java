@@ -6,17 +6,19 @@ import com.cn.common.utils.DateTime;
 import com.cn.common.utils.MyString;
 import com.cn.exam.dao.exam.ExamPlanDao;
 import com.cn.exam.dao.exam.ExamTestPersonDao;
+import com.cn.exam.dao.exam.ExamTestResultDao;
 import com.cn.exam.dao.user.UserDao;
+import com.cn.exam.dto.exam.PersonTestingDTO;
 import com.cn.exam.dto.exam.TestInfoDTO;
 import com.cn.exam.dto.exam.TestPersonDTO;
 import com.cn.exam.dto.login.UserDTO;
 import com.cn.exam.entity.exam.ExamPlan;
 import com.cn.exam.entity.exam.ExamTestPerson;
-import com.cn.exam.entity.user.User;
+import com.cn.exam.entity.exam.ExamTestResult;
 import com.cn.exam.service.exam.ExamTestService;
 import com.cn.exam.vo.exam.EditTestPersonVO;
 import com.cn.exam.vo.exam.TestPersonVO;
-import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -39,6 +41,8 @@ public class ExamTestServiceImpl implements ExamTestService {
     private ExamPlanDao examPlanDao;
     @Resource
     private ExamTestPersonDao examTestPersonDao;
+    @Resource
+    private ExamTestResultDao examTestResultDao;
     @Resource
     private UserDao userDao;
 
@@ -125,10 +129,10 @@ public class ExamTestServiceImpl implements ExamTestService {
 
     /**
      * @Author fengzhilong
-     * @Desc  获取考试信息
+     * @Desc 获取考试信息
      * @Date 2021/3/30 10:14
      * @param planId
-	 * @param ghid
+     * @param ghid
      * @return org.springframework.data.domain.Page<com.cn.exam.dto.exam.TestInfoDTO>
      **/
     @Override
@@ -137,5 +141,45 @@ public class ExamTestServiceImpl implements ExamTestService {
         TestInfoDTO testInfo = examTestPersonDao.getTestInfo(planId, ghid);
 
         return testInfo;
+    }
+
+    /**
+     * @Author fengzhilong
+     * @Desc 提交试卷
+     * @Date 2021/4/6 16:34
+     * @param personTestingDTO
+     * @return void
+     **/
+    @Override
+    public void submitPage(PersonTestingDTO personTestingDTO) throws FzlException {
+
+        System.out.println(personTestingDTO);
+        // 1.获取考试信息
+        ExamPlan examPlan = examPlanDao.findByPlanId(personTestingDTO.getPlanId());
+        ExamTestPerson examTestPerson = examTestPersonDao.findByPlanIdAndGhid(personTestingDTO.getPlanId(), personTestingDTO.getGhid());
+        // 2.修改答卷状态
+        examTestPerson.setTestStatus(2);
+        examTestPerson.setSubmitTime(DateTime.date2Str(new Date()));
+        examTestPerson.setUsedTime(String.valueOf(examPlan.getTestTime() - personTestingDTO.getUseTime()));
+
+        // 2.答案 - 评分
+        double score = 0.0;
+        List<ExamTestResult> personEp = personTestingDTO.getPersonEp();
+        for (ExamTestResult epResult : personEp) {
+            epResult.setGhid(examTestPerson.getGhid());
+            epResult.setName(examTestPerson.getName());
+            epResult.setPaperId(examTestPerson.getPaperId());
+            epResult.setPaperName(examTestPerson.getPaperName());
+            if (epResult.getCorrectAnswer().equals(epResult.getEpReplay())){
+                epResult.setEpScore(epResult.getTopicScore());
+            }
+            score += epResult.getEpScore();
+
+            examTestResultDao.saveAndFlush(epResult);
+        }
+        examTestPerson.setTotalScore(score);
+
+        // 3.保存结果
+        examTestPersonDao.saveAndFlush(examTestPerson);
     }
 }

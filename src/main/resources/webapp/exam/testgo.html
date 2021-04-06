@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>参加考试</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_open.js"></script>
+    <script type="text/javascript" src="/common/dialog/lhgdialog.js?self=false&skin=idialog"></script>
+</head>
+<body>
+<div id="appVM" v-cloak>
+    <el-card>
+        <div>
+            <el-form :inline="true" :model="queryForm" class="demo-form-inline">
+                <el-form-item label="计划名称">
+                    <el-input v-model="queryForm.planName" placeholder="请输入计划名称"></el-input>
+                </el-form-item>
+                <el-form-item label="状态">
+                    <el-select v-model="queryForm.status" placeholder="请选择">
+                        <el-option v-for="item in statusOptions"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="queryUser">查询</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="resetQuery">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+        <el-table :height="tableHeight" :data="tableData" stripe border highlight-current-row style="width: 98%">
+            <el-table-column type="index" width="50">
+            </el-table-column>
+            <el-table-column prop="planName" label="计划名称"></el-table-column>
+            <el-table-column prop="testStartTime" label="考试开始时间"></el-table-column>
+            <el-table-column prop="testEndTime" label="考试结束时间"></el-table-column>
+            <el-table-column prop="testTime" label="考试时长(分)"></el-table-column>
+            <el-table-column prop="testForm" label="考试形式">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.testForm == 0">闭卷</span>
+                    <span v-if="scope.row.testForm == 1">开卷</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="testType" label="发卷类型">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.testForm == 0">随机</span>
+                    <span v-if="scope.row.testForm == 1">轮询</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="status" label="计划状态">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.status == 0">未发布</span>
+                    <span v-if="scope.row.status == 1">已发布</span>
+                    <span v-if="scope.row.status == 2">待公布</span>
+                    <span v-if="scope.row.status == 3">已公布</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="operator" label="创建人"></el-table-column>
+            <el-table-column label="操作" width="350">
+                <template slot-scope="scope">
+                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row,0)">参加考试</el-button>
+                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row,1)">查看成绩</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination
+                background
+                :page-sizes="[10, 50, 100, 200]"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :page-size="pageable.size"
+                :current-page.sync="pageable.page"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pageable.total">
+        </el-pagination>
+    </el-card>
+    <!--edit页面 抽屉-->
+    <el-drawer ref="drawer" :visible.sync="EditDrawer.drawer" direction="rtl"
+               destroy-on-close="true"
+               custom-class="demo-drawer" :show-close="false" size="80%">
+        <el-card class="box-card">
+            <div slot="header" style="text-align:center;">
+                <h2>考试信息</h2>
+            </div>
+            <div v-if="EditForm=={}">
+                <h3>当前试卷没您的考试信息,不能参加考试!
+                    <br>
+                    请您找考官去重新给您分派试卷即可!</h3>
+            </div>
+            <div v-else>
+                <el-row>
+                    <el-button icon="el-icon-arrow-right">考生工号：</el-button>
+                    <span class="examStyle">{{EditForm.ghid}}</span>
+
+                    <br><br>
+                    <el-button icon="el-icon-arrow-right">考生姓名：</el-button>
+                    <span class="examStyle">{{EditForm.name}}</span>
+
+                    <br><br>
+                    <el-button icon="el-icon-arrow-right">试卷名称：</el-button>
+                    <span class="examStyle">{{EditForm.paperName}}</span>
+
+                    <br><br>
+                    <el-button icon="el-icon-arrow-right">考试时长：</el-button>
+                    <span class="examStyle">{{EditForm.testTime}} 分钟</span>
+
+                    <br><br>
+                    <el-button icon="el-icon-arrow-right">考试形式：</el-button>
+                    <span class="examStyle">{{EditForm.testForm}} </span>
+                </el-row>
+                <br>
+                <div style="text-align: center;font-size:18px;">
+                    <el-button type="success" round v-show="EditForm.testStatus==1 && EditForm.sDateType==0" @click="startGoTest">开始考试</el-button>
+                    <span v-if="EditForm.testStatus!=1" style="color:red;">您已经作答结束，不能再次考试！</span>
+                    <span v-else-if="EditForm.sDateType==1" style="color:red;">还未到考试开始日期，您不能进入考试! 请耐心等待！</span>
+                    <span v-else-if="EditForm.sDateType==2" style="color:red;">考试结束日期已过， 您不能进入考试！ </span>
+                </div>
+                <br>
+                <div class="divRead">
+                    <span style="font-size: large;">考前必读：</span><br /><br />
+                    · 如果你已经准备好了，就点击“开始考试”按钮即进入考场，开始计时。
+                    <br />
+                    <br />
+                    · 考试过程中会在试卷的右侧会显示倒计时，您可以随时查看考试剩余时间。
+                    <br />
+                    <br />
+                    · 当完成试卷后，可以点击“提交交卷”按钮结束考试。<br />
+                </div>
+            </div>
+
+        </el-card>
+    </el-drawer>
+</div>
+</body>
+<script>
+
+    let vData = {
+        tableHeight: $(document).height() - 150,
+        queryForm: {
+            planName: '',
+            status: ''
+        },
+        tableData: [],
+        pageable: {
+            size: 10,
+            page: 1,
+            total: 0
+        },
+        EditDrawer: {
+            drawer: false
+        },
+        EditForm: {},
+        testFormOptions: [{
+            value: 0,
+            label: '闭卷'
+        }, {
+            value: 1,
+            label: '开卷'
+        }],
+        testTypeOptions: [{
+            value: 0,
+            label: '随机'
+        }, {
+            value: 1,
+            label: '轮询'
+        }],
+        statusOptions: [{
+            value: 0,
+            label: '未发布'
+        }, {
+            value: 1,
+            label: '已发布'
+        }, {
+            value: 2,
+            label: '待公布'
+        }, {
+            value: 3,
+            label: '已公布'
+        }]
+
+    };
+
+    let vm = new Vue({
+        el: '#appVM',
+        data: vData,
+        method: {
+            queryUser,
+            resetQuery,
+            handleEdit,
+            handleSizeChange,
+            handleCurrentChange,
+            startGoTest
+        }
+    });
+
+    $(function () {
+        getData();
+    });
+
+    function getData() {
+        let lJsonData = vData.queryForm;
+        lJsonData.pageable = vData.pageable;
+        lJsonData.status = 1;
+        axios.post("/exam/listExamPlanPage", lJsonData)
+            .then(function (response) {
+                let lret = response.data;
+                console.log(lret);
+                vData.tableData = lret.data.content;
+                vData.pageable.total = lret.data.total;
+            })
+            .catch(function (error) {
+
+            });
+
+    }
+
+    function queryUser() {
+        vData.pageable.page = 1;
+        getData();
+    }
+
+    function resetQuery() {
+        vData.queryForm.planName = '';
+        vData.queryForm.status = '';
+    }
+
+    function handleEdit(idx, row, flag) {
+        vData.EditDrawer.drawer = true;
+        if (flag == 0){
+            //获取考试信息
+            getTestInfo(row.planId);
+        }else {
+            //跳转到查看成绩页面
+        }
+    }
+
+    function handleSizeChange(val) {
+        vData.pageable.page = 1;
+        vData.pageable.size = val;
+        getData();
+    }
+
+    function handleCurrentChange(val) {
+        getData();
+    }
+
+    function getTestInfo(planId){
+        var ghid = myUtil.getAccountPwd();
+        let lJsonData = {"planId":planId, "ghid":ghid};
+        lJsonData = {'params':lJsonData};
+        axios.get("/exam/getTestInfo", lJsonData)
+            .then(function (response) {
+                let lret = response.data;
+                console.log(lret);
+                vData.EditForm = lret.data;
+            })
+            .catch(function (error) {
+
+            });
+    }
+    
+    function startGoTest() {
+
+        var vUrl = "page/exam/persontesting.html?planId=" + vData.EditForm.planId + "&paperId=" + vData.EditForm.paperId + "&paperName=" + vData.EditForm.paperName;
+        win_openNoBtn(vUrl, '考试', window.screen.width - 50, window.screen.height - 200, false);
+        console.log("开始考试");
+    }
+
+</script>
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+    .myInput {
+        width: 219px;
+    }
+
+    .myText {
+        width: 500px;
+    }
+
+    .headLabel {
+        text-align: center;
+        font-size: 22px;
+        padding: 1px 0 34px 0;
+    }
+
+    .examStyle {
+        font-size: larger;
+        font-weight: bold;
+        padding-left: 20px;
+    }
+
+    .divRead {
+        padding: 20px 10px;
+        background-color: rgba(128, 128, 128, 0.07);
+
+    }
+
+
+</style>
+</html>

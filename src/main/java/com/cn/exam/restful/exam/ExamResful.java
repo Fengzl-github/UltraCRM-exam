@@ -426,6 +426,13 @@ public class ExamResful {
 
 
     /*提交试卷*/
+    @PostMapping("/submitPage")
+    public ResResult submitPage(@Validated @RequestBody PersonTestingDTO personTestingDTO){
+
+        examTestService.submitPage(personTestingDTO);
+
+        return ResCode.OK;
+    }
 
 
 

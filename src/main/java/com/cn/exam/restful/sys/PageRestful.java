@@ -66,4 +66,16 @@ public class PageRestful {
     public String personlist() {
         return "exam/personlist";
     }
+
+    /*参加考试*/
+    @GetMapping("/exam/testgo")
+    public String testgo() {
+        return "exam/testgo";
+    }
+
+    /*考试*/
+    @GetMapping("/exam/persontesting")
+    public String persontesting() {
+        return "exam/persontesting";
+    }
 }
