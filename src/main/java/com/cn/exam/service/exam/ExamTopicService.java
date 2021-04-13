@@ -19,14 +19,14 @@ import java.util.List;
 public interface ExamTopicService {
 
     /*题库列表*/
-    Page<ExamTopic> listExamTopicPage(ExamTopicDTO examTopicDTO, JsonPage pageable) throws FzlException;
+    Page<ExamTopic> listExamTopicPage(ExamTopicDTO examTopicDTO, JsonPage pageable);
 
     /*保存和修改题目*/
-    void saveExamTopic(ExamTopic examTopic) throws FzlException;
+    void saveExamTopic(ExamTopic examTopic);
 
     /*禁用或启用题目*/
-    void removeOrRebootTopic(String topicId, Integer isDel) throws FzlException;
+    void removeOrRebootTopic(String topicId, Integer isDel);
 
     /*获取自主练习题目内容*/
-    List<ExamTopic> getSelfExamData(SelfTrainingDTO selfTrainingDTO) throws FzlException;
+    List<ExamTopic> getSelfExamData(SelfTrainingDTO selfTrainingDTO);
 }

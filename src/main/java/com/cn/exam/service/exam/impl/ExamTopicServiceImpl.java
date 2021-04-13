@@ -45,7 +45,7 @@ public class ExamTopicServiceImpl implements ExamTopicService {
      * @param pageable 分页参数
      **/
     @Override
-    public Page<ExamTopic> listExamTopicPage(ExamTopicDTO examTopicDTO, JsonPage pageable) throws FzlException {
+    public Page<ExamTopic> listExamTopicPage(ExamTopicDTO examTopicDTO, JsonPage pageable) {
 
         Specification<ExamTopic> specification = new Specification<ExamTopic>() {
             @Override
@@ -73,12 +73,12 @@ public class ExamTopicServiceImpl implements ExamTopicService {
      * @param examTopic 参数
      **/
     @Override
-    public void saveExamTopic(ExamTopic examTopic) throws FzlException {
+    public void saveExamTopic(ExamTopic examTopic) {
 
         //新增
         if (MyString.isEmpty(examTopic.getTopicId())) {
-            examTopic.setTopicId("TP" + DateTime.Now().ToString("yyyyMMddHHmmss")+MyString.getRandom(4));
-        }else {
+            examTopic.setTopicId("TP" + DateTime.Now().ToString("yyyyMMddHHmmss") + MyString.getRandom(4));
+        } else {
             ExamTopic byTopicId = examTopicDao.findByTopicId(examTopic.getTopicId());
             examTopic.setId(byTopicId.getId());
         }
@@ -91,7 +91,7 @@ public class ExamTopicServiceImpl implements ExamTopicService {
      * @param topicId 试题id
      **/
     @Override
-    public void removeOrRebootTopic(String topicId, Integer isDel) throws FzlException {
+    public void removeOrRebootTopic(String topicId, Integer isDel) {
 
         examTopicDao.removeOrRebootTopic(topicId, isDel);
     }
@@ -105,7 +105,7 @@ public class ExamTopicServiceImpl implements ExamTopicService {
      * @return java.util.List<com.cn.exam.entity.exam.ExamTopic>
      **/
     @Override
-    public List<ExamTopic> getSelfExamData(SelfTrainingDTO selfTrainingDTO) throws FzlException {
+    public List<ExamTopic> getSelfExamData(SelfTrainingDTO selfTrainingDTO) {
         Map<String, Object> params = new HashMap<>();
         String hql = "select et from ExamTopic et " +
                 "where 1=1 ";

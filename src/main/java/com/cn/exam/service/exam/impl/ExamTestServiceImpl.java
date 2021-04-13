@@ -44,7 +44,7 @@ public class ExamTestServiceImpl implements ExamTestService {
 
 
     @Override
-    public TestPersonDTO getTestPersonInfo(TestPersonVO testPersonVO) throws FzlException {
+    public TestPersonDTO getTestPersonInfo(TestPersonVO testPersonVO) {
 
         //1.判断是否在考试时间段内
         ExamPlan examPlan = examPlanDao.findByPlanId(testPersonVO.getPlanId());
@@ -96,7 +96,7 @@ public class ExamTestServiceImpl implements ExamTestService {
      * @return void
      **/
     @Override
-    public void editTestPaperToPlan(EditTestPersonVO editTestPersonVO) throws FzlException {
+    public void editTestPaperToPlan(EditTestPersonVO editTestPersonVO) {
 
         //1. 获取要操作的ghid
         List<UserDTO> selectMul = editTestPersonVO.getSelectMul();
@@ -131,7 +131,7 @@ public class ExamTestServiceImpl implements ExamTestService {
      * @return org.springframework.data.domain.Page<com.cn.exam.dto.exam.TestInfoDTO>
      **/
     @Override
-    public TestInfoDTO getTestInfo(String planId, String ghid) throws FzlException {
+    public TestInfoDTO getTestInfo(String planId, String ghid) {
 
         return examTestPersonDao.getTestInfo(planId, ghid);
     }
@@ -144,7 +144,7 @@ public class ExamTestServiceImpl implements ExamTestService {
      * @return void
      **/
     @Override
-    public void submitPage(PersonTestingDTO personTestingDTO) throws FzlException {
+    public void submitPage(PersonTestingDTO personTestingDTO) {
 
         System.out.println(personTestingDTO);
         // 1.获取考试信息

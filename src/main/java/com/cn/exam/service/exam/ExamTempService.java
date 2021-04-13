@@ -33,5 +33,5 @@ public interface ExamTempService {
     void allotPaper(String planId);
 
     /*参考人员列表*/
-    List<ExamTestPerson> getTestPerson(String planId) throws FzlException;
+    List<ExamTestPerson> getTestPerson(String planId);
 }

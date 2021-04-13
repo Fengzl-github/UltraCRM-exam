@@ -198,7 +198,7 @@ public class ExamTempServiceImpl implements ExamTempService {
      * @param planId
      **/
     @Override
-    public List<ExamTestPerson> getTestPerson(String planId) throws FzlException {
+    public List<ExamTestPerson> getTestPerson(String planId) {
 
         List<ExamTestPerson> list = examTestPersonDao.findbyPlanId(planId);
 

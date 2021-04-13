@@ -90,7 +90,7 @@ public class ExamResful {
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/saveExamTopic")
-    public ResResult saveExamTopic(@Validated @RequestBody ExamTopicVO examTopicVO) throws FzlException {
+    public ResResult saveExamTopic(@Validated @RequestBody ExamTopicVO examTopicVO) {
 
         examTopicService.saveExamTopic(ExamTopicMapper.INSTANCE.toExamTopic(examTopicVO));
 
@@ -105,7 +105,7 @@ public class ExamResful {
      * @return ResResult
      **/
     @GetMapping("/removeOrRebootTopic")
-    public ResResult removeOrRebootTopic(@NotBlank(message = "缺少topicId") String topicId, @NotNull(message = "缺少禁用状态") Integer isDel) throws FzlException {
+    public ResResult removeOrRebootTopic(@NotBlank(message = "缺少topicId") String topicId, @NotNull(message = "缺少禁用状态") Integer isDel) {
 
         if (MyString.isNotEmpty(topicId)) {
 
@@ -189,7 +189,7 @@ public class ExamResful {
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/listExamPlanPage")
-    public ResResult listExamPlanPage(@RequestBody ExamPlanDTO examPlanDTO, JsonPage pageable) throws FzlException {
+    public ResResult listExamPlanPage(@RequestBody ExamPlanDTO examPlanDTO, JsonPage pageable) {
 
         Page<ExamPlan> page = examPlanService.listExamPlanPage(examPlanDTO, pageable);
 
@@ -207,7 +207,7 @@ public class ExamResful {
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/saveExamPlan")
-    public ResResult saveExamPlan(@RequestBody ExamPlan examPlan) throws FzlException {
+    public ResResult saveExamPlan(@RequestBody ExamPlan examPlan) {
 
         examPlanService.saveExamPlan(examPlan);
 
@@ -224,7 +224,7 @@ public class ExamResful {
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/updatePlanStatus")
-    public ResResult updatePlanStatus(String planId, Integer status) throws FzlException {
+    public ResResult updatePlanStatus(String planId, Integer status) {
 
         if (MyString.isNotEmpty(planId)) {
 
@@ -245,7 +245,7 @@ public class ExamResful {
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/removeExamPlan")
-    public ResResult removeExamPlan(String planId) throws FzlException {
+    public ResResult removeExamPlan(String planId) {
 
         if (MyString.isNotEmpty(planId)) {
 
@@ -266,7 +266,7 @@ public class ExamResful {
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/prodThePaperTemp")
-    public ResResult prodThePaperTemp(@RequestBody ExamProdPaperDTO examProdPaperDTO) throws FzlException {
+    public ResResult prodThePaperTemp(@RequestBody ExamProdPaperDTO examProdPaperDTO) {
 
         examTempService.prodThePaperTemp(examProdPaperDTO);
 
@@ -362,13 +362,13 @@ public class ExamResful {
 
     /**
      * @Author fengzhilong
-     * @Desc  获取考生信息
+     * @Desc 获取考生信息
      * @Date 2021/3/18 16:21
      * @param testPersonVO 参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/getTestPersonInfo")
-    public ResResult getTestPersonInfo(@Validated @RequestBody TestPersonVO testPersonVO) throws FzlException {
+    public ResResult getTestPersonInfo(@Validated @RequestBody TestPersonVO testPersonVO) {
 
         TestPersonDTO testPersonDTO = examTestService.getTestPersonInfo(testPersonVO);
 
@@ -378,7 +378,7 @@ public class ExamResful {
 
     /**
      * @Author fengzhilong
-     * @Desc  编辑参考人员(移入/移出)
+     * @Desc 编辑参考人员(移入 / 移出)
      * @Date 2021/3/18 16:21
      * @param editTestPersonVO 参数
      * @return com.cn.common.vo.ResResult
@@ -392,7 +392,7 @@ public class ExamResful {
 
     /**
      * @Author fengzhilong
-     * @Desc  分配试卷
+     * @Desc 分配试卷
      * @Date 2021/3/18 16:22
      * @param planId 计划id
      * @return com.cn.common.vo.ResResult
@@ -410,14 +410,14 @@ public class ExamResful {
 
     /**
      * @Author fengzhilong
-     * @Desc  获取考试信息
+     * @Desc 获取考试信息
      * @Date 2021/3/30 10:56
      * @param planId 计划id
-	 * @param ghid 工号
+     * @param ghid 工号
      * @return ResResult
      **/
     @GetMapping("/getTestInfo")
-    public ResResult getTestInfo(@NotBlank(message = "缺少计划id") String planId, @NotBlank(message = "缺少工号") String ghid){
+    public ResResult getTestInfo(@NotBlank(message = "缺少计划id") String planId, @NotBlank(message = "缺少工号") String ghid) {
 
         TestInfoDTO testInfo = examTestService.getTestInfo(planId, ghid);
 
@@ -427,7 +427,7 @@ public class ExamResful {
 
     /*提交试卷*/
     @PostMapping("/submitPage")
-    public ResResult submitPage(@Validated @RequestBody PersonTestingDTO personTestingDTO){
+    public ResResult submitPage(@Validated @RequestBody PersonTestingDTO personTestingDTO) {
 
         examTestService.submitPage(personTestingDTO);
 

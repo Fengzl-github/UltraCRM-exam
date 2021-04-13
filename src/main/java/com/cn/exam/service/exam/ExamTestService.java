@@ -17,14 +17,14 @@ import org.springframework.validation.annotation.Validated;
 public interface ExamTestService {
 
     /*获取参考人信息*/
-    TestPersonDTO getTestPersonInfo(TestPersonVO testPersonVO) throws FzlException;
+    TestPersonDTO getTestPersonInfo(TestPersonVO testPersonVO);
 
     /*编辑参考人*/
-    void editTestPaperToPlan(EditTestPersonVO editTestPersonVO) throws FzlException;
+    void editTestPaperToPlan(EditTestPersonVO editTestPersonVO);
 
     /*获取考试信息*/
-    TestInfoDTO getTestInfo(String planId, String ghid) throws FzlException;
+    TestInfoDTO getTestInfo(String planId, String ghid);
 
     /*提交试卷*/
-    void submitPage(PersonTestingDTO personTestingDTO) throws FzlException;
+    void submitPage(PersonTestingDTO personTestingDTO);
 }
