@@ -16,13 +16,7 @@ public class updateJwtTokenTimer {
     @Scheduled(cron = "0 10 0 * * ?")
     public void timerCorpid() {
 
-        /**
-         * @Author fengzhilong
-         * @Desc 每天凌晨10分时触发token改变, 此刻所有的登录在发起请求都需要登录验证
-         * @Date 2021/1/5 11:05
-         * @param
-         * @return void
-         **/
+        /*每天凌晨10分时触发token改变, 此刻所有的登录在发起请求都需要登录验证*/
         try {
             pmJwtToken.setNewTokenSecret();
             log.info("秘钥发生改变, 所有人都需要重新登录");

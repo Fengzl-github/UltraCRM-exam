@@ -31,12 +31,11 @@ public class GlobalExceptionHandler {
      * @Author fengzhilong
      * @Desc 所有异常报错处理
      * @Date 2021/2/24 11:37
-     * @param request
-     * @param exception
-     * @return com.alibaba.fastjson.JSONObject
+     * @param exception 异常
+     * @return json
      **/
     @ExceptionHandler(value = Exception.class)
-    public JSONObject allExceptionHandler(HttpServletRequest request, Exception exception) throws Exception {
+    public JSONObject allExceptionHandler(Exception exception) {
         exception.printStackTrace();
         JSONObject json = new JSONObject();
         json.put("code", -1);

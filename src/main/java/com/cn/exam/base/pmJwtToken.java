@@ -34,9 +34,9 @@ public class pmJwtToken {
 
     /**
      * 生成唯一TOKEN信息
-     * @param strUid
-     * @param strLoginInfo
-     * @return
+     * @param strUid uid
+     * @param strLoginInfo 登录信息
+     * @return token
      */
     public static String getJwtToken(String strUid, String strLoginInfo) {
 		/* 可设置失效日期的处理
@@ -57,13 +57,11 @@ public class pmJwtToken {
         nowTime.add(Calendar.HOUR, 2);
         Date expiresDate = nowTime.getTime();
 
-        String token = JWT.create().withClaim("pmAgent", strLoginInfo)
+        return JWT.create().withClaim("pmAgent", strLoginInfo)
                 .withAudience(strUid)
                 .withIssuedAt(iatDate)
                 .withExpiresAt(expiresDate)
                 .sign(Algorithm.HMAC256(jwtTokenSecret));
-
-        return token;
     }
 
     //用于软件加密授权的license
@@ -80,12 +78,12 @@ public class pmJwtToken {
 
     /**
      * 根据TOKEN获取客户的基本信息
-     * @param token
-     * @return
+     * @param token token
+     * @return strPmAgent
      */
     public static String getPmAgent(String token) {
         String strPmAgent = "";
-        DecodedJWT jwt = null;
+        DecodedJWT jwt ;
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(jwtTokenSecret)).build();
             jwt = verifier.verify(token);
