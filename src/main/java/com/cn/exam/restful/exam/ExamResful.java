@@ -1,6 +1,5 @@
 package com.cn.exam.restful.exam;
 
-import com.cn.common.exception.FzlException;
 import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.MyString;
 import com.cn.common.vo.ResCode;
@@ -12,16 +11,14 @@ import com.cn.exam.entity.exam.ExamTestPerson;
 import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.entity.user.User;
 import com.cn.exam.mapper.exam.ExamTopicMapper;
-import com.cn.exam.service.exam.ExamPlanService;
-import com.cn.exam.service.exam.ExamTempService;
-import com.cn.exam.service.exam.ExamTestService;
-import com.cn.exam.service.exam.ExamTopicService;
+import com.cn.exam.service.exam.*;
 import com.cn.exam.service.excel.down.ExcelDownService;
 import com.cn.exam.service.excel.upload.ExcelUploadService;
 import com.cn.exam.service.user.UserService;
 import com.cn.exam.vo.exam.EditTestPersonVO;
 import com.cn.exam.vo.exam.ExamTopicVO;
 import com.cn.exam.vo.exam.TestPersonVO;
+import com.cn.exam.vo.exam.TestResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -61,6 +59,8 @@ public class ExamResful {
     private UserService userService;
     @Autowired
     private ExamTestService examTestService;
+    @Autowired
+    private ExamResultService examResultService;
 
 
     /**
@@ -425,7 +425,13 @@ public class ExamResful {
     }
 
 
-    /*提交试卷*/
+    /**
+     * @Author fengzhilong
+     * @Desc 提交试卷
+     * @Date 2021/4/13 15:48
+     * @param personTestingDTO 参数
+     * @return ResResult
+     **/
     @PostMapping("/submitPage")
     public ResResult submitPage(@Validated @RequestBody PersonTestingDTO personTestingDTO) {
 
@@ -435,6 +441,20 @@ public class ExamResful {
     }
 
 
+    /* 考试结果 - 阅卷和查看成绩共用
+     *  可一人，多人，根据题型
+     * */
+    @PostMapping("/testResultPage")
+    public ResResult testResultPage(@Valid @RequestBody TestResultVO testResultVO) {
 
-    /*考试结果*/
+        //默认10条
+        JsonPage pageable = new JsonPage();
+        pageable.setSize(10);
+
+        List<TestResultDTO> list = examResultService.testResultPage(testResultVO, pageable);
+
+        return ResCode.OK.setData(list);
+    }
+
+
 }
