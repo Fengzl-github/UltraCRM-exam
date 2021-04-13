@@ -30,7 +30,7 @@ public class SysRestful {
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/getSysMenuData")
-    ResResult getSysMenuData(Integer level) {
+    public ResResult getSysMenuData(Integer level) {
 
         return sysMenuService.getSysMenuData(level);
     }

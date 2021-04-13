@@ -34,7 +34,7 @@ public class ExamPlanServiceImpl implements ExamPlanService {
 
     /**
      * @Desc 考试计划列表
-     * @param pageable
+     * @param pageable 分页参数
      **/
     @Override
     public Page<ExamPlan> listExamPlanPage(ExamPlanDTO examPlanDTO, JsonPage pageable) {
@@ -67,7 +67,7 @@ public class ExamPlanServiceImpl implements ExamPlanService {
 
     /**
      * @Desc 保存考试计划
-     * @param examPlan
+     * @param examPlan 参数
      **/
     @Override
     public void saveExamPlan(ExamPlan examPlan) {
@@ -82,8 +82,8 @@ public class ExamPlanServiceImpl implements ExamPlanService {
 
     /**
      * @Desc 修改考试计划状态
-     * @param planId
-     * @param status
+     * @param planId 计划id
+     * @param status 状态
      **/
     @Override
     public void updatePlanStatus(String planId, Integer status) {
@@ -94,7 +94,7 @@ public class ExamPlanServiceImpl implements ExamPlanService {
 
     /**
      * @Desc 删除考试计划
-     * @param planId
+     * @param planId 计划id
      **/
     @Override
     public void removeExamPlan(String planId) {

@@ -7,7 +7,6 @@ import com.cn.common.utils.MyString;
 import com.cn.exam.dao.exam.ExamPlanDao;
 import com.cn.exam.dao.exam.ExamTestPersonDao;
 import com.cn.exam.dao.exam.ExamTestResultDao;
-import com.cn.exam.dao.user.UserDao;
 import com.cn.exam.dto.exam.PersonTestingDTO;
 import com.cn.exam.dto.exam.TestInfoDTO;
 import com.cn.exam.dto.exam.TestPersonDTO;
@@ -18,7 +17,6 @@ import com.cn.exam.entity.exam.ExamTestResult;
 import com.cn.exam.service.exam.ExamTestService;
 import com.cn.exam.vo.exam.EditTestPersonVO;
 import com.cn.exam.vo.exam.TestPersonVO;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -43,8 +41,6 @@ public class ExamTestServiceImpl implements ExamTestService {
     private ExamTestPersonDao examTestPersonDao;
     @Resource
     private ExamTestResultDao examTestResultDao;
-    @Resource
-    private UserDao userDao;
 
 
     @Override
@@ -71,7 +67,7 @@ public class ExamTestServiceImpl implements ExamTestService {
         }
 
         // 3.返回信息
-        String hql = "";
+        String hql;
         Map<String, Object> params = new HashMap<>();
         hql = "select new com.cn.exam.dto.exam.TestPersonDTO(etp.ep) from ExamTestPerson etp " +
                 "left join ExamPlan ep on ep.planId = etp.planId " +
@@ -87,9 +83,8 @@ public class ExamTestServiceImpl implements ExamTestService {
         }
 
         List<TestPersonDTO> list = jpaUtil.list(hql, params, TestPersonDTO.class);
-        TestPersonDTO testPersonDTO = list.get(0);
 
-        return testPersonDTO;
+        return list.get(0);
 
     }
 
@@ -97,7 +92,7 @@ public class ExamTestServiceImpl implements ExamTestService {
      * @Author fengzhilong
      * @Desc 编辑参考人员，移入/移出
      * @Date 2021/3/17 17:52
-     * @param editTestPersonVO
+     * @param editTestPersonVO 参数
      * @return void
      **/
     @Override
@@ -131,23 +126,21 @@ public class ExamTestServiceImpl implements ExamTestService {
      * @Author fengzhilong
      * @Desc 获取考试信息
      * @Date 2021/3/30 10:14
-     * @param planId
-     * @param ghid
+     * @param planId 计划id
+     * @param ghid 工号
      * @return org.springframework.data.domain.Page<com.cn.exam.dto.exam.TestInfoDTO>
      **/
     @Override
     public TestInfoDTO getTestInfo(String planId, String ghid) throws FzlException {
 
-        TestInfoDTO testInfo = examTestPersonDao.getTestInfo(planId, ghid);
-
-        return testInfo;
+        return examTestPersonDao.getTestInfo(planId, ghid);
     }
 
     /**
      * @Author fengzhilong
      * @Desc 提交试卷
      * @Date 2021/4/6 16:34
-     * @param personTestingDTO
+     * @param personTestingDTO 参数
      * @return void
      **/
     @Override
@@ -170,7 +163,7 @@ public class ExamTestServiceImpl implements ExamTestService {
             epResult.setName(examTestPerson.getName());
             epResult.setPaperId(examTestPerson.getPaperId());
             epResult.setPaperName(examTestPerson.getPaperName());
-            if (epResult.getCorrectAnswer().equals(epResult.getEpReplay())){
+            if (epResult.getCorrectAnswer().equals(epResult.getEpReplay())) {
                 epResult.setEpScore(epResult.getTopicScore());
             }
             score += epResult.getEpScore();

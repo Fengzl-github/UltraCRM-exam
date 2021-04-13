@@ -30,7 +30,7 @@ public interface ExamTempService {
     ResResult previewPaperData(String planId, String paperId);
 
     /*分配试卷*/
-    void allotPaper(String planId) throws FzlException;
+    void allotPaper(String planId);
 
     /*参考人员列表*/
     List<ExamTestPerson> getTestPerson(String planId) throws FzlException;

@@ -8,8 +8,6 @@ import com.cn.exam.vo.exam.EditTestPersonVO;
 import com.cn.exam.vo.exam.TestPersonVO;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
-
 /**
  *@Author fengzhilong
  *@Date 2021/3/12 10:35

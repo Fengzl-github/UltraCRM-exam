@@ -67,12 +67,12 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 题库列表
      * @Date 2021/1/8 17:48
-     * @param examTopicDTO
-     * @param pageable
+     * @param examTopicDTO 参数
+     * @param pageable 分页参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/listExamTopicPage")
-    ResResult listExamTopicPage(@RequestBody ExamTopicDTO examTopicDTO, JsonPage pageable) throws FzlException {
+    public ResResult listExamTopicPage(@RequestBody ExamTopicDTO examTopicDTO, JsonPage pageable) {
 
         Page<ExamTopic> page = examTopicService.listExamTopicPage(examTopicDTO, pageable);
 
@@ -86,11 +86,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 保存和修改题目
      * @Date 2021/1/8 17:57
-     * @param examTopicVO
+     * @param examTopicVO 参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/saveExamTopic")
-    ResResult saveExamTopic(@Validated @RequestBody ExamTopicVO examTopicVO) throws FzlException {
+    public ResResult saveExamTopic(@Validated @RequestBody ExamTopicVO examTopicVO) throws FzlException {
 
         examTopicService.saveExamTopic(ExamTopicMapper.INSTANCE.toExamTopic(examTopicVO));
 
@@ -101,11 +101,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 禁用/启用题目
      * @Date 2021/1/8 17:57
-     * @param topicId 重启
-     * @return
+     * @param topicId 试题id
+     * @return ResResult
      **/
     @GetMapping("/removeOrRebootTopic")
-    ResResult removeOrRebootTopic(@NotBlank(message = "缺少topicId") String topicId, @NotNull(message = "缺少禁用状态") Integer isDel) throws FzlException {
+    public ResResult removeOrRebootTopic(@NotBlank(message = "缺少topicId") String topicId, @NotNull(message = "缺少禁用状态") Integer isDel) throws FzlException {
 
         if (MyString.isNotEmpty(topicId)) {
 
@@ -122,13 +122,13 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 批量导入试题
      * @Date 2021/2/1 16:51
-     * @param file
-     * @param ghid
-     * @param operator
+     * @param file 文件
+     * @param ghid ghid
+     * @param operator 操作人
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("uploadTopic")
-    ResResult uploadTopic(@RequestParam(value = "fileU") MultipartFile file, String ghid, String operator) {
+    public ResResult uploadTopic(@RequestParam(value = "fileU") MultipartFile file, String ghid, String operator) {
 
         excelUploadService.uploadTopic(file, ghid, operator);
 
@@ -140,7 +140,7 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 下载试题导入说明模板
      * @Date 2021/2/3 11:31
-     * @param response
+     * @param response 响应参数
      * @return void
      **/
     @GetMapping("/downTopicTemp")
@@ -163,11 +163,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 自主练习获取题目内容
      * @Date 2021/1/13 15:03
-     * @param selfTrainingDTO
+     * @param selfTrainingDTO 参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/getSelfExamInfo")
-    ResResult getSelfExamInfo(@Validated @RequestBody SelfTrainingDTO selfTrainingDTO) {
+    public ResResult getSelfExamInfo(@Validated @RequestBody SelfTrainingDTO selfTrainingDTO) {
         List<ExamTopic> examList = examTopicService.getSelfExamData(selfTrainingDTO);
 //        System.out.println(examList);
         //转换为前端可解析的数据结构
@@ -185,11 +185,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 考试计划列表
      * @Date 2021/1/14 17:12
-     * @param pageable
+     * @param pageable 分页参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/listExamPlanPage")
-    ResResult listExamPlanPage(@RequestBody ExamPlanDTO examPlanDTO, JsonPage pageable) throws FzlException {
+    public ResResult listExamPlanPage(@RequestBody ExamPlanDTO examPlanDTO, JsonPage pageable) throws FzlException {
 
         Page<ExamPlan> page = examPlanService.listExamPlanPage(examPlanDTO, pageable);
 
@@ -203,11 +203,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 保存和修改考试计划
      * @Date 2021/1/15 10:18
-     * @param examPlan
+     * @param examPlan 参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/saveExamPlan")
-    ResResult saveExamPlan(@RequestBody ExamPlan examPlan) throws FzlException {
+    public ResResult saveExamPlan(@RequestBody ExamPlan examPlan) throws FzlException {
 
         examPlanService.saveExamPlan(examPlan);
 
@@ -219,12 +219,12 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 发布考试计划/公布成绩
      * @Date 2021/1/15 10:39
-     * @param planId
-     * @param status
+     * @param planId 计划id
+     * @param status 状态
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/updatePlanStatus")
-    ResResult updatePlanStatus(String planId, Integer status) throws FzlException {
+    public ResResult updatePlanStatus(String planId, Integer status) throws FzlException {
 
         if (MyString.isNotEmpty(planId)) {
 
@@ -241,11 +241,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 删除考试计划
      * @Date 2021/1/15 10:21
-     * @param planId
+     * @param planId 计划id
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/removeExamPlan")
-    ResResult removeExamPlan(String planId) throws FzlException {
+    public ResResult removeExamPlan(String planId) throws FzlException {
 
         if (MyString.isNotEmpty(planId)) {
 
@@ -262,11 +262,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 生成几套试卷模板 - 新生成的全部不生效，需要单独操作使它们生效
      * @Date 2021/1/27 16:55
-     * @param examProdPaperDTO
+     * @param examProdPaperDTO 参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/prodThePaperTemp")
-    ResResult prodThePaperTemp(@RequestBody ExamProdPaperDTO examProdPaperDTO) throws FzlException {
+    public ResResult prodThePaperTemp(@RequestBody ExamProdPaperDTO examProdPaperDTO) throws FzlException {
 
         examTempService.prodThePaperTemp(examProdPaperDTO);
 
@@ -278,11 +278,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 查看该计划下有几套试卷
      * @Date 2021/2/20 11:34
-     * @param planId
+     * @param planId 计划id
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/testPaperList")
-    ResResult testPaperList(String planId) {
+    public ResResult testPaperList(String planId) {
         if (MyString.isNotEmpty(planId)) {
             List<ExamTestPaper> list = examTempService.testPaperList(planId);
             return ResCode.OK.msg("查询成功")
@@ -297,12 +297,12 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 设置试卷是否有效
      * @Date 2021/2/20 11:34
-     * @param paperId
-     * @param isUsed
+     * @param paperId 试卷id
+     * @param isUsed 是否可用
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/updateIsUsed")
-    ResResult updateIsUsed(String paperId, Integer isUsed) {
+    public ResResult updateIsUsed(String paperId, Integer isUsed) {
         examTempService.updateIsUsed(paperId, isUsed);
 
         return ResCode.OK.msg("操作成功");
@@ -313,11 +313,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 添加考试人员
      * @Date 2021/2/22 13:50
-     * @param
+     * @param planId 计划id
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/findTestUserList")
-    ResResult findTestUserList(String planId) {
+    public ResResult findTestUserList(String planId) {
 
         List<User> list = userService.findTestUserList(planId);
 
@@ -328,11 +328,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 参考人员列表
      * @Date 2021/3/12 15:01
-     * @param planId
+     * @param planId 计划id
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/getTestPerson")
-    ResResult getTestPerson(String planId) {
+    public ResResult getTestPerson(String planId) {
 
         List<ExamTestPerson> list = examTempService.getTestPerson(planId);
 
@@ -343,8 +343,8 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc 试卷预览
      * @Date 2021/3/4 16:38
-     * @param planId
-     * @param paperId
+     * @param planId 计划id
+     * @param paperId 试卷id
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/previewPaperData")
@@ -364,7 +364,7 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc  获取考生信息
      * @Date 2021/3/18 16:21
-     * @param testPersonVO
+     * @param testPersonVO 参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/getTestPersonInfo")
@@ -380,7 +380,7 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc  编辑参考人员(移入/移出)
      * @Date 2021/3/18 16:21
-     * @param editTestPersonVO
+     * @param editTestPersonVO 参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/editTestPaperToPlan")
@@ -394,11 +394,11 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc  分配试卷
      * @Date 2021/3/18 16:22
-     * @param planId
+     * @param planId 计划id
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/allotPaper")
-    public ResResult allotPaper(String planId) throws FzlException {
+    public ResResult allotPaper(String planId) {
 
         examTempService.allotPaper(planId);
 
@@ -412,9 +412,9 @@ public class ExamResful {
      * @Author fengzhilong
      * @Desc  获取考试信息
      * @Date 2021/3/30 10:56
-     * @param planId
-	 * @param ghid
-     * @return
+     * @param planId 计划id
+	 * @param ghid 工号
+     * @return ResResult
      **/
     @GetMapping("/getTestInfo")
     public ResResult getTestInfo(@NotBlank(message = "缺少计划id") String planId, @NotBlank(message = "缺少工号") String ghid){

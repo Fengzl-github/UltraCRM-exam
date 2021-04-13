@@ -147,7 +147,7 @@ public class ExamTempServiceImpl implements ExamTempService {
      * @param planId
      **/
     @Override
-    public void allotPaper(String planId) throws FzlException {
+    public void allotPaper(String planId) {
         log.info("【分配试卷】---【计划id】->{}", planId);
         // 1. 获取考试计划下所有需要分配试卷的人员
         List<ExamTestPerson> personList = examTestPersonDao.findByPlanIdAndPaperId(planId);

@@ -41,8 +41,8 @@ public class ExamTopicServiceImpl implements ExamTopicService {
 
     /**
      * @Desc 题库列表
-     * @param examTopicDTO
-     * @param pageable
+     * @param examTopicDTO 参数
+     * @param pageable 分页参数
      **/
     @Override
     public Page<ExamTopic> listExamTopicPage(ExamTopicDTO examTopicDTO, JsonPage pageable) throws FzlException {
@@ -63,15 +63,14 @@ public class ExamTopicServiceImpl implements ExamTopicService {
                 return criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()]));
             }
         };
-        Page<ExamTopic> page = examTopicDao.findAll(specification, pageable.getPageable());
 
-        return page;
+        return examTopicDao.findAll(specification, pageable.getPageable());
     }
 
 
     /**
      * @Desc 保存和修改题目
-     * @param examTopic
+     * @param examTopic 参数
      **/
     @Override
     public void saveExamTopic(ExamTopic examTopic) throws FzlException {
@@ -89,7 +88,7 @@ public class ExamTopicServiceImpl implements ExamTopicService {
 
     /**
      * @Desc 禁用或启用题目
-     * @param topicId
+     * @param topicId 试题id
      **/
     @Override
     public void removeOrRebootTopic(String topicId, Integer isDel) throws FzlException {
@@ -102,7 +101,7 @@ public class ExamTopicServiceImpl implements ExamTopicService {
      * @Author fengzhilong
      * @Desc 模拟考试
      * @Date 2021/1/13 11:18
-     * @param selfTrainingDTO
+     * @param selfTrainingDTO 参数
      * @return java.util.List<com.cn.exam.entity.exam.ExamTopic>
      **/
     @Override

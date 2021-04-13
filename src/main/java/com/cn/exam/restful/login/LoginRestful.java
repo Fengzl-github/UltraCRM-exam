@@ -52,7 +52,7 @@ public class LoginRestful {
      * @Author fengzhilong
      * @Desc 获取验证码图片
      * @Date 2021/2/22 10:55
-     * @param response
+     * @param response 响应参数
      * @return void
      **/
     @GetMapping("/getCaptcha")
