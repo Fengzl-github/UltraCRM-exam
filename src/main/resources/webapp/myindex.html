@@ -81,7 +81,7 @@
                         </el-tab-pane>
                         <el-tab-pane closable v-for="(item,index) in ableTabs" :key="item.key" :name="item.name">
                             <span slot="label" @dblclick="dblclickIfream(item,index)">{{item.title}}</span>
-                            <iframe :id="item.key" :src="item.tabUrl" scrolling="auto" frameborder="0"
+                            <iframe :id="item.key" :src="item.tabUrl+'?index='+index" scrolling="auto" frameborder="0"
                                     marginheight="0" marginwidth="0" :style="frameStyle"></iframe>
                         </el-tab-pane>
                     </el-tabs>
@@ -192,20 +192,20 @@
     });
 
     function changeStyleColor(nType) {
-        if (nType == 0) {
+        if (nType === 0) {
             ThemeColor(1);
-        } else if (nType == 1) {
+        } else if (nType === 1) {
             TextColor(1);
         }
     }
 
     function handleCommand(command) {
-        if (command == "lout") {
+        if (command === "lout") {
             logoutToRedict();
         } else if (command == "closec") {
             removeTab(vData.tabValue);
         } else if (command == "closeother") {
-            vData.ableTabs = vData.ableTabs.filter(tab => tab.name == vData.tabValue);
+            vData.ableTabs = vData.ableTabs.filter(tab => tab.name === vData.tabValue);
         } else if (command == "closeall") {
             vData.ableTabs = [];
             vData.tabValue = 'a';

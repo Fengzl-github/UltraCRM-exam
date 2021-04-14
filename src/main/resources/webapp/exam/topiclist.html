@@ -427,7 +427,10 @@
     }
 
     function addData() {
-        vData.EditForm = {
+        //添加tab
+        var index = myUtil.fun_querystring('index');
+        top.vData.ableTabs[index].tabUrl = '/page/exam/topicEdit';
+        /*vData.EditForm = {
             "correctAnswer": "",
             "createTime": "",
             "difficultyLevel": "",
@@ -442,7 +445,7 @@
         };
         console.log("新增", JSON.stringify(vData.EditForm));
         vData.topicContent = {};
-        vData.EditDrawer.drawer = true;
+        vData.EditDrawer.drawer = true;*/
     }
 
     /*导出数据*/

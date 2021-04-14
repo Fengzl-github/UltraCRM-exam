@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>题库新增/修改</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+</head>
+<body>
+    <div id="appVM">
+        <el-page-header @back="goBack" content="详情页面">
+        </el-page-header>
+    </div>
+</body>
+
+<script>
+    let vData={
+
+    };
+
+    let vm = new Vue({
+        el: '#appVM',
+        data: vData,
+        methods: {
+            goBack() {
+                var index = myUtil.fun_querystring('index');
+                top.vData.ableTabs[index].tabUrl = '/page/exam/topiclist';
+            }
+        }
+    })
+</script>
+</html>

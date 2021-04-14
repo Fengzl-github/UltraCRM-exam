@@ -19,6 +19,11 @@ public class PageRestful {
         return "exam/topiclist";
     }
 
+    @GetMapping("/exam/topicEdit")
+    public String examTopicEdit() {
+        return "exam/topicEdit";
+    }
+
     /*自主练习*/
     @GetMapping("/exam/selftraning")
     public String examSelftraning() {
