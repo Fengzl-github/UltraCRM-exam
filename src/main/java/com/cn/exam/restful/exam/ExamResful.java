@@ -10,7 +10,6 @@ import com.cn.exam.entity.exam.ExamTestPaper;
 import com.cn.exam.entity.exam.ExamTestPerson;
 import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.entity.user.User;
-import com.cn.exam.mapper.exam.ExamTopicMapper;
 import com.cn.exam.service.exam.*;
 import com.cn.exam.service.excel.down.ExcelDownService;
 import com.cn.exam.service.excel.upload.ExcelUploadService;
@@ -92,7 +91,7 @@ public class ExamResful {
     @PostMapping("/saveExamTopic")
     public ResResult saveExamTopic(@Validated @RequestBody ExamTopicVO examTopicVO) {
 
-        examTopicService.saveExamTopic(ExamTopicMapper.INSTANCE.toExamTopic(examTopicVO));
+        examTopicService.saveExamTopic(examTopicVO);
 
         return ResCode.OK.msg("操作成功");
     }
@@ -107,14 +106,9 @@ public class ExamResful {
     @GetMapping("/removeOrRebootTopic")
     public ResResult removeOrRebootTopic(@NotBlank(message = "缺少topicId") String topicId, @NotNull(message = "缺少禁用状态") Integer isDel) {
 
-        if (MyString.isNotEmpty(topicId)) {
+        examTopicService.removeOrRebootTopic(topicId, isDel);
 
-            examTopicService.removeOrRebootTopic(topicId, isDel);
-
-            return ResCode.OK.msg("操作成功");
-        } else {
-            return ResCode.ERROR.msg("缺少参数");
-        }
+        return ResCode.OK.msg("操作成功");
     }
 
 
@@ -443,7 +437,7 @@ public class ExamResful {
 
     /**
      * @Author fengzhilong
-     * @Desc  考试结果 - 阅卷和查看成绩共用
+     * @Desc 考试结果 - 阅卷和查看成绩共用
      * @Date 2021/4/14 10:27
      * @param testResultVO 参数
      * @return com.cn.common.vo.ResResult
@@ -461,16 +455,15 @@ public class ExamResful {
     }
 
 
-
     /**
      * @Author fengzhilong
-     * @Desc  提交阅卷结果
+     * @Desc 提交阅卷结果
      * @Date 2021/4/14 10:52
      * @param submitScoringDTO 参数
      * @return com.cn.common.vo.ResResult
      **/
     @PostMapping("/submitScoring")
-    public ResResult submitScoring(@Valid @RequestBody SubmitScoringDTO submitScoringDTO){
+    public ResResult submitScoring(@Valid @RequestBody SubmitScoringDTO submitScoringDTO) {
 
         examResultService.submitScoring(submitScoringDTO);
 
@@ -480,7 +473,7 @@ public class ExamResful {
 
     /*如果没有提交直接关闭，则把是否阅卷中状态改回*/
     @PostMapping("/updateIsScoring")
-    public void updateIsScoring(List<Integer> ids){
+    public void updateIsScoring(List<Integer> ids) {
 
         System.out.println(ids.toString());
     }

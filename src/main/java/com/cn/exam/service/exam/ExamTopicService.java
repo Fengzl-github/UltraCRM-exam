@@ -5,6 +5,7 @@ import com.cn.common.jpa.vo.JsonPage;
 import com.cn.exam.dto.exam.ExamTopicDTO;
 import com.cn.exam.dto.exam.SelfTrainingDTO;
 import com.cn.exam.entity.exam.ExamTopic;
+import com.cn.exam.vo.exam.ExamTopicVO;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 
@@ -22,7 +23,7 @@ public interface ExamTopicService {
     Page<ExamTopic> listExamTopicPage(ExamTopicDTO examTopicDTO, JsonPage pageable);
 
     /*保存和修改题目*/
-    void saveExamTopic(ExamTopic examTopic);
+    void saveExamTopic(ExamTopicVO examTopicVO);
 
     /*禁用或启用题目*/
     void removeOrRebootTopic(String topicId, Integer isDel);

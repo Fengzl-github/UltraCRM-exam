@@ -1,6 +1,5 @@
 package com.cn.exam.service.exam.impl;
 
-import com.cn.common.exception.FzlException;
 import com.cn.common.jpa.util.JpaUtil;
 import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.DateTime;
@@ -9,8 +8,10 @@ import com.cn.exam.dao.exam.ExamTopicDao;
 import com.cn.exam.dto.exam.ExamTopicDTO;
 import com.cn.exam.dto.exam.SelfTrainingDTO;
 import com.cn.exam.entity.exam.ExamTopic;
+import com.cn.exam.mapper.exam.ExamTopicMapper;
 import com.cn.exam.service.exam.ExamTopicService;
 import com.cn.exam.util.ExamUtil;
+import com.cn.exam.vo.exam.ExamTopicVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,7 +22,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -70,19 +74,20 @@ public class ExamTopicServiceImpl implements ExamTopicService {
 
     /**
      * @Desc 保存和修改题目
-     * @param examTopic 参数
+     * @param examTopicVO 参数
      **/
     @Override
-    public void saveExamTopic(ExamTopic examTopic) {
+    public void saveExamTopic(ExamTopicVO examTopicVO) {
 
         //新增
-        if (MyString.isEmpty(examTopic.getTopicId())) {
-            examTopic.setTopicId("TP" + DateTime.Now().ToString("yyyyMMddHHmmss") + MyString.getRandom(4));
+        if (MyString.isEmpty(examTopicVO.getTopicId())) {
+            examTopicVO.setTopicId("TP" + DateTime.Now().ToString("yyyyMMddHHmmss") + MyString.getRandom(4));
+            examTopicDao.saveAndFlush(ExamTopicMapper.INSTANCE.toExamTopic(examTopicVO));
         } else {
-            ExamTopic byTopicId = examTopicDao.findByTopicId(examTopic.getTopicId());
-            examTopic.setId(byTopicId.getId());
+            ExamTopic examTopic = examTopicDao.findByTopicId(examTopicVO.getTopicId());
+            ExamTopicMapper.INSTANCE.updateExamTopic(examTopicVO, examTopic);
+            examTopicDao.saveAndFlush(examTopic);
         }
-        examTopicDao.saveAndFlush(examTopic);
     }
 
 

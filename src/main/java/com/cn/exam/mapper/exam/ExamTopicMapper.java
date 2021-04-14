@@ -2,7 +2,10 @@ package com.cn.exam.mapper.exam;
 
 import com.cn.exam.entity.exam.ExamTopic;
 import com.cn.exam.vo.exam.ExamTopicVO;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +20,8 @@ public interface ExamTopicMapper {
 
     ExamTopicMapper INSTANCE = Mappers.getMapper(ExamTopicMapper.class);
 
-    /*@Mappings({
-            @Mapping(source = "createTime", target = "createTime", dateFormat = "yyyy-MM-dd HH:mm:ss")
-    })*/
     ExamTopic toExamTopic(ExamTopicVO examTopicVO);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateExamTopic(ExamTopicVO examTopicVO, @MappingTarget ExamTopic examTopic);
 }
