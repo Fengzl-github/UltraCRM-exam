@@ -33,6 +33,9 @@ public class TestResultDTO {
     //考试用时
     private String usedTime;
 
+
+    //试题id
+    private Integer resId;
     //试题编号
     private String topicId;
     //题目类型：1:单项选择题,2:多项选择题,3:填空题,4:判断题,5:简答题
@@ -70,6 +73,7 @@ public class TestResultDTO {
             this.usedTime = ps.getUsedTime();
         }
         if (rs != null) {
+            this.resId = rs.getId();
             this.topicId = rs.getTopicId();
             this.topicType = rs.getTopicType();
             this.topicDes = rs.getTopicDes();

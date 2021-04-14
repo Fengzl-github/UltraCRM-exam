@@ -1,19 +1,24 @@
 package com.cn.exam.service.exam.impl;
 
+import com.cn.common.exception.FzlException;
 import com.cn.common.jpa.util.JpaUtil;
 import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.MyString;
 import com.cn.exam.dao.exam.ExamTestPersonDao;
+import com.cn.exam.dao.exam.ExamTestResultDao;
+import com.cn.exam.dto.exam.SubmitScoringDTO;
 import com.cn.exam.dto.exam.TestResultDTO;
+import com.cn.exam.dto.exam.TestScoreDTO;
+import com.cn.exam.entity.exam.ExamTestPerson;
 import com.cn.exam.service.exam.ExamResultService;
 import com.cn.exam.vo.exam.TestResultVO;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.management.StandardEmitterMBean;
+import java.util.*;
 
 /**
  *@Author fengzhilong
@@ -25,6 +30,8 @@ public class ExamResultServiceImpl implements ExamResultService {
 
     @Resource
     private ExamTestPersonDao examTestPersonDao;
+    @Resource
+    private ExamTestResultDao examTestResultDao;
     @Resource
     private JpaUtil jpaUtil;
 
@@ -69,7 +76,7 @@ public class ExamResultServiceImpl implements ExamResultService {
             page = jpaUtil.page(hql, params, pageable.getPageableUnsorted(), TestResultDTO.class);
             System.out.println("试题数:" + page.getTotalElements());
             // 阅卷：修改抽到试卷的是否阅卷中状态
-            if (testResultVO.getScoringStatus() == 1){
+            if (testResultVO.getScoringStatus() == 1) {
                 for (TestResultDTO temp : page.getContent()) {
 
                     examTestPersonDao.updateIsScoring(temp.getId(), 1);
@@ -78,5 +85,52 @@ public class ExamResultServiceImpl implements ExamResultService {
         }
 
         return page.getContent();
+    }
+
+
+    /**
+     * @Author fengzhilong
+     * @Desc 提交阅卷结果
+     * @Date 2021/4/14 10:47
+     * @param submitScoringDTO 参数
+     * @return void
+     **/
+    @Override
+    @Transactional
+    public void submitScoring(SubmitScoringDTO submitScoringDTO) {
+
+        // 1. 获取提交试题
+        List<TestScoreDTO> epList = submitScoringDTO.getEpList();
+        // 2. 存储所有考生id - 不重复
+        Set<Integer> idSet = new HashSet<>();
+        // 3. 循环所有试题
+        for (TestScoreDTO testScoreDto : epList) {
+            // 修改试题分数
+            Integer isSucceed = examTestResultDao.updateEpScore(testScoreDto.getResId(), testScoreDto.getEpScore());
+            if (isSucceed > 0) {
+                System.out.println("分数更新成功，id-> " + testScoreDto.getResId());
+                idSet.add(testScoreDto.getId());
+            }
+        }
+        // 4. 循环更新每个人的状态 阅卷人等信息
+        for (Integer id : idSet) {
+            Optional<ExamTestPerson> personOptional = examTestPersonDao.findById(id);
+            if (!personOptional.isPresent()) {
+                throw new FzlException("考生不存在");
+            }
+            ExamTestPerson examTestPerson = personOptional.get();
+            examTestPerson.setScoringStatus(2);
+            examTestPerson.setMarkerGhid(submitScoringDTO.getMarkerGhid());
+            examTestPerson.setMarkerName(submitScoringDTO.getMarkerName());
+
+            //重新计算每个人总分
+            double totalScore = examTestResultDao.countTotalScore(examTestPerson.getPaperId(), examTestPerson.getGhid());
+            examTestPerson.setTotalScore(totalScore);
+
+            // 保存
+            examTestPersonDao.saveAndFlush(examTestPerson);
+        }
+
+
     }
 }

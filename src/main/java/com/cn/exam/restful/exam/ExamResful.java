@@ -441,9 +441,13 @@ public class ExamResful {
     }
 
 
-    /* 考试结果 - 阅卷和查看成绩共用
-     *  可一人，多人，根据题型
-     * */
+    /**
+     * @Author fengzhilong
+     * @Desc  考试结果 - 阅卷和查看成绩共用
+     * @Date 2021/4/14 10:27
+     * @param testResultVO 参数
+     * @return com.cn.common.vo.ResResult
+     **/
     @PostMapping("/testResultPage")
     public ResResult testResultPage(@Valid @RequestBody TestResultVO testResultVO) {
 
@@ -454,6 +458,31 @@ public class ExamResful {
         List<TestResultDTO> list = examResultService.testResultPage(testResultVO, pageable);
 
         return ResCode.OK.setData(list);
+    }
+
+
+
+    /**
+     * @Author fengzhilong
+     * @Desc  提交阅卷结果
+     * @Date 2021/4/14 10:52
+     * @param submitScoringDTO 参数
+     * @return com.cn.common.vo.ResResult
+     **/
+    @PostMapping("/submitScoring")
+    public ResResult submitScoring(@Valid @RequestBody SubmitScoringDTO submitScoringDTO){
+
+        examResultService.submitScoring(submitScoringDTO);
+
+        return ResCode.OK.msg("提交成功");
+    }
+
+
+    /*如果没有提交直接关闭，则把是否阅卷中状态改回*/
+    @PostMapping("/updateIsScoring")
+    public void updateIsScoring(List<Integer> ids){
+
+        System.out.println(ids.toString());
     }
 
 
