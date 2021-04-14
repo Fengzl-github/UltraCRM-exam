@@ -70,11 +70,14 @@
                 <el-button style="float: right; margin-right: 10px" type="primary" @click="exportData">导出</el-button>
             </el-form>
         </div>
-        <el-table :height="tableHeight" :data="tableData" stripe border highlight-current-row style="width: 98%">
+        <el-table :max-height="tableHeight" :data="tableData" stripe border highlight-current-row style="width: 98%"
+                  :row-style="{height:'50px'}"
+                  :cell-style="{padding:'0px'}"
+                  :header-cell-style="{background:'#EEEEEE',color:'#4d4d4d'}">
             <el-table-column type="index" width="50">
             </el-table-column>
-            <el-table-column prop="topicDes" label="题干"></el-table-column>
-            <el-table-column prop="topicType" label="题目类型">
+            <el-table-column show-overflow-tooltip prop="topicDes" label="题干"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="topicType" label="题目类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.topicType == 1">单选</span>
                     <span v-if="scope.row.topicType == 2">多选</span>
@@ -83,7 +86,7 @@
                     <span v-if="scope.row.topicType == 5">简答</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="difficultyLevel" label="难度等级">
+            <el-table-column show-overflow-tooltip prop="difficultyLevel" label="难度等级">
                 <template slot-scope="scope"><!--1:困难,2:较难,3:一般,4:较易,5:容易-->
                     <span v-if="scope.row.difficultyLevel == 1">困难</span>
                     <span v-if="scope.row.difficultyLevel == 2">较难</span>
@@ -92,15 +95,15 @@
                     <span v-if="scope.row.difficultyLevel == 5">容易</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="correctAnswer" label="正确答案"></el-table-column>
-            <el-table-column prop="isDel" label="状态">
+            <el-table-column show-overflow-tooltip prop="correctAnswer" label="正确答案"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="isDel" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.isDel == 0">正常</span>
                     <span v-if="scope.row.isDel == 1">过时</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="operator" label="创建人"></el-table-column>
-            <el-table-column>
+            <el-table-column show-overflow-tooltip prop="operator" label="创建人"></el-table-column>
+            <el-table-column label="操作" width="350">
                 <template slot-scope="scope">
                     <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                     <el-button v-show="scope.row.isDel === 1" size="mini" type="warning"

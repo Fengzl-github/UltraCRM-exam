@@ -39,26 +39,29 @@
                 </el-form-item>
             </el-form>
         </div>
-        <el-table :height="tableHeight" :data="tableData" stripe border highlight-current-row style="width: 98%">
+        <el-table :max-height="tableHeight" :data="tableData" stripe border highlight-current-row style="width: 98%"
+                  :row-style="{height:'50px'}"
+                  :cell-style="{padding:'0px'}"
+                  :header-cell-style="{background:'#EEEEEE',color:'#4d4d4d'}">
             <el-table-column type="index" width="50">
             </el-table-column>
-            <el-table-column prop="planName" label="计划名称"></el-table-column>
-            <el-table-column prop="testStartTime" label="考试开始时间"></el-table-column>
-            <el-table-column prop="testEndTime" label="考试结束时间"></el-table-column>
-            <el-table-column prop="testTime" label="考试时长(分)"></el-table-column>
-            <el-table-column prop="testForm" label="考试形式">
+            <el-table-column show-overflow-tooltip prop="planName" label="计划名称"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="testStartTime" label="考试开始时间"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="testEndTime" label="考试结束时间"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="testTime" label="考试时长(分)"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="testForm" label="考试形式">
                 <template slot-scope="scope">
                     <span v-if="scope.row.testForm == 0">闭卷</span>
                     <span v-if="scope.row.testForm == 1">开卷</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="testType" label="发卷类型">
+            <el-table-column show-overflow-tooltip prop="testType" label="发卷类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.testForm == 0">随机</span>
                     <span v-if="scope.row.testForm == 1">轮询</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="status" label="计划状态">
+            <el-table-column show-overflow-tooltip prop="status" label="计划状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 0">未发布</span>
                     <span v-if="scope.row.status == 1">已发布</span>
@@ -66,7 +69,7 @@
                     <span v-if="scope.row.status == 3">已公布</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="operator" label="创建人"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="operator" label="创建人"></el-table-column>
             <el-table-column label="操作" width="350">
                 <template slot-scope="scope">
                     <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -185,12 +188,15 @@
                     <el-button type="primary" @click="addPerson">添加人员</el-button>
                 </el-button-group>
             </div>
-            <el-table :height="tableHeight" :data="paperData" stripe border highlight-current-row style="width: 98%">
+            <el-table :max-height="tableHeight" :data="paperData" stripe border highlight-current-row style="width: 98%"
+                      :row-style="{height:'50px'}"
+                      :cell-style="{padding:'0px'}"
+                      :header-cell-style="{background:'#EEEEEE',color:'#4d4d4d'}">
                 <el-table-column type="index" width="50">
                 </el-table-column>
-                <el-table-column prop="planName" label="计划名称"></el-table-column>
-                <el-table-column prop="paperName" label="试卷名称"></el-table-column>
-                <el-table-column prop="isUsed" label="是否有效">
+                <el-table-column show-overflow-tooltip prop="planName" label="计划名称"></el-table-column>
+                <el-table-column show-overflow-tooltip prop="paperName" label="试卷名称"></el-table-column>
+                <el-table-column show-overflow-tooltip prop="isUsed" label="是否有效">
                     <template slot-scope="scope">
                         <span v-if="scope.row.isUsed == 0">未使用</span>
                         <span v-if="scope.row.isUsed == 1">使用</span>
