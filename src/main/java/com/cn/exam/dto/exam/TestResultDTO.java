@@ -11,6 +11,7 @@ import lombok.Data;
  **/
 @Data
 public class TestResultDTO {
+    private Integer id;
     //考试计划编号
     private String planId;
     //参考人工号
@@ -56,6 +57,7 @@ public class TestResultDTO {
 
     public TestResultDTO(ExamTestPerson ps, ExamTestResult rs) {
         if (ps != null) {
+            this.id = ps.getId();
             this.planId = ps.getPlanId();
             this.ghid = ps.getGhid();
             this.name = ps.getName();

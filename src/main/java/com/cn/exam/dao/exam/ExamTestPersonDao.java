@@ -53,4 +53,17 @@ public interface ExamTestPersonDao extends JpaRepository<ExamTestPerson, Integer
             "where 1=1 " +
             "and ps.planId = :planId and ps.ghid = :ghid ")
     TestInfoDTO getTestInfo(@Param("planId") String planId, @Param("ghid") String ghid);
+
+    /**
+     * @Author fengzhilong
+     * @Desc  改变是否阅卷中状态
+     * @Date 2021/4/14 10:18
+     * @param id 主键
+	 * @param isScoring 0-待阅 1-阅卷中
+     * @return void
+     **/
+    @Transactional
+    @Modifying
+    @Query("update ExamTestPerson ep set ep.isScoring = :isScoring where ep.id = :id")
+    void updateIsScoring(@Param("id") Integer id, @Param("isScoring") Integer isScoring);
 }

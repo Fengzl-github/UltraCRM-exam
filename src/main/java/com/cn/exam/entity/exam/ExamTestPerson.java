@@ -37,6 +37,12 @@ public class ExamTestPerson extends BaseIntIdEntity {
     private Integer testStatus;
     @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 1 COMMENT '阅卷状态：1:未阅卷,2:已阅卷'")
     private Integer scoringStatus;
+    @Column(columnDefinition = "tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否阅卷中：0:待阅,1:阅卷中'")
+    private Integer isScoring;
+    @Column(columnDefinition = "varchar(30) NULL DEFAULT NULL COMMENT '阅卷人ghid'")
+    private String markerGhid;
+    @Column(columnDefinition = "varchar(64) NULL DEFAULT NULL COMMENT '阅卷人'")
+    private String markerName;
     @Column(columnDefinition = "varchar(64) NULL DEFAULT NULL COMMENT '提交试卷时间'")
     private String submitTime;
     @Column(columnDefinition = "double(5,1) COMMENT '考试总分'")

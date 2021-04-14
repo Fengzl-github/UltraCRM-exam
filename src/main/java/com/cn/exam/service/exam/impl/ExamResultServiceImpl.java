@@ -3,6 +3,7 @@ package com.cn.exam.service.exam.impl;
 import com.cn.common.jpa.util.JpaUtil;
 import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.MyString;
+import com.cn.exam.dao.exam.ExamTestPersonDao;
 import com.cn.exam.dto.exam.TestResultDTO;
 import com.cn.exam.service.exam.ExamResultService;
 import com.cn.exam.vo.exam.TestResultVO;
@@ -23,6 +24,8 @@ import java.util.Map;
 public class ExamResultServiceImpl implements ExamResultService {
 
     @Resource
+    private ExamTestPersonDao examTestPersonDao;
+    @Resource
     private JpaUtil jpaUtil;
 
 
@@ -41,6 +44,10 @@ public class ExamResultServiceImpl implements ExamResultService {
             hql += "and ps.scoringStatus = :scoringStatus ";
             params.put("scoringStatus", testResultVO.getScoringStatus());
         }
+        if (testResultVO.getIsScoring() != null) {
+            hql += "and ps.isScoring = :isScoring ";
+            params.put("isScoring", testResultVO.getIsScoring());
+        }
         if (MyString.isNotEmpty(testResultVO.getPlanId())) {
             hql += "and ps.planId = :planId ";
             params.put("planId", testResultVO.getPlanId());
@@ -57,8 +64,19 @@ public class ExamResultServiceImpl implements ExamResultService {
 
         hql += "order by ps.submitTime asc, ps.ghid asc";
 
-        Page<TestResultDTO> page = jpaUtil.page(hql, params, pageable.getPageableUnsorted(), TestResultDTO.class);
-        System.out.println("试题数:"+page.getTotalElements());
+        Page<TestResultDTO> page = null;
+        synchronized (page) {
+            page = jpaUtil.page(hql, params, pageable.getPageableUnsorted(), TestResultDTO.class);
+            System.out.println("试题数:" + page.getTotalElements());
+            // 阅卷：修改抽到试卷的是否阅卷中状态
+            if (testResultVO.getScoringStatus() == 1){
+                for (TestResultDTO temp : page.getContent()) {
+
+                    examTestPersonDao.updateIsScoring(temp.getId(), 1);
+                }
+            }
+        }
+
         return page.getContent();
     }
 }
