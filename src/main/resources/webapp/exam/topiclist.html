@@ -45,7 +45,8 @@
                     <el-button type="primary" @click="resetQuery">重置</el-button>
                 </el-form-item>
 
-                <el-button style="float: right; margin-right: 120px" type="primary" @click="handleEdit(0,null)">新增</el-button>
+                <el-button style="float: right; margin-right: 120px" type="primary" @click="handleEdit(0,null)">新增
+                </el-button>
                 <el-popover style="float: right; margin-right: 40px"
                             placement="bottom"
                             width="400"
@@ -115,15 +116,15 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination
-                background
-                :page-sizes="[10, 50, 100, 200]"
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :page-size="pageable.size"
-                :current-page.sync="pageable.page"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="pageable.total">
+        <el-pagination style="padding-top: 10px"
+                       background
+                       :page-sizes="[10, 50, 100, 200]"
+                       @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :page-size="pageable.size"
+                       :current-page.sync="pageable.page"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="pageable.total">
         </el-pagination>
     </el-card>
 </div>
@@ -201,7 +202,7 @@
     });
 
     $(function () {
-        if (myUtil.getLookie('queryForm') != ""){
+        if (myUtil.getLookie('queryForm') != "") {
             vData.queryForm = JSON.parse(myUtil.getLookie('queryForm'));
             vData.pageable = vData.queryForm.pageable;
         }
@@ -217,7 +218,7 @@
                 console.log(lret);
                 vData.tableData = lret.data.content;
                 vData.pageable.total = lret.data.total;
-                if (myUtil.getLookie('queryForm') != ""){
+                if (myUtil.getLookie('queryForm') != "") {
                     myUtil.deleteLookie('queryForm');
                 }
             })
@@ -275,12 +276,12 @@
 
     function handleEdit(idx, row) {
         var id = '';
-        if (row != null){
+        if (row != null) {
             id = row.id;
         }
         var index = myUtil.fun_querystring('index');
         myUtil.setLookie('queryForm', JSON.stringify(vData.queryForm));
-        top.vData.ableTabs[index].tabUrl = encodeURI('/page/exam/topicEdit?id='+id);
+        top.vData.ableTabs[index].tabUrl = encodeURI('/page/exam/topicEdit?id=' + id);
     }
 
     /*导出数据*/
@@ -327,7 +328,7 @@
         vData.fileList = [];
         vData.fileList.push(file.raw);
         console.log(vData.fileList);
-    };
+    }
 
     /*删除文件*/
     function fileRemove(file, fileList) {
@@ -347,12 +348,12 @@
             myEl.elAlert(-1, '文件大小不得超过10M');
             return;
         }
-    };
+    }
 
     function UploadUrl() {
         // 因为action参数是必填项，我们使用二次确认进行文件上传时，直接填上传文件的url会因为没有参数导致api报404，所以这里将action设置为一个返回为空的方法就行，避免抛错
         return "";
-    };
+    }
 </script>
 
 <style>
