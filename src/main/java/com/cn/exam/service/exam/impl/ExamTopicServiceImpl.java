@@ -1,5 +1,6 @@
 package com.cn.exam.service.exam.impl;
 
+import com.cn.common.exception.FzlException;
 import com.cn.common.jpa.util.JpaUtil;
 import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.DateTime;
@@ -16,16 +17,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 
 
 /**
@@ -71,6 +71,22 @@ public class ExamTopicServiceImpl implements ExamTopicService {
         return examTopicDao.findAll(specification, pageable.getPageable());
     }
 
+    /**
+     * @Author fengzhilong
+     * @Desc 获取详情
+     * @Date 2021/4/15 10:29
+     * @param id 主键
+     * @return com.cn.exam.entity.exam.ExamTopic
+     **/
+    @Override
+    public ExamTopic topicEditInfo(Integer id) {
+
+        Optional<ExamTopic> optional = examTopicDao.findById(id);
+        if (!optional.isPresent()) {
+            throw new FzlException("不存在");
+        }
+        return optional.get();
+    }
 
     /**
      * @Desc 保存和修改题目

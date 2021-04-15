@@ -81,7 +81,9 @@
                         </el-tab-pane>
                         <el-tab-pane closable v-for="(item,index) in ableTabs" :key="item.key" :name="item.name">
                             <span slot="label" @dblclick="dblclickIfream(item,index)">{{item.title}}</span>
-                            <iframe :id="item.key" :src="item.tabUrl+'?index='+index" scrolling="auto" frameborder="0"
+                            <iframe :id="item.key"
+                                    :src="(item.tabUrl).indexOf('?') != -1 ? item.tabUrl+'&index='+index : item.tabUrl+'?index='+index"
+                                    scrolling="auto" frameborder="0"
                                     marginheight="0" marginwidth="0" :style="frameStyle"></iframe>
                         </el-tab-pane>
                     </el-tabs>

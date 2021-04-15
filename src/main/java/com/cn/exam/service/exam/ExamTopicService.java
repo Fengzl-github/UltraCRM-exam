@@ -22,6 +22,9 @@ public interface ExamTopicService {
     /*题库列表*/
     Page<ExamTopic> listExamTopicPage(ExamTopicDTO examTopicDTO, JsonPage pageable);
 
+    /*获取详情*/
+    ExamTopic topicEditInfo(Integer id);
+
     /*保存和修改题目*/
     void saveExamTopic(ExamTopicVO examTopicVO);
 

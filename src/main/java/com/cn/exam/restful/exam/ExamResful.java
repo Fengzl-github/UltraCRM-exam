@@ -80,6 +80,14 @@ public class ExamResful {
                 .putData("total", page.getTotalElements());
     }
 
+    @PostMapping("/topicEditInfo")
+    public ResResult topicEditInfo(Integer id) {
+
+        ExamTopic examTopic = examTopicService.topicEditInfo(id);
+
+        return ResCode.OK.setData(examTopic);
+    }
+
 
     /**
      * @Author fengzhilong

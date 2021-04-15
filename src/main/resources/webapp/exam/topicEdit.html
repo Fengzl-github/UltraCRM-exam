@@ -13,15 +13,138 @@
     <script type="text/javascript" src="/common/myutil/myEl.js"></script>
 </head>
 <body>
-    <div id="appVM">
-        <el-page-header @back="goBack" content="详情页面">
-        </el-page-header>
-    </div>
+<div id="appVM" v-cloak>
+    <el-card>
+        <el-page-header @back="goBack" content="详情页面"></el-page-header>
+        <el-divider></el-divider>
+        <!--内容-->
+        <div>
+            <el-col :span="12">
+                <el-form label-position="right" label-width="100px" :model="EditForm">
+                    <el-form-item label="题目编号">
+                        <el-input class="myInput" v-model="EditForm.topicId" disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="题干">
+                        <el-input class="myText" type="textarea" v-model="EditForm.topicDes"></el-input>
+                    </el-form-item>
+                    <el-form-item label="题目类型">
+                        <template>
+                            <el-select v-model="EditForm.topicType" placeholder="请选择">
+                                <el-option v-for="item in tpTypeOptions"
+                                           :key="item.value"
+                                           :label="item.label"
+                                           :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </template>
+                    </el-form-item>
+                    <el-form-item label="难度等级">
+                        <el-select v-model="EditForm.difficultyLevel" placeholder="请选择">
+                            <el-option v-for="item in tpDifficultyLevelOptions"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="分值">
+                        <el-input-number v-model="EditForm.topicScore" :min="0.5" :max="20" :precision="1"
+                                         :step="0.5" :step-strictly="true"></el-input-number>
+                    </el-form-item>
+                    <el-form-item label="状态">
+                        <template>
+                            <el-radio-group v-model="EditForm.isDel">
+                                <el-radio :label="0">正常</el-radio>
+                                <el-radio :label="1">禁用</el-radio>
+                            </el-radio-group>
+                        </template>
+                    </el-form-item>
+                    <el-form-item label="正确答案">
+                        <el-input class="myText" type="textarea" v-model="EditForm.correctAnswer"></el-input>
+                    </el-form-item>
+                    <el-form-item label="创建时间">
+                        <el-date-picker v-model="EditForm.createTime" readonly
+                                        value-format="yyyy-MM-dd HH:mm:ss"
+                                        type="datetime"
+                                        placeholder="选择日期时间"
+                                        disabled="true">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="创建人">
+                        <el-input class="myInput" v-model="EditForm.operator" disabled="true"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div style="text-align: right">
+                    <el-button type="primary" @click="saveData">保 存</el-button>
+                </div>
+            </el-col>
+            <el-col :span="12">
+                <div class="headLabel">选项集合</div>
+                <el-form label-position="right" label-width="100px" :model="topicContent">
+                    <el-form-item label="选项A">
+                        <el-input id="A" class="myText" type="textarea" v-model="topicContent.A"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项B">
+                        <el-input id="B" class="myText" type="textarea" v-model="topicContent.B"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项C">
+                        <el-input id="C" class="myText" type="textarea" v-model="topicContent.C"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项D">
+                        <el-input id="D" class="myText" type="textarea" v-model="topicContent.D"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项E">
+                        <el-input id="E" class="myText" type="textarea" v-model="topicContent.E"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项F">
+                        <el-input id="F" class="myText" type="textarea" v-model="topicContent.F"></el-input>
+                    </el-form-item>
+                    <el-form-item label="选项G">
+                        <el-input id="G" class="myText" type="textarea" v-model="topicContent.G"></el-input>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+        </div>
+    </el-card>
+</div>
 </body>
 
 <script>
-    let vData={
-
+    let vData = {
+        EditForm: {},
+        topicContent: {},
+        tpTypeOptions: [{
+            value: 1,
+            label: '单选'
+        }, {
+            value: 2,
+            label: '多选'
+        }, {
+            value: 3,
+            label: '填空'
+        }, {
+            value: 4,
+            label: '判断'
+        }, {
+            value: 5,
+            label: '简答'
+        }],
+        tpDifficultyLevelOptions: [{
+            value: 1,
+            label: '困难'
+        }, {
+            value: 2,
+            label: '较难'
+        }, {
+            value: 3,
+            label: '一般'
+        }, {
+            value: 4,
+            label: '较易'
+        }, {
+            value: 5,
+            label: '容易'
+        }]
     };
 
     let vm = new Vue({
@@ -31,8 +154,100 @@
             goBack() {
                 var index = myUtil.fun_querystring('index');
                 top.vData.ableTabs[index].tabUrl = '/page/exam/topiclist';
+            },
+            saveData() {
+                saveData();
             }
+        }
+    });
+
+
+    var vTopic = ["A", "B", "C", "D", "E", "F", "G"];
+
+    function saveData() {
+        let vJsonData = vData.EditForm;
+        vJsonData.topicContent = vData.topicContent;
+        vJsonData.ghid = myUtil.getAccountPwd();
+        vJsonData.operator = myUtil.getUname();
+        if (vData.EditForm.topicType == 1 || vData.EditForm.topicType == 2 || vData.EditForm.topicType == 4) {
+            let topicQueContent = [];
+            for (var index = 0; index < vTopic.length; index++) {
+                var vLeter = vTopic[index];
+                var vValue = $("#" + vLeter).val();
+                if (vValue.length > 0) {
+                    topicQueContent.push({"K": vLeter, "V": vValue, "CH": false})
+                }
+            }
+            vJsonData.topicQueContent = topicQueContent;
+        } else if (vData.EditForm.topicType == 3) {
+            var vMsg = "";  //存储汉字写入答案字段
+            var vJson = [];//存储json数据显示格式
+            for (var index = 0; index < vTopic.length; index++) {
+                var vLeter = vTopic[index];
+                var vValue = $("#" + vLeter).val();
+                if (vValue.length > 0) {
+                    vJson.push({"K": vLeter, "V": vValue});
+
+                    if (vMsg.length > 0) {
+                        vMsg += ";";
+                    }
+                    vMsg += vValue;
+                }
+            }
+            vJsonData.topicQueContent = vJson;
+            vJsonData.correctAnswer = vMsg;
+        } else {
+            vJsonData.topicContent = {};
+        }
+        axios.post("/exam/saveExamTopic", vJsonData)
+            .then(function (response) {
+                let lret = response.data;
+                if (lret.code == 200) {
+                    var index = myUtil.fun_querystring('index');
+                    top.vData.ableTabs[index].tabUrl = '/page/exam/topiclist';
+                }
+                myEl.elAlert(lret.code, lret.msg);
+            })
+            .catch(function (error) {
+
+            });
+    }
+
+
+    $(function () {
+        if (myUtil.fun_querystring("id") != '') {
+            let vJsonData = {"id": myUtil.fun_querystring("id")};
+            axios.post("/exam/topicEditInfo", vJsonData)
+                .then(function (response) {
+                    let lret = response.data;
+                    console.log("结果",lret);
+                    vData.EditForm = lret.data;
+                    vData.topicContent = JSON.parse(vData.EditForm.topicContent);
+                })
+                .catch(function (error) {
+
+                })
         }
     })
 </script>
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+    .myInput {
+        width: 219px;
+    }
+
+    .myText {
+        width: 500px;
+    }
+
+    .headLabel {
+        text-align: center;
+        font-size: 22px;
+        padding: 1px 0 34px 0;
+    }
+</style>
 </html>
