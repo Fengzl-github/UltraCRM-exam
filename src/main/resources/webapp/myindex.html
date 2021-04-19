@@ -68,7 +68,8 @@
             <el-aside :width="asideStyle.asidewidth">
                 <el-menu :collapse="asideStyle.isCollapse" :collapse-transition="false" :background-color="styleColor"
                          :text-color="textColor" active-text-color="#ffd04b" style="height:100%;">
-                    <tree-menu :list="MenuItems" :iconStyle="iconStyle()"></tree-menu>
+                    <tree-menu :list="MenuItems" :iconStyle="iconStyle()"
+                               :class="collClass()"></tree-menu>
                 </el-menu>
             </el-aside>
             <el-main>
@@ -187,7 +188,8 @@
             errorHandler,
             addTab,
             removeTab,
-            dblclickIfream
+            dblclickIfream,
+            collClass
         }
 
 
@@ -199,6 +201,15 @@
         } else if (nType === 1) {
             TextColor(1);
         }
+    }
+
+    function collClass() {
+        if (vData.asideStyle.isCollapse){
+            return "el-menu--collapse el-menu";
+        }else {
+            return "el-submenu";
+        }
+
     }
 
     function handleCommand(command) {
@@ -264,6 +275,12 @@
     function toggleClick() { //切换左侧菜单折叠效果
         vData.asideStyle.isCollapse = !vData.asideStyle.isCollapse;
         vData.asideStyle.asidewidth = (vData.asideStyle.isCollapse == true ? "65px" : "250px");
+
+        if (vData.asideStyle.isCollapse){
+            $(".el-submenu").attr('class', 'el-menu--collapse el-menu');
+        }else {
+            $(".el-menu--collapse el-menu").attr('class', 'el-submenu');
+        }
     }
 
 

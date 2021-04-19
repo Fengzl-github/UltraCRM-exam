@@ -1,5 +1,6 @@
 package com.cn.exam.restful.exam;
 
+import com.cn.common.exception.FzlException;
 import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.MyString;
 import com.cn.common.vo.ResCode;
@@ -270,6 +271,9 @@ public class ExamResful {
     @PostMapping("/prodThePaperTemp")
     public ResResult prodThePaperTemp(@RequestBody ExamProdPaperDTO examProdPaperDTO) {
 
+        if (examProdPaperDTO.getExamDatas().size() == 0) {
+            throw new FzlException("试题不能为空");
+        }
         examTempService.prodThePaperTemp(examProdPaperDTO);
 
         return ResCode.OK.msg("生成试卷成功");
@@ -285,13 +289,9 @@ public class ExamResful {
      **/
     @PostMapping("/testPaperList")
     public ResResult testPaperList(String planId) {
-        if (MyString.isNotEmpty(planId)) {
-            List<ExamTestPaper> list = examTempService.testPaperList(planId);
-            return ResCode.OK.msg("查询成功")
-                    .putData("content", list);
-        } else {
-            return ResCode.ERROR.msg("缺少参数");
-        }
+        List<ExamTestPaper> list = examTempService.testPaperList(planId);
+        return ResCode.OK.msg("查询成功")
+                .putData("content", list);
     }
 
 

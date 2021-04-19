@@ -7,6 +7,7 @@ import com.cn.exam.entity.exam.ExamTestPaper;
 import com.cn.exam.entity.exam.ExamTestPerson;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public interface ExamTempService {
     void prodThePaperTemp(ExamProdPaperDTO examProdPaperDTO);
 
     /*计划下试卷列表*/
-    List<ExamTestPaper> testPaperList(String planId);
+    List<ExamTestPaper> testPaperList(@NotBlank(message = "缺少计划id") String planId);
 
     /*设置试卷是否生效*/
     void updateIsUsed(String paperId, Integer isUsed);

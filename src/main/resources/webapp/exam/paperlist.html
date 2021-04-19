@@ -22,7 +22,7 @@
                 <el-form-item label="计划名称">
                     <el-input v-model="queryForm.planName" placeholder="请输入计划名称"></el-input>
                 </el-form-item>
-                <el-form-item label="状态">
+                <!--<el-form-item label="状态">
                     <el-select v-model="queryForm.status" placeholder="请选择">
                         <el-option v-for="item in statusOptions"
                                    :key="item.value"
@@ -30,7 +30,7 @@
                                    :value="item.value">
                         </el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item>-->
                 <el-form-item>
                     <el-button type="primary" @click="queryUser">查询</el-button>
                 </el-form-item>
@@ -76,7 +76,7 @@
                     <el-button size="mini" type="success"
                                @click="examPaperInfo(scope.$index, scope.row)">试卷信息
                     </el-button>
-                    <el-button v-show="scope.row.status === 0" size="mini" type="primary"
+                    <!--<el-button v-show="scope.row.status === 0" size="mini" type="primary"
                                @click="updatePlanStatus(scope.$index, scope.row,1,'发布试卷')">发布试卷
                     </el-button>
                     <el-button v-show="scope.row.status === 1" size="mini" type="primary"
@@ -84,7 +84,7 @@
                     </el-button>
                     <el-button v-show="scope.row.status === 2" size="mini" type="primary"
                                @click="updatePlanStatus(scope.$index, scope.row,3,'公布成绩')">公布成绩
-                    </el-button>
+                    </el-button>-->
                     <el-button size="mini" type="danger"
                                @click="handleRemove(scope.$index, scope.row)">删除
                     </el-button>
@@ -92,6 +92,7 @@
             </el-table-column>
         </el-table>
         <el-pagination
+                style="padding-top: 10px"
                 background
                 :page-sizes="[10, 50, 100, 200]"
                 @size-change="handleSizeChange"
