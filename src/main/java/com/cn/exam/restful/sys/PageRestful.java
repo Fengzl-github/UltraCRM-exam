@@ -83,4 +83,8 @@ public class PageRestful {
     public String persontesting() {
         return "exam/persontesting";
     }
+
+    /*阅卷*/
+    @GetMapping("/exam/scoringList")
+    public String scoringList(){ return "exam/scoringList";}
 }

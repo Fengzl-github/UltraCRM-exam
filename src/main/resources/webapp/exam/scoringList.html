@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>阅卷</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_open.js"></script>
+    <script type="text/javascript" src="/common/dialog/lhgdialog.js?self=false&skin=idialog"></script>
+</head>
+<body>
+<div id="appVM" v-cloak>
+    <el-card>
+        <div>
+            <el-form :inline="true" :model="queryForm" class="demo-form-inline">
+                <el-form-item label="计划名称">
+                    <el-input v-model="queryForm.planName" placeholder="请输入计划名称"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="queryUser">查询</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="resetQuery">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+
+        <el-table :max-height="tableHeight" :data="tableData" stripe border highlight-current-row style="width: 98%"
+                  :row-style="{height:'50px'}"
+                  :cell-style="{padding:'0px'}"
+                  :header-cell-style="{background:'#EEEEEE',color:'#4d4d4d'}">
+            <el-table-column type="index" width="50"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="planName" label="计划名称"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="testStartTime" label="考试开始时间"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="testEndTime" label="考试结束时间"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="testTime" label="考试时长(分)"></el-table-column>
+            <el-table-column show-overflow-tooltip prop="testForm" label="考试形式">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.testForm == 0">闭卷</span>
+                    <span v-if="scope.row.testForm == 1">开卷</span>
+                </template>
+            </el-table-column>
+            <el-table-column show-overflow-tooltip prop="testType" label="发卷类型">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.testForm == 0">随机</span>
+                    <span v-if="scope.row.testForm == 1">轮询</span>
+                </template>
+            </el-table-column>
+            <el-table-column show-overflow-tooltip prop="status" label="计划状态">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.status == 0">未发布</span>
+                    <span v-if="scope.row.status == 1">已发布</span>
+                    <span v-if="scope.row.status == 2">待公布</span>
+                    <span v-if="scope.row.status == 3">已公布</span>
+                </template>
+            </el-table-column>
+            <el-table-column show-overflow-tooltip prop="operator" label="创建人"></el-table-column>
+            <el-table-column label="操作" width="350">
+                <template slot-scope="scope">
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination
+                style="padding-top: 10px"
+                background
+                :page-sizes="[10, 50, 100, 200]"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :page-size="pageable.size"
+                :current-page.sync="pageable.page"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pageable.total">
+        </el-pagination>
+    </el-card>
+</div>
+
+</body>
+
+<script>
+    let vData = {
+        queryForm: {planName: ''},
+        tableHeight: $(document).height() - 150,
+        tableData: [],
+        pageable: {
+            size: 10,
+            page: 1,
+            total: 0
+        }
+    };
+
+    let vm = new Vue({
+        el: '#appVM',
+        data: vData,
+        methods: {
+            queryUser() {
+                vData.pageable.page = 1;
+                getData();
+            },
+            resetQuery() {
+                vData.queryForm.planName = '';
+            },
+            handleSizeChange(val) {
+                vData.pageable.page = 1;
+                vData.pageable.size = val;
+                getData();
+            },
+            handleCurrentChange() {
+                getData();
+            }
+        }
+    });
+
+    $(function () {
+        getData();
+    });
+
+    function getData() {
+        let lJsonData = vData.queryForm;
+        lJsonData.pageable = vData.pageable;
+        lJsonData.status = 2;
+        axios.post("/exam/listExamPlanPage", lJsonData)
+            .then(function (response) {
+                let lret = response.data;
+                console.log(lret);
+                vData.tableData = lret.data.content;
+                vData.pageable.total = lret.data.total;
+            })
+            .catch(function (error) {
+
+            });
+    }
+
+</script>
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+</html>
