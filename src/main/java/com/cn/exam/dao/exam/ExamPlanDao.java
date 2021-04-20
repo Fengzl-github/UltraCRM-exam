@@ -32,4 +32,10 @@ public interface ExamPlanDao extends JpaRepository<ExamPlan, Integer>, JpaSpecif
     /*根据计划id获取考试计划*/
     @Query("select ep from ExamPlan ep where ep.planId = :planId and ep.isDel = 0")
     ExamPlan findByPlanId(@Param("planId") String planId);
+
+    /*修改是否添加试卷状态*/
+    @Transactional
+    @Modifying
+    @Query("update ExamPlan ep set ep.isPaper = :isPaper where ep.planId = :planId")
+    void updateIsPaper(@Param("planId") String planId, @Param("isPaper") Integer isPaper);
 }

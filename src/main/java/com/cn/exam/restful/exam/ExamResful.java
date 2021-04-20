@@ -310,6 +310,21 @@ public class ExamResful {
         return ResCode.OK.msg("操作成功");
     }
 
+    /**
+     * @Author fengzhilong 
+     * @Desc  删除试卷
+     * @Date 2021/4/20 15:36
+     * @param id 主键
+     * @return com.cn.common.vo.ResResult
+     **/
+    @PostMapping("/delPaper")
+    public ResResult delPaper(Integer id){
+
+        examTempService.delPaper(id);
+
+        return ResCode.OK.msg("删除成功");
+    }
+
 
     /**
      * @Author fengzhilong

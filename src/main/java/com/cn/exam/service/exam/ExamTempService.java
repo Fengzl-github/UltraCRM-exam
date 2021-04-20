@@ -8,6 +8,7 @@ import com.cn.exam.entity.exam.ExamTestPerson;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -35,4 +36,7 @@ public interface ExamTempService {
 
     /*参考人员列表*/
     List<ExamTestPerson> getTestPerson(String planId);
+
+    /*删除试卷*/
+    void delPaper(@NotNull(message = "缺少id") Integer id);
 }

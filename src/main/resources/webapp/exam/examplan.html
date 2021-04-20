@@ -242,6 +242,7 @@
         let lJsonData = vData.queryForm;
         lJsonData.pageable = vData.pageable;
         lJsonData.isPaper = 0;
+        lJsonData.status = 0;
         axios.post("/exam/listExamPlanPage", lJsonData)
             .then(function (response) {
                 let lret = response.data;

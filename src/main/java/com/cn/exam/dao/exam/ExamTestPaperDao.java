@@ -33,4 +33,10 @@ public interface ExamTestPaperDao extends JpaRepository<ExamTestPaper, Integer>,
     /*有效试卷列表*/
     @Query("select etp from ExamTestPaper etp where etp.isDel = 0 and etp.planId = :planId and etp.isUsed = :isUsed order by etp.isUsed desc,etp.createTime desc")
     List<ExamTestPaper> findByPlanIdAndIsUsed(@Param("planId") String planId, @Param("isUsed") Integer isUsed);
+
+    /*删除试卷*/
+    @Transactional
+    @Modifying
+    @Query("delete from ExamTestPaper etp where etp.id = :id")
+    void delPaperById(@Param("id") Integer id);
 }

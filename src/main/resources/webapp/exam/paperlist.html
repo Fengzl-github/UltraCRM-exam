@@ -22,15 +22,6 @@
                 <el-form-item label="计划名称">
                     <el-input v-model="queryForm.planName" placeholder="请输入计划名称"></el-input>
                 </el-form-item>
-                <!--<el-form-item label="状态">
-                    <el-select v-model="queryForm.status" placeholder="请选择">
-                        <el-option v-for="item in statusOptions"
-                                   :key="item.value"
-                                   :label="item.label"
-                                   :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>-->
                 <el-form-item>
                     <el-button type="primary" @click="queryUser">查询</el-button>
                 </el-form-item>
@@ -76,15 +67,9 @@
                     <el-button size="mini" type="success"
                                @click="examPaperInfo(scope.$index, scope.row)">试卷信息
                     </el-button>
-                    <!--<el-button v-show="scope.row.status === 0" size="mini" type="primary"
-                               @click="updatePlanStatus(scope.$index, scope.row,1,'发布试卷')">发布试卷
+                    <el-button size="mini" type="primary"
+                               @click="updatePlanStatus(scope.$index, scope.row,1,'发布试卷，开始考试')">发布试卷
                     </el-button>
-                    <el-button v-show="scope.row.status === 1" size="mini" type="primary"
-                               @click="updatePlanStatus(scope.$index, scope.row,2,'开始阅卷')">开始阅卷
-                    </el-button>
-                    <el-button v-show="scope.row.status === 2" size="mini" type="primary"
-                               @click="updatePlanStatus(scope.$index, scope.row,3,'公布成绩')">公布成绩
-                    </el-button>-->
                     <el-button size="mini" type="danger"
                                @click="handleRemove(scope.$index, scope.row)">删除
                     </el-button>
@@ -215,7 +200,7 @@
                                    @click="previewPaper(scope.$index, scope.row)">预览
                         </el-button>
                         <el-button size="mini" type="danger"
-                                   @click="handleRemove(scope.$index, scope.row)">删除
+                                   @click="delPaper(scope.$index, scope.row)">删除
                         </el-button>
                     </template>
                 </el-table-column>
@@ -288,7 +273,9 @@
             updatePlanStatus,
             updateIsUsed,
             previewPaper,
-            addPerson
+            addPerson,
+            handleRemove,
+            delPaper
         }
     });
 
@@ -300,6 +287,7 @@
         let lJsonData = vData.queryForm;
         lJsonData.pageable = vData.pageable;
         lJsonData.isPaper = 1;
+        lJsonData.status = 0;
         axios.post("/exam/listExamPlanPage", lJsonData)
             .then(function (response) {
                 let lret = response.data;
@@ -324,6 +312,49 @@
         vData.EditDrawer.title = "编辑计划-" + row.planName;
         vData.EditForm = row;
         console.log("编辑---- ", JSON.stringify(vData.EditForm));
+    }
+
+    function handleRemove(idx, row) {
+        vm.$confirm("确认删除'" + row.planName + "'吗？")
+            .then(_ => {
+                let lJsonData = {"planId": row.planId};
+                axios.post("/exam/removeExamPlan", lJsonData)
+                    .then(function (response) {
+                        let lret = response.data;
+                        if (lret.code == 200) {
+                            getData();
+                        }
+                        myEl.elAlert(lret.code, lret.msg);
+                    })
+                    .catch(function (error) {
+
+                    });
+            })
+            .catch(_ => {
+
+            })
+    }
+
+    function delPaper(idx, row) {
+        console.log(idx, row);
+        vm.$confirm("确认删除'" + row.paperName + "'吗？")
+            .then(_ => {
+                let lJsonData = {"id": row.id};
+                axios.post("/exam/delPaper", lJsonData)
+                    .then(function (response) {
+                        let lret = response.data;
+                        if (lret.code == 200) {
+                            getData();
+                        }
+                        myEl.elAlert(lret.code, lret.msg);
+                    })
+                    .catch(function (error) {
+
+                    });
+            })
+            .catch(_ => {
+
+            })
     }
 
     function resetQuery() {

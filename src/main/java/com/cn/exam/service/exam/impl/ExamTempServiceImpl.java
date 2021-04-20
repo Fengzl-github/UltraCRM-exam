@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 /**
@@ -203,5 +204,30 @@ public class ExamTempServiceImpl implements ExamTempService {
         List<ExamTestPerson> list = examTestPersonDao.findbyPlanId(planId);
 
         return list;
+    }
+
+    /**
+     * @Author fengzhilong
+     * @Desc 删除试卷
+     * @Date 2021/4/20 15:27
+     * @param id 主键
+     * @return void
+     **/
+    @Override
+    public void delPaper(@NotNull(message = "缺少id") Integer id) {
+
+        //获取试卷信息
+        Optional<ExamTestPaper> byId = examTestPaperDao.findById(id);
+        if (!byId.isPresent()) {
+            throw new FzlException("试卷不存在");
+        }
+        //删除试卷
+        examTestPaperDao.delPaperById(id);
+
+        // 检测计划下试卷是否全部删除
+        List<ExamTestPaper> list = examTestPaperDao.findByPlanId(byId.get().getPlanId());
+        if (list.size() == 0) {
+            examPlanDao.updateIsPaper(byId.get().getPlanId(), 0);
+        }
     }
 }
