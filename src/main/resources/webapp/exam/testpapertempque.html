@@ -599,7 +599,9 @@
     function setSelect() {
         //合并内容
         for (n in vData.multipleSelection) {
-            vData.multipleSelection[n].topicQueContent = JSON.parse(vData.multipleSelection[n].topicQueContent);
+            if (vData.multipleSelection[n].topicType != 5){
+                vData.multipleSelection[n].topicQueContent = JSON.parse(vData.multipleSelection[n].topicQueContent);
+            }
             vData.ExamItems[vData.tabletIndex].ExamItem.push(vData.multipleSelection[n]);
         }
         //计算试题题量
@@ -639,6 +641,8 @@
                     .then(function (response) {
                         let lret = response.data;
                         myEl.elAlert(lret.code, lret.msg);
+                        //刷新父页面列表 关闭页面
+                        CloseWin();
                     })
                     .catch(function (error) {
 
@@ -675,6 +679,11 @@
         vData.planId = myUtil.fun_querystring("planId");
         vData.planName = decodeURI(myUtil.fun_querystring("planName"));
     })
+
+    function CloseWin() {
+        var dgRet = frameElement.api;
+        dgRet.close();
+    }
 
 
 </script>

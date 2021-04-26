@@ -70,20 +70,21 @@ public class ExamResultServiceImpl implements ExamResultService {
 
         hql += "order by ps.submitTime asc, ps.ghid asc";
 
-        Page<TestResultDTO> page = null;
-        synchronized (page) {
-            page = jpaUtil.page(hql, params, pageable.getPageableUnsorted(), TestResultDTO.class);
+        List<TestResultDTO> list = new ArrayList<>();
+        synchronized (list) {
+            Page<TestResultDTO> page = jpaUtil.page(hql, params, pageable.getPageableUnsorted(), TestResultDTO.class);
             System.out.println("试题数:" + page.getTotalElements());
+            list = page.getContent();
             // 阅卷：修改抽到试卷的是否阅卷中状态
             if (testResultVO.getScoringStatus() == 1) {
-                for (TestResultDTO temp : page.getContent()) {
+                for (TestResultDTO temp : list) {
 
                     examTestPersonDao.updateIsScoring(temp.getId(), 1);
                 }
             }
         }
 
-        return page.getContent();
+        return list;
     }
 
 

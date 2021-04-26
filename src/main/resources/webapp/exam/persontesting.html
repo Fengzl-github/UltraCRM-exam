@@ -47,7 +47,8 @@
                             </h5>
                             <br>
                             <template v-for="(tRadio,indexR) in testQue.topicQueContent">
-                                <el-radio v-model="testQue.radionName" :label="indexR" @change="ChangeValue(tRadio,index)">
+                                <el-radio v-model="testQue.radionName" :label="indexR"
+                                          @change="ChangeValue(tRadio,index)">
                                     {{tRadio.k}}、{{tRadio.v}}
                                 </el-radio>
                                 <br>
@@ -85,7 +86,8 @@
                             <template v-for="(tMSelect,tInx) in testQue.topicQueContent">
                                 {{tInx+1}}）
                                 <el-input v-model="tMSelect.INPUT" placeholder="请输入内容" style="width:300px;"
-                                          @change="ChangeValue(tMSelect,index)" :maxlength="200" size="medium"></el-input>
+                                          @change="ChangeValue(tMSelect,index)" :maxlength="200"
+                                          size="medium"></el-input>
                                 <br><br>
                             </template>
                         </el-card>
@@ -153,7 +155,7 @@
                 var vValue = vData.ExamItem[index];
                 if (vValue.topicType == 1) {
                     vValue.epReplay = val.k;
-                } else if (vValue.topicType == 2 || vValue.topicType == 3 || vValue.topicType == 4) {
+                } else if (vValue.topicType == 2 || vValue.topicType == 4) {
                     var vAns = "";
                     for (var i = 0; i < vValue.topicQueContent.length; i++) {
                         if (vValue.topicQueContent[i].CH) {
@@ -161,8 +163,22 @@
                         }
                     }
                     vValue.epReplay = vAns;
-                } else if (vValue.topicType == 5) {
-                    console.log("填空题答案:" + vValue.epReplay);
+                } else if (vValue.topicType == 3) {
+                    var vAns = [];
+                    var isAll = true;//检测所有填空是不是为空,如果是答案则记录为空
+                    for (var i = 0; i < vValue.topicQueContent.length; i++) {
+                        if (vValue.topicQueContent[i].INPUT) {
+                            vAns.push({"K": i, "V": vValue.topicQueContent[i].INPUT.replace(/\"/g, "“")});
+                            isAll = false;
+                        } else {
+                            vAns.push({"K": i, "V": ""});
+                        }
+                    }
+                    if (isAll) {
+                        vValue.EP_REPLAY = "";
+                    } else {
+                        vValue.EP_REPLAY = JSON.stringify(vAns);
+                    }
                 }
             },
             goTop() { //回到顶部
@@ -171,7 +187,13 @@
             SubmitPage() {
                 console.log("提交试卷", vData.ExamItem);
 
-                let lJsonForm = {'planId': myUtil.fun_querystring("planId"), 'paperId': myUtil.fun_querystring("paperId"), "ghid": myUtil.getAccountPwd(),"useTime": parseInt(vData.Timer / 60),"personEp": vData.ExamItem};
+                let lJsonForm = {
+                    'planId': myUtil.fun_querystring("planId"),
+                    'paperId': myUtil.fun_querystring("paperId"),
+                    "ghid": myUtil.getAccountPwd(),
+                    "useTime": parseInt(vData.Timer / 60),
+                    "personEp": vData.ExamItem
+                };
                 console.log("参数", lJsonForm);
                 axios.post('/exam/submitPage', lJsonForm)
                     .then(function (response) {

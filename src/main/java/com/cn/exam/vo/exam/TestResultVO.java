@@ -19,10 +19,10 @@ public class TestResultVO {
     private Integer testStatus;
     @NotNull(message = "缺少scoringStatus；阅卷状态：1:未阅卷,2:已阅卷")
     private Integer scoringStatus;
-    // 是否在阅卷中(1-待阅卷 2-阅卷中；防止多个阅卷人抽到相同试卷)
+    // 是否在阅卷中(0-待阅卷 1-阅卷中；防止多个阅卷人抽到相同试卷)
     private Integer isScoring;
 
     private String ghid;
-    @NotNull(message = "缺少onlyShortAnswer")
+    @NotNull(message = "缺少onlyShortAnswer")//0-全部 1-只填空 简单
     private Integer onlyShortAnswer;
 }

@@ -87,4 +87,10 @@ public class PageRestful {
     /*阅卷*/
     @GetMapping("/exam/scoringList")
     public String scoringList(){ return "exam/scoringList";}
+
+    /*批量阅卷*/
+    @GetMapping("/exam/allReading")
+    public String allReading(){ return "exam/allReading";}
+
+
 }
