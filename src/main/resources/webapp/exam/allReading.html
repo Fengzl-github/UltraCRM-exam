@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>批量阅卷</title>
+    <link rel="stylesheet" type="text/css" href="/common/element/element-index.css">
+    <script type="text/javascript" src="/common/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/common/vue/vue.min.js"></script>
+    <script type="text/javascript" src="/common/element/element-index.js"></script>
+    <script type="text/javascript" src="/common/axios/axios.min.js"></script>
+    <script type="text/javascript" src="/common/myutil/axios_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/my_util.js"></script>
+    <script type="text/javascript" src="/common/myutil/myEl.js"></script>
+</head>
+<body>
+<a href="#thisTop" target="_self" id="thisTop"></a>
+<div id="examlook">
+
+    <el-container>
+        <el-header>批量阅卷</el-header>
+
+        <el-dialog title="阅卷信息" :show-close="false" :close-on-click-modal="false" :visible.sync="dialogTableVisible"
+                   :modal="false" width="200px" top="60px" style="right:0px;left:auto;height:auto;text-align: center">
+
+            <el-button type="success" style="width:100%;" @click="closeWinPage">关闭窗口</el-button>
+            <br> <br>
+
+            <el-button type="success" style="width:100%;" @click="submitReadingRet" :disabled="ExamItem.length==0">
+                提交审阅
+            </el-button>
+            <br> <br><br> <br>
+            <el-tooltip content="回到顶部" placement="top" effect="light">
+                <el-button icon="el-icon-arrow-up" circle @click="goTop"></el-button>
+            </el-tooltip>
+        </el-dialog>
+
+        <el-main>
+            <div v-for="(testQue,index) in ExamItem">
+                <div v-if="(testQue.topicType==3 )">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、({{testQue.topicScore}}分) {{testQue.topicDes}} </h5><br>
+                        <div class="KSanswerStyle"><br>考生得分：
+                            <el-input-number size="small" v-model="testQue.epScore" :min="0"
+                                             :max="testQue.topicScore"></el-input-number>
+                        </div>
+                        <div class="KSanswerStyle"><br>考生答案：<br><br>
+                            <div style="margin-top: 10px;">
+                                <template v-for="(tMSelect,tInx) in testQue.epReplayList">
+                                    {{tInx+1}}）{{tMSelect.v}}<br><br>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="answerStyle"><br>正确答案：<br><br>
+                            <template v-for="(tMSelect,tInx) in testQue.topicQueContent">
+                                {{tInx+1}}）{{tMSelect.v}}<br><br>
+                            </template>
+                        </div>
+                    </el-card>
+                </div>
+
+
+                <div v-if="testQue.topicType==5">
+                    <el-card shadow="always">
+                        <h5>{{index+1}}、({{testQue.topicScore}}分) {{testQue.topicDes}}</h5><br>
+                        <div class="KSanswerStyle"><br>考生得分：
+                            <el-input-number size="small" v-model="testQue.epScore" :min="0"
+                                             :max="testQue.topicScore"></el-input-number>
+                        </div>
+                        <div class="KSanswerStyle"><br>考生答案：{{testQue.epReplay}}</div>
+                        <div class="answerStyle"><br>正确答案：{{testQue.correctAnswer}}</div>
+
+                    </el-card>
+                </div>
+            </div>
+        </el-main>
+    </el-container>
+</div>
+<script>
+    var vData = {
+        dialogTableVisible: true,
+        ExamItem: [],             //试卷整体信息
+        isSubmit: 0               //是否是提交之后的关闭，0-未提交点击关闭，1-提交之后点击关闭
+    };
+
+    // 该对象被加入到一个 Vue 实例中
+    var vm = new Vue({
+        el: '#examlook',
+        data: vData,
+        methods: {
+            closeWinPage() {
+                if (vData.isSubmit == 0 && vData.ExamItem.length != 0) {
+                    delYJPerson();
+                }
+                ClosePage();
+            },
+            submitReadingRet() {
+                submitRet();
+            },
+            goTop() { //回到顶部
+                $("#thisTop")[0].click();
+            }
+        }
+    })
+
+    $(function () {
+        getExamInfo();
+    })
+
+    function submitRet() {
+        vm.$confirm("确定要提交审阅评分结果吗?", '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(() => {
+            submitToSer();
+        }).catch(() => {
+
+        });
+    }
+
+    //读取试题
+    function getExamInfo() {
+        let lJsonData = {
+            "planId": myUtil.fun_querystring("planId"),
+            "testStatus": 2,
+            "scoringStatus": 1,
+            // "isScoring": 0,
+            "onlyShortAnswer": 1
+        };
+        axios.post("/exam/testResultPage", lJsonData)
+            .then(function (response) {
+                let lret = response.data;
+                console.log(lret);
+                vData.ExamItem = lret.data;
+            })
+            .catch(function (error) {
+
+            });
+    }
+
+
+    function submitToSer() {
+        //获取每道题的答案提交到服务端
+        console.log("提交数据：");
+        var vRet = [];
+        for (let index = 0; index < vData.ExamItem.length; index++) {
+            var vel = vData.ExamItem[index];
+            vRet.push(
+                {
+                    id: vel.id,
+                    resId: vel.resId,
+                    epScore: vel.epScore
+                });
+        }
+
+        //集合信息提交给服务端
+        var vJsonData = {
+            markerGhid: myUtil.getAccountPwd(),
+            markerName: myUtil.getUname(),
+            epList: vRet
+        };
+        console.log(vJsonData);
+        axios.post("/exam/submitScoring", vJsonData)
+            .then(function (response) {
+                let lret = response.data;
+                console.log(lret);
+
+            })
+            .catch(function (error) {
+
+            });
+        /*
+         var vConfig = location.search + "&reqcmd=submit";
+         $.post("${rootURL}/ut_exam/exam_testpaper_allreading.do/reading" + vConfig, vJsonData,
+             function (result) {
+                 if (result.RET == "OK") {
+                     vData.isSubmit = 1;
+                     vm.$notify({
+                         title: '成功',
+                         message: result.DATA,
+                         type: 'success'
+                     });
+                 } else {
+                     vm.$notify.error({
+                         title: '错误',
+                         message: result.DATA
+                     });
+                 }
+             });*/
+
+    }
+
+    function alterToKS() {
+        vm.$alert('您的审阅已经成功提交!', '成功', {
+            confirmButtonText: '确定',
+            callback: action => { //回调
+
+                ClosePage();//关闭页面
+            }
+        });
+    }
+
+    function ClosePage() {
+        var dgRet = frameElement.api;
+        dgRet.close();
+    }
+
+    function delYJPerson() {
+        var vRet = [];
+        for (let index = 0; index < vData.ExamItem.length; index++) {
+            var vel = vData.ExamItem[index];
+            vRet.push(
+                {
+                    id: vel.id,
+                });
+        }
+        let vJsonData = {isd:vRet};
+
+        axios.post("/exam/updateIsScoring", vJsonData)
+            .then(function (response) {
+
+            })
+            .catch(function (error) {
+
+            });
+
+    }
+</script>
+<style>
+    .transition-box {
+        width: 100%;
+        border-radius: 4px;
+        background-color: #409EFF;
+        text-align: center;
+        color: #fff;
+        padding: 20px 20px;
+        box-sizing: border-box;
+        margin-right: 20px;
+        font-size: 20px;
+    }
+
+    .el-header,
+    .el-footer {
+        background-color: #D3DCE6;
+        color: #333;
+        text-align: center;
+        line-height: 60px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .el-aside {
+        background-color: #D3DCE6;
+        color: #333;
+        text-align: center;
+        line-height: 100px;
+    }
+
+    .el-main {
+        background-color: #FFF;
+        color: #333;
+        text-align: left;
+        line-height: 100%;
+        padding-left: 30px;
+
+    }
+
+    body > .el-container {
+        margin-bottom: 40px;
+        font-size: 18px;
+    }
+
+    .el-container:nth-child(5) .el-aside,
+    .el-container:nth-child(6) .el-aside {
+        line-height: 260px;
+    }
+
+    .el-container:nth-child(7) .el-aside {
+        line-height: 320px;
+    }
+
+    .el-checkbox__label {
+        font-size: 16px;
+    }
+
+    .answerStyle {
+        margin: 15px, 15px;
+        color: #67c738;
+        font-size: 18px;
+        line-height: 23px;
+    }
+
+    .KSanswerStyle {
+        margin: 15px, 15px;
+        color: rgb(78, 35, 235);
+        font-size: 18px;
+        line-height: 23px;
+    }
+</style>
+</body>
+</html>

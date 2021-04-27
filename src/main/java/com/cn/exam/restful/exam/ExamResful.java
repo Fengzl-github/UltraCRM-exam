@@ -468,11 +468,8 @@ public class ExamResful {
     @PostMapping("/testResultPage")
     public ResResult testResultPage(@Valid @RequestBody TestResultVO testResultVO) {
 
-        //默认10条
-        JsonPage pageable = new JsonPage();
-        pageable.setSize(10);
 
-        List<TestResultDTO> list = examResultService.testResultPage(testResultVO, pageable);
+        List<TestResultDTO> list = examResultService.testResultPage(testResultVO);
 
         return ResCode.OK.setData(list);
     }

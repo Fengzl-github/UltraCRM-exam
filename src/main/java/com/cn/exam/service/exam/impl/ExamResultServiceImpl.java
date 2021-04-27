@@ -2,7 +2,6 @@ package com.cn.exam.service.exam.impl;
 
 import com.cn.common.exception.FzlException;
 import com.cn.common.jpa.util.JpaUtil;
-import com.cn.common.jpa.vo.JsonPage;
 import com.cn.common.utils.MyString;
 import com.cn.exam.dao.exam.ExamTestPersonDao;
 import com.cn.exam.dao.exam.ExamTestResultDao;
@@ -12,7 +11,6 @@ import com.cn.exam.dto.exam.TestScoreDTO;
 import com.cn.exam.entity.exam.ExamTestPerson;
 import com.cn.exam.service.exam.ExamResultService;
 import com.cn.exam.vo.exam.TestResultVO;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +34,7 @@ public class ExamResultServiceImpl implements ExamResultService {
 
 
     @Override
-    public List<TestResultDTO> testResultPage(TestResultVO testResultVO, JsonPage pageable) {
+    public List<TestResultDTO> testResultPage(TestResultVO testResultVO) {
         String hql = "";
         Map<String, Object> params = new HashMap<>();
         hql += "select new com.cn.exam.dto.exam.TestResultDTO(ps,rs) from ExamTestPerson ps " +
@@ -61,6 +59,10 @@ public class ExamResultServiceImpl implements ExamResultService {
         if (MyString.isNotEmpty(testResultVO.getGhid())) {
             hql += "and ps.ghid = :ghid ";
             params.put("ghid", testResultVO.getGhid());
+        } else {
+            List<String> people = examTestPersonDao.findbyPlanIdLimit5(testResultVO.getPlanId());
+            hql += "and ps.ghid in :ghidList ";
+            params.put("ghidList", people);
         }
         if (testResultVO.getOnlyShortAnswer() != null) {
             if (testResultVO.getOnlyShortAnswer() == 1) { // 只展示填空题和简答题
@@ -72,9 +74,8 @@ public class ExamResultServiceImpl implements ExamResultService {
 
         List<TestResultDTO> list = new ArrayList<>();
         synchronized (list) {
-            Page<TestResultDTO> page = jpaUtil.page(hql, params, pageable.getPageableUnsorted(), TestResultDTO.class);
-            System.out.println("试题数:" + page.getTotalElements());
-            list = page.getContent();
+            list = jpaUtil.list(hql, params, TestResultDTO.class);
+            System.out.println("试题数:" + list.size());
             // 阅卷：修改抽到试卷的是否阅卷中状态
             if (testResultVO.getScoringStatus() == 1) {
                 for (TestResultDTO temp : list) {

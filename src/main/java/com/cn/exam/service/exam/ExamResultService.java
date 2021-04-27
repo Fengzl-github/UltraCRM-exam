@@ -17,7 +17,7 @@ import java.util.List;
 public interface ExamResultService {
 
     /*考试结果  阅卷取试题，查看成绩共用*/
-    List<TestResultDTO> testResultPage(TestResultVO testResultVO, JsonPage pageable);
+    List<TestResultDTO> testResultPage(TestResultVO testResultVO);
 
     /*提交阅卷结果*/
     void submitScoring(SubmitScoringDTO submitScoringDTO);

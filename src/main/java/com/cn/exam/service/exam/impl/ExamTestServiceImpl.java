@@ -159,6 +159,7 @@ public class ExamTestServiceImpl implements ExamTestService {
         double score = 0.0;
         List<ExamTestResult> personEp = personTestingDTO.getPersonEp();
         for (ExamTestResult epResult : personEp) {
+            epResult.setId(null);
             epResult.setGhid(examTestPerson.getGhid());
             epResult.setName(examTestPerson.getName());
             epResult.setPaperId(examTestPerson.getPaperId());

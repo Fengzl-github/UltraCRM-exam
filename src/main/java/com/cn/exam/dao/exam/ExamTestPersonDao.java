@@ -32,6 +32,10 @@ public interface ExamTestPersonDao extends JpaRepository<ExamTestPerson, Integer
     @Query("select ep from ExamTestPerson ep where ep.planId = :planId order by ep.ghid asc ")
     List<ExamTestPerson> findbyPlanId(@Param("planId") String planId);
 
+    /*阅卷默认取五个人的试题*/
+    @Query(value = "select ghid from t_exam_test_person ep where ep.plan_id = :planId order by ep.ghid asc limit 5", nativeQuery = true)
+    List<String> findbyPlanIdLimit5(@Param("planId") String planId);
+
     /*删除参考人*/
     @Transactional
     @Modifying

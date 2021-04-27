@@ -1,8 +1,11 @@
 package com.cn.exam.dto.exam;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cn.exam.entity.exam.ExamTestPerson;
 import com.cn.exam.entity.exam.ExamTestResult;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  *@Author fengzhilong
@@ -46,6 +49,8 @@ public class TestResultDTO {
     private String correctAnswer;
     //考生答案
     private String epReplay;
+    //考生答案 填空题
+    private List<ExamOptionDTO> epReplayList;
     //题目分值
     private double topicScore;
     //考生得分
@@ -55,7 +60,7 @@ public class TestResultDTO {
     //选项内容
     private String topicContent;
     //选项内容,用于考试页面
-    private String topicQueContent;
+    private List<ExamOptionDTO> topicQueContent;
 
 
     public TestResultDTO(ExamTestPerson ps, ExamTestResult rs) {
@@ -78,12 +83,16 @@ public class TestResultDTO {
             this.topicType = rs.getTopicType();
             this.topicDes = rs.getTopicDes();
             this.correctAnswer = rs.getCorrectAnswer();
-            this.epReplay = rs.getEpReplay();
+            if (topicType == 3) {
+                this.epReplayList = JSONObject.parseArray(rs.getEpReplay(), ExamOptionDTO.class);
+            } else {
+                this.epReplay = rs.getEpReplay();
+            }
             this.topicScore = rs.getTopicScore();
             this.epScore = rs.getEpScore();
             this.difficultyLevel = rs.getDifficultyLevel();
             this.topicContent = rs.getTopicContent();
-            this.topicQueContent = rs.getTopicQueContent();
+            this.topicQueContent = JSONObject.parseArray(rs.getTopicQueContent(), ExamOptionDTO.class);
         }
     }
 

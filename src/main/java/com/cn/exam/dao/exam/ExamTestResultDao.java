@@ -38,6 +38,6 @@ public interface ExamTestResultDao extends JpaRepository<ExamTestResult, Integer
 	 * @param ghid ghid
      * @return double
      **/
-    @Query(value = "select count(tr.ep_score) from t_exam_test_result tr where tr.paper_id = :paperId and tr.ghid = :ghid ", nativeQuery = true)
+    @Query(value = "select sum(tr.ep_score) from t_exam_test_result tr where tr.paper_id = :paperId and tr.ghid = :ghid ", nativeQuery = true)
     double countTotalScore(String paperId, String ghid);
 }
