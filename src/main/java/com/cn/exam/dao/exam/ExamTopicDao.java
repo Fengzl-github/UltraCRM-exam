@@ -24,4 +24,8 @@ public interface ExamTopicDao extends JpaRepository<ExamTopic, Integer>, JpaSpec
     @Modifying
     @Query("update ExamTopic et set et.isDel = :isDel where et.topicId = :topicId")
     void removeOrRebootTopic(@Param("topicId") String topicId, @Param("isDel") Integer isDel);
+
+
+    @Query("select max(et.topicId) from ExamTopic et")
+    String findMaxTopicId();
 }
