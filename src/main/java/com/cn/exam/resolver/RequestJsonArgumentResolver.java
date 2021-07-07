@@ -44,9 +44,9 @@ public class RequestJsonArgumentResolver extends AbstractNamedValueMethodArgumen
      **/
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        log.info("【ParameterAnnotations是否为null】-> {}",parameter.getParameterAnnotations() == null);
-        log.info("【ParameterAnnotations是否长度为0】-> {}",parameter.getParameterAnnotations().length == 0);
-        log.info("【ParameterAnnotations是否有RequestJson注解】-> {}",parameter.hasParameterAnnotation(RequestJson.class));
+//        log.info("【ParameterAnnotations是否为null】-> {}",parameter.getParameterAnnotations() == null);
+//        log.info("【ParameterAnnotations是否长度为0】-> {}",parameter.getParameterAnnotations().length == 0);
+//        log.info("【ParameterAnnotations是否有RequestJson注解】-> {}",parameter.hasParameterAnnotation(RequestJson.class));
 
         return parameter.getParameterAnnotations() == null
                 || parameter.getParameterAnnotations().length == 0
@@ -56,7 +56,7 @@ public class RequestJsonArgumentResolver extends AbstractNamedValueMethodArgumen
     @Override
     protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) {
         RequestJson ann = parameter.getParameterAnnotation(RequestJson.class);
-        log.info("【RequestJson注解参数】-> {}", JSONObject.toJSONString(ann));
+//        log.info("【RequestJson注解参数】-> {}", JSONObject.toJSONString(ann));
         return (ann != null ? new RequestJsonNamedValueInfo(ann) : new RequestJsonNamedValueInfo());
     }
 

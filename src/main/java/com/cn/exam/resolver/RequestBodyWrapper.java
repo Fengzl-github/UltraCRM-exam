@@ -30,11 +30,10 @@ public class RequestBodyWrapper extends HttpServletRequestWrapper {
     }
 
     // 传入是JSON格式 转换成JSONObject
-    public JSONObject getJSONObject() throws UnsupportedEncodingException {
+    public JSONObject getJSONObject() {
         if (jsonObject != null) {
             return jsonObject;
         }
-        System.out.println("-------------------------------------------------");
         return jsonObject = JSON.parseObject(jsonText);
     }
 
@@ -45,25 +44,22 @@ public class RequestBodyWrapper extends HttpServletRequestWrapper {
     public RequestBodyWrapper(HttpServletRequest request) {
         super(request);
         try {
-            System.out.println("-------------------------------------------------");
-            System.out.println("访问地址: " + request.getRequestURI());
             requestBody = StreamUtils.copyToByteArray(request.getInputStream());
             jsonText = new String(requestBody, "UTF-8");
-            System.out.println(jsonText);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public ServletInputStream getInputStream() throws IOException {
+    public ServletInputStream getInputStream() {
         if (requestBody == null) {
             requestBody = new byte[0];
         }
         final ByteArrayInputStream bais = new ByteArrayInputStream(requestBody);
         return new ServletInputStream() {
             @Override
-            public int read() throws IOException {
+            public int read() {
                 return bais.read();
             }
 
