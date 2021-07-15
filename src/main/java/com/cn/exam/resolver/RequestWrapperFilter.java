@@ -27,35 +27,43 @@ public class RequestWrapperFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
-        HttpServletRequest resquest = (HttpServletRequest) servletRequest;
-        String requestID = REQUEST_ID_PREFIX + System.currentTimeMillis();
-        resquest.setAttribute(REQUEST_ID, requestID);
-        MDC.put(REQUEST_ID, requestID);
-        log.info("------------------------------------------------------------");
-        log.info("                                                            ");
-        log.info(" ## request method -> {}", resquest.getMethod());
-        log.info(" ## request uri -> {}", resquest.getRequestURI());
-        log.info(" ## request ip -> {}", RemoteAddrUtils.getIpAddr(resquest));
         try {
-            if (servletRequest.getContentType() != null
-                    && (servletRequest.getContentType().toLowerCase().contains("json")
-//                       ||
-//                       servletRequest.getContentType().toLowerCase().contains("xml")
-            )) {
-                RequestBodyWrapper myRequestWrapper = new RequestBodyWrapper((HttpServletRequest) servletRequest);
-                log.info(" ## request params -> {}", myRequestWrapper.getJsonText());
-                log.info("                                                            ");
-                log.info("------------------------------------------------------------");
-                filterChain.doFilter(myRequestWrapper, servletResponse);
+            HttpServletRequest request = (HttpServletRequest) servletRequest;
+            if (!isFilterExcludeRequest(request)) {
+                String requestUuid = REQUEST_ID_PREFIX + System.currentTimeMillis();
+                MDC.put(REQUEST_ID, requestUuid);
+                request.setAttribute(REQUEST_ID, requestUuid);
+                log.info("-----------------------------------------------------------");
+                log.info("                                                           ");
+                log.info(" ## request method -> {}", request.getMethod());
+                log.info(" ## request uri -> {}", request.getRequestURI());
+                log.info(" ## request ip -> {}", RemoteAddrUtils.getIpAddr(request));
+                if (servletRequest.getContentType() != null
+                        && (servletRequest.getContentType().toLowerCase().contains("json")
+                )) {
+                    RequestBodyWrapper myRequestWrapper = new RequestBodyWrapper((HttpServletRequest) servletRequest);
+                    log.info(" ## request params -> {}", myRequestWrapper.getJsonText());
+                    log.info("                                                           ");
+                    log.info("-----------------------------------------------------------");
+                    filterChain.doFilter(myRequestWrapper, servletResponse);
+                } else {
+                    log.info(" ## request params -> {}", JSONObject.toJSONString(request.getParameterMap()));
+                    log.info("                                                           ");
+                    log.info("-----------------------------------------------------------");
+                    filterChain.doFilter(servletRequest, servletResponse);
+                }
             } else {
-                log.info(" ## request params -> {}", JSONObject.toJSONString(resquest.getParameterMap()));
-                log.info("                                                            ");
-                log.info("------------------------------------------------------------");
                 filterChain.doFilter(servletRequest, servletResponse);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isFilterExcludeRequest(HttpServletRequest request) {
+        String strUri = request.getRequestURI();
+        return strUri.equals("/") || strUri.startsWith("/page") || strUri.endsWith(".ico") || strUri.startsWith("/common") || strUri.startsWith("/images")
+                || strUri.equals("/myindex.html") || strUri.equals("/main.html");
     }
 
     @Override
